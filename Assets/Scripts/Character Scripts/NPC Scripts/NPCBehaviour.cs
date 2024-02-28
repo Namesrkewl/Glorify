@@ -2,10 +2,13 @@ using UnityEngine;
 using UnityEngine.AI;
 using FishNet.Connection;
 using FishNet.Object;
-using System;
+using System.Linq;
 using System.Collections;
 using System.Collections.Generic;
+using FishNet.Demo.AdditiveScenes;
+using FishNet.Managing.Logging;
 using static UnityEngine.GraphicsBuffer;
+using UnityEngine.TextCore.Text;
 
 
 [RequireComponent(typeof(NavMeshAgent))]
@@ -14,15 +17,9 @@ public class NPCBehaviour : NetworkBehaviour, ICombatable, ICastable, IAbleToAtt
     #region Variables
     protected DeathShatter deathShatter;
     public CombatManager combatManager;
-    public float moveSpeed = 7.1f;
-    public float maxAttackRange = 50f;
-    private float autoAttackTimer = 0f;
     private NavMeshAgent agent;
-    public float aggroRange = 10f; // Base range for initiating combat
-    private Vector3 lastAttackPosition; // Last position where the NPC attacked the player
-    private Vector3 originalPosition;
-    private TargetType initialStatus;
     public NPC npc;
+    
     #endregion
 
     public override void OnStartServer() {
@@ -34,10 +31,10 @@ public class NPCBehaviour : NetworkBehaviour, ICombatable, ICastable, IAbleToAtt
         agent = GetComponent<NavMeshAgent>();
 
         SetStartingValues();
-        originalPosition = transform.position;
+        npc.originalPosition = transform.position;
 
         // Initialize based on npc
-        agent.speed = moveSpeed;
+        agent.speed = npc.speed;
 
         // Adjust NavMeshAgent settings for NPC collision
         agent.radius = 0.5f; // Adjust as needed for the size of your NPCs
@@ -66,8 +63,8 @@ public class NPCBehaviour : NetworkBehaviour, ICombatable, ICastable, IAbleToAtt
     }
 
     public void SetStartingValues() {
-        //npc.currentHealth = npc.maxHealth;
-        //npc.currentMana = npc.maxMana;
+        npc.currentHealth = npc.maxHealth;
+        npc.currentMana = npc.maxMana;
     }
 
     #region Movement Logic
@@ -82,12 +79,13 @@ public class NPCBehaviour : NetworkBehaviour, ICombatable, ICastable, IAbleToAtt
         var tempCharacters = new List<ICombatable>(npc.aggroList);
 
         foreach (var character in tempCharacters) {
-            ExitCombat(character);
+            NetworkBehaviour _character = character as NetworkBehaviour;
+            ExitCombat(_character);
         }
         agent.enabled = false;
 
-        while (Vector3.Distance(transform.position, originalPosition) > 0f) {
-            transform.position = Vector3.MoveTowards(transform.position, originalPosition, moveSpeed * Time.deltaTime);
+        while (Vector3.Distance(transform.position, npc.originalPosition) > 0f) {
+            transform.position = Vector3.MoveTowards(transform.position, npc.originalPosition, npc.speed * Time.deltaTime);
             yield return null;
         }
 
@@ -99,7 +97,7 @@ public class NPCBehaviour : NetworkBehaviour, ICombatable, ICastable, IAbleToAtt
     #region Combat Logic
     private void HandleCombatState() {
         if (npc.combatStatus == CombatStatus.OutOfCombat) {
-            originalPosition = transform.position;
+            npc.originalPosition = transform.position;
         }
         if (npc.targetStatus == TargetStatus.Dead && npc.currentHealth > 0) {
             StartCoroutine(ResetPosition());
@@ -111,14 +109,12 @@ public class NPCBehaviour : NetworkBehaviour, ICombatable, ICastable, IAbleToAtt
     private void CheckForEnemiesInRange() {
         // Logic to detect players within aggro range and add them to combat list
         if (npc.currentHealth > 0 && npc.combatStatus != CombatStatus.Resetting) {
-            foreach (var player in FindObjectsOfType<PlayerBehaviour>()) {
-                /*
-                if (player.playerData.Value) {
-                    if (Vector3.Distance(transform.position, player.transform.position) <= CalculateCombatRange(player) && IsLineOfSightClear(player.gameObject) && player.state != State.Dead) {
-                        EnterCombat(player);
-                    }
+            foreach (var target in FindObjectsOfType<MonoBehaviour>().OfType<ICombatable>()) {
+                GameObject targetObject = target.GetTargetObject();
+                if (Vector3.Distance(transform.position, targetObject.transform.position) <= CalculateCombatRange(target) && IsLineOfSightClear(targetObject) && target.GetTargetStatus() != TargetStatus.Dead) {
+                    NetworkBehaviour _target = target as NetworkBehaviour;
+                    EnterCombat(_target);
                 }
-                */
             }
         }
     }
@@ -128,7 +124,8 @@ public class NPCBehaviour : NetworkBehaviour, ICombatable, ICastable, IAbleToAtt
         var tempCharacters = new List<ICombatable>(npc.aggroList);
         foreach (var character in tempCharacters) {
             if (ShouldStopCombat(character)) {
-                ExitCombat(character);
+                NetworkBehaviour _character = character as NetworkBehaviour;
+                ExitCombat(_character);
             }
         }
         if (npc.aggroList.Count == 0) {
@@ -161,9 +158,9 @@ public class NPCBehaviour : NetworkBehaviour, ICombatable, ICastable, IAbleToAtt
         Character target = Database.instance.GetTarget(_target);
         int levelDifference = Mathf.Abs(target.level - npc.level);
         if (target.level >= npc.level) {
-            return aggroRange - Mathf.Min(levelDifference, 5);
+            return npc.aggroRange - Mathf.Min(levelDifference, 5);
         } else {
-            return aggroRange + Mathf.Min(levelDifference, 5);
+            return npc.aggroRange + Mathf.Min(levelDifference, 5);
         }
     }
     private bool IsTargetInAttackRange(GameObject target) {
@@ -173,7 +170,7 @@ public class NPCBehaviour : NetworkBehaviour, ICombatable, ICastable, IAbleToAtt
     private bool IsLineOfSightClear(GameObject target) {
         RaycastHit hit;
         Vector3 direction = target.transform.position - transform.position;
-        float range = (npc.combatStatus == CombatStatus.InCombat) ? npc.autoAttackRange : aggroRange;
+        float range = (npc.combatStatus == CombatStatus.InCombat) ? npc.autoAttackRange : npc.aggroRange;
 
         if (Physics.Raycast(transform.position, direction.normalized, out hit, range)) {
             return hit.collider.gameObject == target;
@@ -187,15 +184,15 @@ public class NPCBehaviour : NetworkBehaviour, ICombatable, ICastable, IAbleToAtt
 
     private void HandleAutoAttack(ICombatable target) {
         if (IsTargetInRangeAndVisible(target)) {
-            if (autoAttackTimer <= 0f) {
+            if (npc.autoAttackTimer <= 0f) {
                 Debug.Log("Attacked");
                 PerformAutoAttack(target);
-                autoAttackTimer = CalculateAutoAttackCooldown();
+                npc.autoAttackTimer = CalculateAutoAttackCooldown();
             } else {
-                autoAttackTimer -= Time.deltaTime;
+                npc.autoAttackTimer -= Time.deltaTime;
             }
         } else {
-            autoAttackTimer -= Time.deltaTime;
+            npc.autoAttackTimer -= Time.deltaTime;
         }
     }
 
@@ -204,7 +201,7 @@ public class NPCBehaviour : NetworkBehaviour, ICombatable, ICastable, IAbleToAtt
         if (target != null && target.currentHealth > 0) {
             // Auto-attack logic here...
             Debug.Log("Performed");
-            int damage = UnityEngine.Random.Range(npc.autoAttackDamageMin, npc.autoAttackDamageMax);
+            int damage = UnityEngine.Random.Range(npc.minAutoAttackDamage, npc.maxAutoAttackDamage);
             combatManager.SendDamage(_target, damage);
         }
     }
@@ -242,28 +239,42 @@ public class NPCBehaviour : NetworkBehaviour, ICombatable, ICastable, IAbleToAtt
     #region Combat Logic
     // New method to determine whether to stop combat
     private bool ShouldStopCombat(ICombatable target) {
-        return Vector3.Distance(originalPosition, target.GetTargetObject().transform.position) > maxAttackRange;
+        return Vector3.Distance(npc.originalPosition, target.GetTargetObject().transform.position) > npc.maxAttackRange;
     }
 
     // Overriding methods...
 
-    public void EnterCombat(ICombatable target) {
-        if (!npc.aggroList.Contains(target)) {
-            npc.aggroList.Add(target);
+    [ObserversRpc]
+    private void EnterCombat(NetworkBehaviour target) {
+        ICombatable combatant = target as ICombatable;
+        if (!npc.aggroList.Contains(combatant)) {
+            npc.aggroList.Add(combatant);
             npc.combatStatus = CombatStatus.InCombat;
 
             // Notify the other character to enter combat
-            target.EnterCombat(this);
+            combatant.ServerEnterCombat(this);
         }
     }
 
-    public void ExitCombat(ICombatable target) {
-        if (npc.aggroList.Contains(target)) {
-            npc.aggroList.Remove(target);
+    [Server(Logging = LoggingType.Off)]
+    public void ServerEnterCombat(NetworkBehaviour target) {
+        EnterCombat(target);
+    }
+
+    [ObserversRpc]
+    public void ExitCombat(NetworkBehaviour target) {
+        ICombatable combatant = target as ICombatable;
+        if (npc.aggroList.Contains(combatant)) {
+            npc.aggroList.Remove(combatant);
 
             // Notify the other character to exit combat
-            target.ExitCombat(this);
+            combatant.ServerExitCombat(this);
         }
+    }
+
+    [Server(Logging = LoggingType.Off)]
+    public void ServerExitCombat(NetworkBehaviour target) {
+        ExitCombat(target);
     }
 
     #endregion
@@ -273,15 +284,17 @@ public class NPCBehaviour : NetworkBehaviour, ICombatable, ICastable, IAbleToAtt
         Debug.Log("Running Death");
         npc.targetStatus = TargetStatus.Dead;
         // Create a temporary list to store characters to exit combat with
-        var tempCharacters = new List<ICombatable>(npc.aggroList);
+        var tempTargets = new List<ICombatable>(npc.aggroList);
         //PlayerBehaviour tempPlayer = null;
 
-        foreach (var character in tempCharacters) {
-            /*tempPlayer = character as PlayerBehaviour;
-            if (tempPlayer != null) {
-                tempPlayer.playerData.Value.currentExperience += npc.experience;
-            }*/
-            ExitCombat(character);
+        foreach (var target in tempTargets) {
+            Character character = Database.instance.GetTarget(target);
+            if (character as Player != null) {
+                Player player = character as Player;
+                player.currentExperience += npc.experience;
+            }
+            NetworkBehaviour _target = target as NetworkBehaviour;
+            ExitCombat(_target);
         }
         // Stop all coroutines to cease current behaviour
         StopAllCoroutines();
@@ -310,7 +323,7 @@ public class NPCBehaviour : NetworkBehaviour, ICombatable, ICastable, IAbleToAtt
     }
 
     public Character GetTarget() {
-        return Database.instance.GetNPC(GetKey());
+        return npc;
     }
 
     public ITargetable GetTargetComponent() {
@@ -318,11 +331,11 @@ public class NPCBehaviour : NetworkBehaviour, ICombatable, ICastable, IAbleToAtt
     }
 
     public TargetType GetTargetType() {
-        return Database.instance.GetNPC(npc.key).targetType;
+        return npc.targetType;
     }
 
     public TargetStatus GetTargetStatus() {
-        return TargetStatus.Alive;
+        return npc.targetStatus;
     }
 
     public GameObject GetTargetObject() {

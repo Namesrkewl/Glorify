@@ -1,3 +1,4 @@
+using FishNet.Demo.AdditiveScenes;
 using System;
 using System.Collections.Generic;
 using UnityEngine;
@@ -27,5 +28,9 @@ public class Player : Character  {
 
     public Player() {
         key = new Key();
+        level = 1;
+        location = new Vector3(2700, 12, 2200);
+        scale = Vector3.one;
+        rotation = Quaternion.identity;
     }
 }

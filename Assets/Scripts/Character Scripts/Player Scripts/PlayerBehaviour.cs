@@ -1,5 +1,10 @@
+using FishNet.Connection;
+using FishNet.Demo.AdditiveScenes;
+using FishNet.Managing.Logging;
 using FishNet.Object;
+using System;
 using UnityEngine;
+using UnityEngine.InputSystem;
 
 [RequireComponent(typeof(PlayerMovement))]
 [RequireComponent(typeof(PlayerTargeting))]
@@ -20,26 +25,40 @@ public class PlayerBehaviour : NetworkBehaviour, ICombatable, ICastable, IAbleTo
         PlayerManager.instance.UpdatePlayer(Database.instance.GetPlayer(GetKey()));
     }
 
-    //[ServerRpc]
-    public void EnterCombat(ICombatable target) {
-        Player player = Database.instance.GetPlayer(GetKey());
-        if (!player.aggroList.Contains(target)) {
-            player.aggroList.Add(target);
+    [ObserversRpc]
+    private void EnterCombat(NetworkBehaviour target, Player player) {
+        ICombatable combatant = target as ICombatable;
+        if (!player.aggroList.Contains(combatant)) {
+            player.aggroList.Add(combatant);
             player.combatStatus = CombatStatus.InCombat;
 
             // Notify the other character to enter combat
-            target.EnterCombat(this);
+            combatant.ServerEnterCombat(this);
         }
     }
 
-    public void ExitCombat(ICombatable target) {
+    [ServerRpc]
+    public void ServerEnterCombat(NetworkBehaviour target) {
         Player player = Database.instance.GetPlayer(GetKey());
-        if (player.aggroList.Contains(target)) {
-            player.aggroList.Remove(target);
+        EnterCombat(target, player);
+
+    }
+
+    [ObserversRpc]
+    public void ExitCombat(NetworkBehaviour target, Player player) {
+        ICombatable combatant = target as ICombatable;
+        if (player.aggroList.Contains(combatant)) {
+            player.aggroList.Remove(combatant);
 
             // Notify the other character to exit combat
-            target.ExitCombat(this);
+            combatant.ServerExitCombat(this);
         }
+    }
+
+    [ServerRpc]
+    public void ServerExitCombat(NetworkBehaviour target) {
+        Player player = Database.instance.GetPlayer(GetKey());
+        ExitCombat(target, player);
     }
 
     public Key GetKey() {
@@ -58,7 +77,7 @@ public class PlayerBehaviour : NetworkBehaviour, ICombatable, ICastable, IAbleTo
     }
 
     public TargetStatus GetTargetStatus() {
-        return TargetStatus.Alive;
+        return Database.instance.GetPlayer(GetKey()).targetStatus;
     }
 
     public GameObject GetTargetObject() {
@@ -76,7 +95,7 @@ public class PlayerBehaviour : NetworkBehaviour, ICombatable, ICastable, IAbleTo
                 EnterCombatWith(player, targetBehavior as NPCBehaviour); // Enter combat with the target
 
                 // Auto-attack logic here...
-                int damage = Random.Range(player.autoAttackDamageMin, player.autoAttackDamageMax);
+                int damage = Random.Range(player.minAutoAttackDamage, player.maxAutoAttackDamage);
                 CombatManager.instance.SendDamage(targetBehavior, damage);
                 ConfirmAutoAttack(player);
             }

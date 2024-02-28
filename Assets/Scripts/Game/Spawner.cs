@@ -17,7 +17,7 @@ public class Spawner : NetworkBehaviour {
         Player player = Database.instance.GetPlayer(key);
         GameObject playerObject = Instantiate(playerPrefab, player.location, player.rotation);
         playerObject.transform.localScale = player.scale;
-        Debug.Log($"Total Player Count: {Database.instance.players.Count}");
+        Debug.Log($"Total Player Count: {Database.instance.GetPlayerCount()}");
         Debug.Log($"Spawning {player.key.name} with the ID {player.key.ID}!");
         Spawn(playerObject, sender);
     }

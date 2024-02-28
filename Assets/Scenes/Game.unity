@@ -25571,9 +25571,31 @@ MonoBehaviour:
   _addedNetworkObject: {fileID: 78385335}
   _networkObjectCache: {fileID: 78385335}
   combatManager: {fileID: 0}
-  moveSpeed: 7.1
   maxAttackRange: 50
   aggroRange: 10
+  npc:
+    targetType: 0
+    characterRace: 0
+    targetStatus: 0
+    combatStatus: 0
+    level: 0
+    maxHealth: 0
+    currentHealth: 0
+    maxMana: 0
+    currentMana: 0
+    armor: 0
+    speed: 0
+    minAutoAttackDamage: 0
+    maxAutoAttackDamage: 0
+    autoAttackRange: 0
+    autoAttackCooldown: 0
+    location: {x: 0, y: 0, z: 0}
+    scale: {x: 0, y: 0, z: 0}
+    rotation: {x: 0, y: 0, z: 0, w: 0}
+    rarity: 0
+    wealth: 0
+    experience: 0
+    dropTable: []
 --- !u!136 &1224530593
 CapsuleCollider:
   m_ObjectHideFlags: 0
@@ -26317,7 +26339,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!4 &1261425127
 Transform:
   m_ObjectHideFlags: 0
@@ -26371,9 +26393,31 @@ MonoBehaviour:
   _addedNetworkObject: {fileID: 78385335}
   _networkObjectCache: {fileID: 78385335}
   combatManager: {fileID: 0}
-  moveSpeed: 7.1
   maxAttackRange: 50
   aggroRange: 10
+  npc:
+    targetType: 0
+    characterRace: 0
+    targetStatus: 0
+    combatStatus: 0
+    level: 1
+    maxHealth: 20
+    currentHealth: 20
+    maxMana: 20
+    currentMana: 20
+    armor: 1
+    speed: 7.1
+    minAutoAttackDamage: 1
+    maxAutoAttackDamage: 10
+    autoAttackRange: 5
+    autoAttackCooldown: 3
+    location: {x: 2679.8, y: 5, z: 2098.8}
+    scale: {x: 1, y: 1, z: 1}
+    rotation: {x: 0, y: 0, z: 0, w: 0}
+    rarity: 0
+    wealth: 10
+    experience: 0
+    dropTable: []
 --- !u!136 &1261425130
 CapsuleCollider:
   m_ObjectHideFlags: 0
@@ -28656,9 +28700,31 @@ MonoBehaviour:
   _addedNetworkObject: {fileID: 78385335}
   _networkObjectCache: {fileID: 78385335}
   combatManager: {fileID: 0}
-  moveSpeed: 7.1
   maxAttackRange: 50
   aggroRange: 10
+  npc:
+    targetType: 0
+    characterRace: 0
+    targetStatus: 0
+    combatStatus: 0
+    level: 0
+    maxHealth: 0
+    currentHealth: 0
+    maxMana: 0
+    currentMana: 0
+    armor: 0
+    speed: 0
+    minAutoAttackDamage: 0
+    maxAutoAttackDamage: 0
+    autoAttackRange: 0
+    autoAttackCooldown: 0
+    location: {x: 0, y: 0, z: 0}
+    scale: {x: 0, y: 0, z: 0}
+    rotation: {x: 0, y: 0, z: 0, w: 0}
+    rarity: 0
+    wealth: 0
+    experience: 0
+    dropTable: []
 --- !u!195 &1553720423
 NavMeshAgent:
   m_ObjectHideFlags: 0
@@ -29072,9 +29138,31 @@ MonoBehaviour:
   _addedNetworkObject: {fileID: 78385335}
   _networkObjectCache: {fileID: 78385335}
   combatManager: {fileID: 0}
-  moveSpeed: 7.1
   maxAttackRange: 50
   aggroRange: 10
+  npc:
+    targetType: 0
+    characterRace: 0
+    targetStatus: 0
+    combatStatus: 0
+    level: 0
+    maxHealth: 0
+    currentHealth: 0
+    maxMana: 0
+    currentMana: 0
+    armor: 0
+    speed: 0
+    minAutoAttackDamage: 0
+    maxAutoAttackDamage: 0
+    autoAttackRange: 0
+    autoAttackCooldown: 0
+    location: {x: 0, y: 0, z: 0}
+    scale: {x: 0, y: 0, z: 0}
+    rotation: {x: 0, y: 0, z: 0, w: 0}
+    rarity: 0
+    wealth: 0
+    experience: 0
+    dropTable: []
 --- !u!136 &1630318951
 CapsuleCollider:
   m_ObjectHideFlags: 0
@@ -33095,9 +33183,31 @@ MonoBehaviour:
   _addedNetworkObject: {fileID: 78385335}
   _networkObjectCache: {fileID: 78385335}
   combatManager: {fileID: 0}
-  moveSpeed: 7.1
   maxAttackRange: 50
   aggroRange: 10
+  npc:
+    targetType: 0
+    characterRace: 0
+    targetStatus: 0
+    combatStatus: 0
+    level: 0
+    maxHealth: 0
+    currentHealth: 0
+    maxMana: 0
+    currentMana: 0
+    armor: 0
+    speed: 0
+    minAutoAttackDamage: 0
+    maxAutoAttackDamage: 0
+    autoAttackRange: 0
+    autoAttackCooldown: 0
+    location: {x: 0, y: 0, z: 0}
+    scale: {x: 0, y: 0, z: 0}
+    rotation: {x: 0, y: 0, z: 0, w: 0}
+    rarity: 0
+    wealth: 0
+    experience: 0
+    dropTable: []
 --- !u!136 &1974042543
 CapsuleCollider:
   m_ObjectHideFlags: 0

@@ -1,0 +1,39 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6063cb4091898f44dbb3b30acbfdc550, type: 3}
+  m_Name: Bandit
+  m_EditorClassIdentifier: 
+  npc:
+    targetType: 0
+    characterRace: 0
+    targetStatus: 0
+    combatStatus: 0
+    level: 1
+    maxHealth: 20
+    currentHealth: 20
+    maxMana: 20
+    currentMana: 20
+    armor: 1
+    speed: 7.1
+    minAutoAttackDamage: 1
+    maxAutoAttackDamage: 10
+    autoAttackRange: 5
+    autoAttackCooldown: 3
+    location: {x: 2679.8, y: 5, z: 2098.8}
+    scale: {x: 1, y: 1, z: 1}
+    rotation: {x: 0, y: 0, z: 0, w: 0}
+    rarity: 0
+    wealth: 10
+    experience: 0
+    dropTable: []
+  name: Bandit
+  ID: 0

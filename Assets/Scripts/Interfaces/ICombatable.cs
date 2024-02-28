@@ -1,6 +1,9 @@
 
+using FishNet.Connection;
+using FishNet.Object;
+
 public interface ICombatable : ITargetable
 {
-    void EnterCombat(ICombatable target);
-    void ExitCombat(ICombatable target);
+    void ServerEnterCombat(NetworkBehaviour target);
+    void ServerExitCombat(NetworkBehaviour target);
 }

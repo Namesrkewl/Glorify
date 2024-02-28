@@ -1,4 +1,5 @@
 using FishNet.Demo.AdditiveScenes;
+using FishNet.Object.Synchronizing;
 using System;
 using System.Collections.Generic;
 using UnityEngine;
@@ -17,11 +18,12 @@ public class Character : Identifiable {
     public float maxMana;
     public float currentMana;
     public int armor;
-    public int speed;
-    public int autoAttackDamageMin;
-    public int autoAttackDamageMax;
+    public float speed;
+    public int minAutoAttackDamage;
+    public int maxAutoAttackDamage;
     public float autoAttackRange;
     public float autoAttackCooldown;
+    public float autoAttackTimer = 0f;
     public Vector3 location;
     public Vector3 scale;
     public Quaternion rotation;

@@ -235,14 +235,11 @@ public class PlayerManager : NetworkBehaviour {
         Debug.Log("Creating New Player!");
         Player player = new Player();
         player.key.name = name;
-        List<Player> sameNamedPlayers = Database.instance.players.Where(p => p.key.name == player.key.name).ToList();
+        List<Player> sameNamedPlayers = Database.instance.GetAllPlayers().Where(p => p.key.name == player.key.name).ToList();
         List<int> excludedIDs = sameNamedPlayers.Select(p => p.key.ID).ToList();
         do {
             player.key.ID = Random.Range(0, 9999999);
         } while (excludedIDs.Contains(player.key.ID));
-        player.location = new Vector3(2700, 12, 2200);
-        player.scale = Vector3.one;
-        player.rotation = Quaternion.identity;
         Database.instance.AddPlayer(player, credentials);
         API.instance.CompleteLogin(sender, Database.instance.GetPlayer(player.key).key);
     }
