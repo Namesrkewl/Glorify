@@ -10,12 +10,16 @@ using System.ComponentModel;
 public class Database : NetworkBehaviour {
     public static Database instance;
     private void Awake() {
-        instance = this;
+        if (instance != null) {
+            Destroy(gameObject);
+        } else {
+            instance = this;
+        }
     }
 
     #region Players
     private readonly SyncDictionary<int, Player> players = new SyncDictionary<int, Player>();
-    private readonly SyncDictionary<string, int> playerIDs = new SyncDictionary<string, int>(); 
+    private readonly SyncDictionary<string, int> playerIDs = new SyncDictionary<string, int>();
     private readonly SyncDictionary<int, Key> playerKeys = new SyncDictionary<int, Key>();
 
     public Player GetPlayer(int ID) {
@@ -173,4 +177,15 @@ public class Database : NetworkBehaviour {
     }
 
     #endregion
+
+    public Identifiable GetTarget(ITargetable target) {
+        Identifiable entity = null;
+        int ID = target.GetID();
+        if (target as PlayerBehaviour) {
+            entity = GetPlayer(ID);
+        } else if (target as NPCBehaviour) {
+            entity = GetNPC(ID);
+        }
+        return entity;
+    }
 }

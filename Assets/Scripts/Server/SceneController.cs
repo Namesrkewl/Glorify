@@ -10,15 +10,16 @@ public class SceneController : NetworkBehaviour {
     public static SceneController instance;
 
     private void Awake() {
-        instance = this;
+        if (instance != null) {
+            Destroy(gameObject);
+        } else {
+            instance = this;
+        }
     }
 
     public override void OnStartServer() {
         base.OnStartServer();
         StartServer();
-        if (ConnectionStarter.instance.connectionType == ConnectionType.Host) {
-            UnityEngine.SceneManagement.SceneManager.LoadScene("Client", UnityEngine.SceneManagement.LoadSceneMode.Additive);
-        }
     }
 
     [Server(Logging = LoggingType.Off)]

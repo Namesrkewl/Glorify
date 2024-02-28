@@ -1,18 +1,9 @@
-using FishNet.CodeGenerating;
-using FishNet.Connection;
 using FishNet.Object;
-using System.Collections;
-using System.Collections.Generic;
-using System.ComponentModel;
 using UnityEngine;
-using FishNet.Object;
-using FishNet.Connection;
-using FishNet.Object.Synchronizing;
-using FishNet.Demo.AdditiveScenes;
 
 [RequireComponent(typeof(PlayerMovement))]
 [RequireComponent(typeof(PlayerTargeting))]
-public class PlayerBehaviour : NetworkBehaviour, ICombatable, IAttackable, ICastable, IAbleToAttack, IAbleToCast {
+public class PlayerBehaviour : NetworkBehaviour, ICombatable, IDamageable, ICastable, IAbleToAttack, IAbleToCast {
     private PlayerTargeting playerTargeting;
     private PlayerMovement playerMovement;
 
@@ -27,6 +18,28 @@ public class PlayerBehaviour : NetworkBehaviour, ICombatable, IAttackable, ICast
 
     private void UpdatePlayer() {
         PlayerManager.instance.UpdatePlayer(Database.instance.GetPlayer(GetID()));
+    }
+
+    //[ServerRpc]
+    public void EnterCombat(ICombatable target) {
+        Player player = Database.instance.GetPlayer(GetID());
+        if (!player.aggroList.Contains(target)) {
+            player.aggroList.Add(target);
+            player.combatStatus = CombatStatus.InCombat;
+
+            // Notify the other character to enter combat
+            target.EnterCombat(this);
+        }
+    }
+
+    public void ExitCombat(ICombatable target) {
+        Player player = Database.instance.GetPlayer(GetID());
+        if (player.aggroList.Contains(target)) {
+            player.aggroList.Remove(target);
+
+            // Notify the other character to exit combat
+            target.ExitCombat(this);
+        }
     }
 
     public int GetID() {
@@ -59,7 +72,7 @@ public class PlayerBehaviour : NetworkBehaviour, ICombatable, IAttackable, ICast
     private void ServerPerformAutoAttack(Player player, GameObject targetObject, NetworkConnection sender = null) {
         if (targetObject != null) {
             EntityBehaviour targetBehavior = targetObject.GetComponent<EntityBehaviour>();
-            if (targetBehavior != null && targetBehavior.characterData.currentHealth > 0) {
+            if (targetBehavior != null && targetBehavior.npc.currentHealth > 0) {
                 EnterCombatWith(player, targetBehavior as NPCBehaviour); // Enter combat with the target
 
                 // Auto-attack logic here...

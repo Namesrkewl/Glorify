@@ -5,7 +5,7 @@ using UnityEngine.UI;
 
 public class Player : Identifiable  {
     public PlayerClass playerClass;
-    [System.NonSerialized] public Image characterImage;
+    [NonSerialized] public Image characterImage;
     public string name;
     public TargetType targetType = TargetType.Player;
     public Races characterRace;
@@ -48,7 +48,7 @@ public class Player : Identifiable  {
     public float regenerationCooldownTimer = 0f; // Timer for delaying regeneration
     public List<Spell> Spells;
     public List<Spell> Passives;
-    [NonSerialized] public List<ICombatable> aggroList;
+    [NonSerialized] public List<ICombatable> aggroList = new List<ICombatable>();
     private int playerID;
 
     public int GetID() {

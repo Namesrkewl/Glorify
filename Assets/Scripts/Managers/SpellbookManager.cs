@@ -8,9 +8,16 @@ public class SpellbookManager : ActionManager {
     public GameObject spellContainer;
     public List<Spell> spellList;
 
+    private void Awake() {
+        if (instance != null) { 
+            Destroy(gameObject);
+        } else {
+            instance = this;
+        }
+    }
+
     public override void OnStartClient() {
         base.OnStartClient();
-        instance = this;
     }
 
     protected override void HandleSwap(ActionButton secondButton) {

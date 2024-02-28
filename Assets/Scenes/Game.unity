@@ -14751,7 +14751,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!4 &871841141
 Transform:
   m_ObjectHideFlags: 0
@@ -25517,7 +25517,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &1224530590
 Transform:
   m_ObjectHideFlags: 0
@@ -25570,15 +25570,11 @@ MonoBehaviour:
   _componentIndexCache: 3
   _addedNetworkObject: {fileID: 78385335}
   _networkObjectCache: {fileID: 78385335}
-  state: 0
-  characterData: {fileID: 11400000, guid: 2bad6cb5e13cbf54c90695a0ef7197a1, type: 2}
-  aggroList: []
   combatManager: {fileID: 0}
-  npcData: {fileID: 0}
   moveSpeed: 7.1
   maxAttackRange: 50
   aggroRange: 10
-  ID: 0
+  npc: {fileID: 0}
 --- !u!136 &1224530593
 CapsuleCollider:
   m_ObjectHideFlags: 0
@@ -26375,15 +26371,11 @@ MonoBehaviour:
   _componentIndexCache: 1
   _addedNetworkObject: {fileID: 78385335}
   _networkObjectCache: {fileID: 78385335}
-  state: 0
-  characterData: {fileID: 11400000, guid: 9d296e7a6ce0c6b44bdef1c55a086c8b, type: 2}
-  aggroList: []
   combatManager: {fileID: 0}
-  npcData: {fileID: 0}
   moveSpeed: 7.1
   maxAttackRange: 50
   aggroRange: 10
-  ID: 0
+  npc: {fileID: 11400000, guid: 89c8c064740340543a87af0934e1f8b4, type: 2}
 --- !u!136 &1261425130
 CapsuleCollider:
   m_ObjectHideFlags: 0
@@ -28561,7 +28553,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &1553720418
 Transform:
   m_ObjectHideFlags: 0
@@ -28665,15 +28657,11 @@ MonoBehaviour:
   _componentIndexCache: 2
   _addedNetworkObject: {fileID: 78385335}
   _networkObjectCache: {fileID: 78385335}
-  state: 0
-  characterData: {fileID: 11400000, guid: 89c8c064740340543a87af0934e1f8b4, type: 2}
-  aggroList: []
   combatManager: {fileID: 0}
-  npcData: {fileID: 0}
   moveSpeed: 7.1
   maxAttackRange: 50
   aggroRange: 10
-  ID: 0
+  npc: {fileID: 0}
 --- !u!195 &1553720423
 NavMeshAgent:
   m_ObjectHideFlags: 0
@@ -29033,7 +29021,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &1630318948
 Transform:
   m_ObjectHideFlags: 0
@@ -29086,15 +29074,11 @@ MonoBehaviour:
   _componentIndexCache: 5
   _addedNetworkObject: {fileID: 78385335}
   _networkObjectCache: {fileID: 78385335}
-  state: 0
-  characterData: {fileID: 11400000, guid: 42dc1bda000a8ac42861ad91fbd2f713, type: 2}
-  aggroList: []
   combatManager: {fileID: 0}
-  npcData: {fileID: 0}
   moveSpeed: 7.1
   maxAttackRange: 50
   aggroRange: 10
-  ID: 0
+  npc: {fileID: 0}
 --- !u!136 &1630318951
 CapsuleCollider:
   m_ObjectHideFlags: 0
@@ -33061,7 +33045,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &1974042540
 Transform:
   m_ObjectHideFlags: 0
@@ -33114,15 +33098,11 @@ MonoBehaviour:
   _componentIndexCache: 4
   _addedNetworkObject: {fileID: 78385335}
   _networkObjectCache: {fileID: 78385335}
-  state: 0
-  characterData: {fileID: 11400000, guid: d40d4fede56f3cd4dbb5bb3e39825fba, type: 2}
-  aggroList: []
   combatManager: {fileID: 0}
-  npcData: {fileID: 0}
   moveSpeed: 7.1
   maxAttackRange: 50
   aggroRange: 10
-  ID: 0
+  npc: {fileID: 0}
 --- !u!136 &1974042543
 CapsuleCollider:
   m_ObjectHideFlags: 0

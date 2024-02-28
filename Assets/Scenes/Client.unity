@@ -123,11 +123,6 @@ NavMeshSettings:
     debug:
       m_Flags: 0
   m_NavMeshData: {fileID: 0}
---- !u!1 &445105569 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 584090072317847074, guid: aaf049b7291f21a4b9b7f9d26eaf7d16, type: 3}
-  m_PrefabInstance: {fileID: 5357546314405447502}
-  m_PrefabAsset: {fileID: 0}
 --- !u!1001 &901925755
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -811,6 +806,11 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: aaf049b7291f21a4b9b7f9d26eaf7d16, type: 3}
+--- !u!1 &5357546314405447503 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 584090072317847074, guid: aaf049b7291f21a4b9b7f9d26eaf7d16, type: 3}
+  m_PrefabInstance: {fileID: 5357546314405447502}
+  m_PrefabAsset: {fileID: 0}
 --- !u!222 &6745855428685087815
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -944,7 +944,7 @@ PrefabInstance:
     - target: {fileID: 3342857923515940075, guid: bbb0c337df82bf9479e5cc3fa1d68e37, type: 3}
       propertyPath: mainMenu
       value: 
-      objectReference: {fileID: 445105569}
+      objectReference: {fileID: 5357546314405447503}
     - target: {fileID: 3342857923515940075, guid: bbb0c337df82bf9479e5cc3fa1d68e37, type: 3}
       propertyPath: loginUsername
       value: 

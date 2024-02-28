@@ -9,7 +9,11 @@ public class PlayerManager : NetworkBehaviour {
     public static PlayerManager instance;
 
     private void Awake() {
-        instance = this;
+        if (instance != null) {
+            Destroy(gameObject);
+        } else {
+            instance = this;
+        }
     }
 
     #region Variables

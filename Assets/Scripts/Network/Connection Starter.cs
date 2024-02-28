@@ -16,10 +16,14 @@ public class ConnectionStarter : MonoBehaviour {
     public ConnectionType connectionType;
 
     private void Awake() {
-        instance = this;
-        connected = false;
-        connecting = false;
-        StartCoroutine(Connect());
+        if (instance != null) {
+            Destroy(gameObject);
+        } else {
+            instance = this;
+            connected = false;
+            connecting = false;
+            StartCoroutine(Connect());
+        }
     }
 
     private void Update() {

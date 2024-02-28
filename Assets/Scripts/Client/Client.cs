@@ -10,9 +10,9 @@ public class Client : MonoBehaviour {
 
     private void Awake() {
         if (instance != null) {
-            Debug.Log("More than one Client Found! Destroying one.");
-            Destroy(this);
+            Destroy(gameObject);
         } else {
+            Debug.Log("Set Client instance");
             instance = this;
             mainMenu.SetActive(true);
             LoadAPI();
@@ -20,6 +20,7 @@ public class Client : MonoBehaviour {
     }
 
     public void Login() {
+        Debug.Log("Test");
         if (Input.GetKeyDown(KeyCode.Return) || Input.GetKeyDown(KeyCode.KeypadEnter)) {
             if (loginUsername.text == "") {
                 Debug.Log("Invalid Username!");

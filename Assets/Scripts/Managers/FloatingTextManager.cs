@@ -2,6 +2,7 @@ using UnityEngine;
 using System.Collections.Generic;
 using FishNet.Connection;
 using FishNet.Object;
+using System.Linq;
 
 public class FloatingTextManager : NetworkBehaviour {
     #region Variables
@@ -23,40 +24,45 @@ public class FloatingTextManager : NetworkBehaviour {
 
     private void CheckForEntitiesInRange() {
         // Check for entities within range of the player
-        EntityBehaviour[] entities = FindObjectsOfType<EntityBehaviour>();
+        List<ITargetable> entities = FindObjectsOfType<MonoBehaviour>().OfType<ITargetable>().ToList();
+        GameObject entityObject;
         foreach (var entity in entities) {
-            float distance = Vector3.Distance(player.transform.position, entity.transform.position);
-            if (distance <= 50f && !activeEntities.Contains(entity.transform)) {
+            entityObject = entity.GetTargetObject();
+            float distance = Vector3.Distance(player.transform.position, entityObject.transform.position);
+            if (distance <= 50f && !activeEntities.Contains(entityObject.transform)) {
                 CreateEntityPrefab(entity);
-            } else if (distance > 50f && activeEntities.Contains(entity.transform)) {
+            } else if (distance > 50f && activeEntities.Contains(entityObject.transform)) {
                 DestroyEntityPrefab(entity);
             }
         }
     }
 
-    private void CreateEntityPrefab(EntityBehaviour entity) {
-        GameObject newEntity = Instantiate(entityPrefab, entity.transform.position, Quaternion.identity, transform);
-        newEntity.name = entity.name;
-        newEntity.GetComponent<EntityUI>().worldObjectTransform = entity.transform;
-        activeEntities.Add(entity.transform);
-        instantiatedPrefabs[entity.transform] = newEntity;
+    private void CreateEntityPrefab(ITargetable entity) {
+        GameObject entityObject = entity.GetTargetObject();
+        GameObject newEntity = Instantiate(entityPrefab, entityObject.transform.position, Quaternion.identity, transform);
+        newEntity.name = entityObject.name;
+        newEntity.GetComponent<EntityUI>().worldObjectTransform = entityObject.transform;
+        activeEntities.Add(entityObject.transform);
+        instantiatedPrefabs[entityObject.transform] = newEntity;
         // Additional setup for the new Entity prefab if needed
         CreateInformationText(newEntity.GetComponent<EntityUI>(), entity);
     }
 
-    public EntityUI GetEntityUI(EntityBehaviour entity) {
-        if (instantiatedPrefabs.TryGetValue(entity.transform, out GameObject prefab)) {
+    public EntityUI GetEntityUI(ITargetable entity) {
+        GameObject entityObject = entity.GetTargetObject();
+        if (instantiatedPrefabs.TryGetValue(entityObject.transform, out GameObject prefab)) {
             return prefab.GetComponent<EntityUI>();
         }
         return null;
     }
 
-    private void DestroyEntityPrefab(EntityBehaviour entity) {
-        if (instantiatedPrefabs.TryGetValue(entity.transform, out GameObject prefab)) {
+    private void DestroyEntityPrefab(ITargetable entity) {
+        GameObject entityObject = entity.GetTargetObject();
+        if (instantiatedPrefabs.TryGetValue(entityObject.transform, out GameObject prefab)) {
             Destroy(prefab);
-            instantiatedPrefabs.Remove(entity.transform);
+            instantiatedPrefabs.Remove(entityObject.transform);
         }
-        activeEntities.Remove(entity.transform);
+        activeEntities.Remove(entityObject.transform);
     }
 
     public void CreateCombatText(EntityUI entityUI, string message) {
@@ -66,7 +72,7 @@ public class FloatingTextManager : NetworkBehaviour {
         }
     }
 
-    public void CreateInformationText(EntityUI entityUI, EntityBehaviour entity) {
+    public void CreateInformationText(EntityUI entityUI, ITargetable entity) {
         if (entityUI != null) {
             entityUI.CreateInformationText(entity);
         }

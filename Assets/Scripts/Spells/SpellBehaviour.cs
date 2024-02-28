@@ -36,7 +36,7 @@ public class SpellBehaviour : MonoBehaviour {
         }
         currentSpell = spell;
         yield return StartCoroutine(uiManager.ShowCastBar(spell));
-        if (targetBehavior != null && targetBehavior.characterData.currentHealth > 0 && canAggro) {
+        if (targetBehavior != null && targetBehavior.npc.currentHealth > 0 && canAggro) {
             NPCBehaviour targetBehaviorAsNPC = targetBehavior as NPCBehaviour;
             if (targetBehaviorAsNPC != null) {
                 //if (targetBehaviorAsNPC)

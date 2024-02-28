@@ -1,20 +1,13 @@
+/*
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using FishNet.Connection;
 using FishNet.Object;
+using System;
 
 [RequireComponent(typeof(DeathShatter))]
-public class EntityBehaviour : NetworkBehaviour
-{
-    public State state;
-    public enum State {
-        OutOfCombat,
-        Resetting,
-        Combat,
-        Dead
-    }
-    public Character characterData;
+public class EntityBehaviour : NetworkBehaviour {
     protected DeathShatter deathShatter;
     public List<EntityBehaviour> aggroList = new List<EntityBehaviour>();
     public CombatManager combatManager;
@@ -25,12 +18,15 @@ public class EntityBehaviour : NetworkBehaviour
     }
 
     protected virtual void Update() {
+        if (!base.IsServerInitialized)
+            return;
+
         if (characterData == null) {
             return;
         }
-        if (characterData.currentHealth <= 0 && (state != State.Dead && state != State.Resetting)) {
+        if (characterData.currentHealth <= 0 && (characterData.targetStatus != TargetStatus.Dead && characterData.combatStatus != CombatStatus.Resetting)) {
             Death();
-        } else if ((state != State.Dead || state != State.Resetting)) {
+        } else if (characterData.targetStatus != TargetStatus.Dead && characterData.combatStatus != CombatStatus.Resetting) {
             if (characterData != null) {
                 if (characterData.currentHealth > characterData.maxHealth) {
                     characterData.currentHealth = characterData.maxHealth;
@@ -46,7 +42,7 @@ public class EntityBehaviour : NetworkBehaviour
     public virtual void EnterCombatWith(EntityBehaviour entityBehaviour) {
         if (!aggroList.Contains(entityBehaviour)) {
             aggroList.Add(entityBehaviour);
-            state = State.Combat;
+            characterData.combatStatus = CombatStatus.InCombat;
 
             // Notify the other character to enter combat
             entityBehaviour.EnterCombatWith(this);
@@ -63,7 +59,7 @@ public class EntityBehaviour : NetworkBehaviour
     }
 
     protected virtual void Death() {
-        state = State.Dead;
+        characterData.targetStatus = TargetStatus.Dead;
         // Create a temporary list to store characters to exit combat with
         var tempCharacters = new List<EntityBehaviour>(aggroList);
 
@@ -76,3 +72,4 @@ public class EntityBehaviour : NetworkBehaviour
         }
     }
 }
+*/

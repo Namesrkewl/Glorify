@@ -1,12 +1,19 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.AI;
+using FishNet.Connection;
+using FishNet.Object;
+using System;
+using System.Collections;
+using System.Collections.Generic;
+using static UnityEngine.GraphicsBuffer;
+
 
 [RequireComponent(typeof(NavMeshAgent))]
-public class NPCBehaviour : EntityBehaviour, ICombatable, ITargetable, ICastable, IAbleToAttack, IAbleToCast {
+[RequireComponent(typeof(DeathShatter))]
+public class NPCBehaviour : NetworkBehaviour, ICombatable, ICastable, IAbleToAttack, IAbleToCast {
     #region Variables
-    public NPC npcData;
+    protected DeathShatter deathShatter;
+    public CombatManager combatManager;
     public float moveSpeed = 7.1f;
     public float maxAttackRange = 50f;
     private float autoAttackTimer = 0f;
@@ -15,22 +22,22 @@ public class NPCBehaviour : EntityBehaviour, ICombatable, ITargetable, ICastable
     private Vector3 lastAttackPosition; // Last position where the NPC attacked the player
     private Vector3 originalPosition;
     private TargetType initialStatus;
-    public int ID;
+    private int ID;
+    public NPC npc;
     #endregion
 
     public override void OnStartServer() {
-        base.OnStartServer();
-        if (characterData != null) {
-            npcData = characterData as NPC;
-        }
-        if (npcData == null) {
+        if (!base.IsServerInitialized)
             return;
-        }
+
+        deathShatter = GetComponent<DeathShatter>();
+        combatManager = FindObjectOfType<CombatManager>();
         agent = GetComponent<NavMeshAgent>();
+
         SetStartingValues();
         originalPosition = transform.position;
 
-        // Initialize based on npcData
+        // Initialize based on npc
         agent.speed = moveSpeed;
 
         // Adjust NavMeshAgent settings for NPC collision
@@ -39,17 +46,31 @@ public class NPCBehaviour : EntityBehaviour, ICombatable, ITargetable, ICastable
 
         // Set the obstacle avoidance type to none or low
         agent.obstacleAvoidanceType = ObstacleAvoidanceType.NoObstacleAvoidance;
+        //npc = Database.instance.GetNPC(ID);
     }
 
-    protected override void Update() {
-        base.Update();
+    private void Update() {
+        if (!base.IsServerInitialized)
+            return;
+        if (npc.currentHealth <= 0 && (npc.targetStatus != TargetStatus.Dead && npc.combatStatus != CombatStatus.Resetting)) {
+            Death();
+        } else if (npc.targetStatus != TargetStatus.Dead && npc.combatStatus != CombatStatus.Resetting) {
+            if (npc.currentHealth > npc.maxHealth) {
+                npc.currentHealth = npc.maxHealth;
+            } else if (npc.currentHealth < 0) {
+                npc.currentHealth = 0;
+            }
+        } else {
+            return;
+        }
         CheckForEnemiesInRange();
         HandleCombatState();
     }
 
     public void SetStartingValues() {
-        npcData.currentHealth = npcData.maxHealth;
-        npcData.currentMana = npcData.maxMana;
+        Debug.Log("Hi Nerd");
+        //npc.currentHealth = npc.maxHealth;
+        //npc.currentMana = npc.maxMana;
     }
 
     #region Movement Logic
@@ -58,13 +79,13 @@ public class NPCBehaviour : EntityBehaviour, ICombatable, ITargetable, ICastable
     }
 
     private IEnumerator ResetPosition() {
-        state = State.Resetting;
+        npc.combatStatus = CombatStatus.Resetting;
 
         // Create a temporary list to store characters to exit combat with
-        var tempCharacters = new List<EntityBehaviour>(aggroList);
+        var tempCharacters = new List<ICombatable>(npc.aggroList);
 
         foreach (var character in tempCharacters) {
-            ExitCombatWith(character.GetComponent<EntityBehaviour>());
+            ExitCombat(character);
         }
         agent.enabled = false;
 
@@ -75,29 +96,29 @@ public class NPCBehaviour : EntityBehaviour, ICombatable, ITargetable, ICastable
 
         SetStartingValues();
         agent.enabled = true;
-        state = State.OutOfCombat;
+        npc.combatStatus = CombatStatus.OutOfCombat;
     }
     #endregion
     #region Combat Logic
     private void HandleCombatState() {
-        if (state == State.OutOfCombat) {
+        if (npc.combatStatus == CombatStatus.OutOfCombat) {
             originalPosition = transform.position;
         }
-        if (state == State.Dead && npcData.currentHealth > 0) {
+        if (npc.targetStatus == TargetStatus.Dead && npc.currentHealth > 0) {
             StartCoroutine(ResetPosition());
-         } else if (npcData.targetType == TargetType.Hostile && state != State.Resetting && state != State.Dead) {
-            StartCoroutine(Combat());
+         } else if (npc.targetType == TargetType.Hostile && npc.combatStatus != CombatStatus.Resetting && npc.targetStatus != TargetStatus.Dead) {
+            StartCoroutine(InCombat());
         }
     }
 
     private void CheckForEnemiesInRange() {
         // Logic to detect players within aggro range and add them to combat list
-        if (npcData.currentHealth > 0 && state != State.Resetting) {
+        if (npc.currentHealth > 0 && npc.combatStatus != CombatStatus.Resetting) {
             foreach (var player in FindObjectsOfType<PlayerBehaviour>()) {
                 /*
                 if (player.playerData.Value) {
                     if (Vector3.Distance(transform.position, player.transform.position) <= CalculateCombatRange(player) && IsLineOfSightClear(player.gameObject) && player.state != State.Dead) {
-                        EnterCombatWith(player);
+                        EnterCombat(player);
                     }
                 }
                 */
@@ -105,33 +126,33 @@ public class NPCBehaviour : EntityBehaviour, ICombatable, ITargetable, ICastable
         }
     }
 
-    private IEnumerator Combat() {
+    private IEnumerator InCombat() {
         // Create a temporary list to store characters to exit combat with
-        var tempCharacters = new List<EntityBehaviour>(aggroList);
+        var tempCharacters = new List<ICombatable>(npc.aggroList);
         foreach (var character in tempCharacters) {
             if (ShouldStopCombat(character)) {
-                ExitCombatWith(character.GetComponent<EntityBehaviour>());
+                ExitCombat(character);
             }
         }
-        if (aggroList.Count == 0) {
+        if (npc.aggroList.Count == 0) {
             StartCoroutine(ResetPosition());
         } else {
-            state = State.Combat;
+            npc.combatStatus = CombatStatus.InCombat;
             //Debug.Log("Attacking");
-            var targetBehavior = aggroList[0];
-            var target = targetBehavior.gameObject;
-            HandleAutoAttack(targetBehavior);
+            var target = npc.aggroList[0];
+            HandleAutoAttack(target);
             // Look toward the target logic goes here
             if (target != null) {
-                Vector3 directionToTarget = target.transform.position - transform.position;
+                GameObject targetObject = target.GetTargetObject();
+                Vector3 directionToTarget = targetObject.transform.position - targetObject.transform.position;
                 directionToTarget.y = 0; // This ensures the rotation only happens along the y-axis
                 Quaternion targetRotation = Quaternion.LookRotation(directionToTarget);
                 // Apply the rotation to the gameObject
                 transform.rotation = targetRotation;
-                if (IsTargetInAttackRange(target) && IsLineOfSightClear(target)) {
+                if (IsTargetInAttackRange(targetObject) && IsLineOfSightClear(targetObject)) {
                     agent.SetDestination(transform.position);
                 } else {
-                    PathToTarget(target);
+                    PathToTarget(targetObject);
                 }
             }
             
@@ -139,22 +160,37 @@ public class NPCBehaviour : EntityBehaviour, ICombatable, ITargetable, ICastable
         }
     }
 
-    private float CalculateCombatRange(EntityBehaviour target) {
-        int levelDifference = Mathf.Abs(target.GetComponent<EntityBehaviour>().characterData.level - npcData.level);
-        if (target.GetComponent<EntityBehaviour>().characterData.level >= npcData.level) {
-            return aggroRange - Mathf.Min(levelDifference, 5);
+    private float CalculateCombatRange(ICombatable _target) {
+        Identifiable target = Database.instance.GetTarget(_target);
+        
+        if (target as Player != null) {
+            Player targetAsPlayer = target as Player;
+            int levelDifference = Mathf.Abs(targetAsPlayer.level - npc.level);
+            if ( targetAsPlayer.level >= npc.level) {
+                return aggroRange - Mathf.Min(levelDifference, 5);
+            } else {
+                return aggroRange + Mathf.Min(levelDifference, 5);
+            }
         } else {
-            return aggroRange + Mathf.Min(levelDifference, 5);
+            NPC targetAsNPC = target as NPC;
+            int levelDifference = Mathf.Abs(targetAsNPC.level - npc.level);
+            if (targetAsNPC.level >= npc.level) {
+                return aggroRange - Mathf.Min(levelDifference, 5);
+            } else {
+                return aggroRange + Mathf.Min(levelDifference, 5);
+            }
         }
+
+        
     }
     private bool IsTargetInAttackRange(GameObject target) {
-        return Vector3.Distance(transform.position, target.transform.position) <= npcData.autoAttackRange - 2;
+        return Vector3.Distance(transform.position, target.transform.position) <= npc.autoAttackRange - 2;
     }
 
     private bool IsLineOfSightClear(GameObject target) {
         RaycastHit hit;
         Vector3 direction = target.transform.position - transform.position;
-        float range = (state == State.Combat) ? npcData.autoAttackRange : aggroRange;
+        float range = (npc.combatStatus == CombatStatus.InCombat) ? npc.autoAttackRange : aggroRange;
 
         if (Physics.Raycast(transform.position, direction.normalized, out hit, range)) {
             return hit.collider.gameObject == target;
@@ -162,9 +198,11 @@ public class NPCBehaviour : EntityBehaviour, ICombatable, ITargetable, ICastable
         return false;
     }
 
+    #endregion
+
     #region Auto Attack Logic
 
-    private void HandleAutoAttack(EntityBehaviour target) {
+    private void HandleAutoAttack(ICombatable target) {
         if (IsTargetInRangeAndVisible(target)) {
             if (autoAttackTimer <= 0f) {
                 Debug.Log("Attacked");
@@ -178,23 +216,38 @@ public class NPCBehaviour : EntityBehaviour, ICombatable, ITargetable, ICastable
         }
     }
 
-    private void PerformAutoAttack(EntityBehaviour target) {
-        if (target != null && target.characterData.currentHealth > 0) {
-            // Auto-attack logic here...
-            Debug.Log("Performed");
-            int damage = Random.Range(npcData.autoAttackDamageMin, npcData.autoAttackDamageMax);
-            combatManager.SendDamage(target, damage);
+    private void PerformAutoAttack(ICombatable _target) {
+        Identifiable target = Database.instance.GetTarget(_target);
+       
+        if (target as Player != null) {
+            Player targetAsPlayer = target as Player;
+            if (target != null && targetAsPlayer.currentHealth > 0) {
+                // Auto-attack logic here...
+                Debug.Log("Performed");
+                int damage = UnityEngine.Random.Range(npc.autoAttackDamageMin, npc.autoAttackDamageMax);
+                combatManager.SendDamage(_target as IDamageable, damage);
+            }
+        } else {
+            NPC targetAsNPC = target as NPC;
+            if (target != null && targetAsNPC.currentHealth > 0) {
+                // Auto-attack logic here...
+                Debug.Log("Performed");
+                int damage = UnityEngine.Random.Range(npc.autoAttackDamageMin, npc.autoAttackDamageMax);
+                combatManager.SendDamage(_target as IDamageable, damage);
+            }
         }
     }
 
-    private bool IsTargetInRangeAndVisible(EntityBehaviour target) {
+    private bool IsTargetInRangeAndVisible(ICombatable target) {
         if (target == null) return false;
 
-        float distanceToTarget = Vector3.Distance(transform.position, target.transform.position);
-        if (distanceToTarget > npcData.autoAttackRange) return false;
+        GameObject targetObject = target.GetTargetObject();
+
+        float distanceToTarget = Vector3.Distance(transform.position, targetObject.transform.position);
+        if (distanceToTarget > npc.autoAttackRange) return false;
 
         // Calculate direction to target
-        Vector3 directionToTarget = (target.transform.position - transform.position).normalized;
+        Vector3 directionToTarget = (targetObject.transform.position - transform.position).normalized;
 
         // Check if target is in front of the player
         float angleToTarget = Vector3.Angle(transform.forward, directionToTarget);
@@ -202,59 +255,62 @@ public class NPCBehaviour : EntityBehaviour, ICombatable, ITargetable, ICastable
 
         // Perform raycast to check line of sight
         RaycastHit hit;
-        if (Physics.Raycast(transform.position, directionToTarget, out hit, npcData.autoAttackRange)) {
-            return hit.collider.gameObject == target.gameObject;
+        if (Physics.Raycast(transform.position, directionToTarget, out hit, npc.autoAttackRange)) {
+            return hit.collider.gameObject == targetObject;
         }
 
         return false;
     }
 
     private float CalculateAutoAttackCooldown() {
-        return Mathf.Max(npcData.autoAttackCooldown, 0.5f);
+        return Mathf.Max(npc.autoAttackCooldown, 0.5f);
     }
 
     #endregion
 
-
+    #region Combat Logic
     // New method to determine whether to stop combat
-    private bool ShouldStopCombat(EntityBehaviour target) {
-        return Vector3.Distance(originalPosition, target.transform.position) > maxAttackRange;
+    private bool ShouldStopCombat(ICombatable target) {
+        return Vector3.Distance(originalPosition, target.GetTargetObject().transform.position) > maxAttackRange;
     }
 
     // Overriding methods...
-    public override void EnterCombatWith(EntityBehaviour entityBehaviour) {
-        base.EnterCombatWith(entityBehaviour);
-        // NPC specific logic for entering combat
+
+    public void EnterCombat(ICombatable target) {
+        if (!npc.aggroList.Contains(target)) {
+            npc.aggroList.Add(target);
+            npc.combatStatus = CombatStatus.InCombat;
+
+            // Notify the other character to enter combat
+            target.EnterCombat(this);
+        }
     }
 
-    public override void ExitCombatWith(EntityBehaviour entityBehaviour) {
-        base.ExitCombatWith(entityBehaviour);
-        // NPC specific logic for exiting combat
+    public void ExitCombat(ICombatable target) {
+        if (npc.aggroList.Contains(target)) {
+            npc.aggroList.Remove(target);
+
+            // Notify the other character to exit combat
+            target.ExitCombat(this);
+        }
     }
 
-    public void EnterCombat() {
+    #endregion
 
-    }
-
-    public void ExitCombat() {
-
-    }
-
-#endregion
     #region Death Logic
-    protected override void Death() {
+    private void Death() {
         Debug.Log("Running Death");
-        state = State.Dead;
+        npc.targetStatus = TargetStatus.Dead;
         // Create a temporary list to store characters to exit combat with
-        var tempCharacters = new List<EntityBehaviour>(aggroList);
+        var tempCharacters = new List<ICombatable>(npc.aggroList);
         //PlayerBehaviour tempPlayer = null;
 
         foreach (var character in tempCharacters) {
             /*tempPlayer = character as PlayerBehaviour;
             if (tempPlayer != null) {
-                tempPlayer.playerData.Value.currentExperience += npcData.experience;
+                tempPlayer.playerData.Value.currentExperience += npc.experience;
             }*/
-            ExitCombatWith(character.GetComponent<EntityBehaviour>());
+            ExitCombat(character);
         }
         // Stop all coroutines to cease current behaviour
         StopAllCoroutines();
@@ -277,8 +333,13 @@ public class NPCBehaviour : EntityBehaviour, ICombatable, ITargetable, ICastable
     }
     #endregion
 
+    #region Interfaces
+    public int GetID() {
+        return 0;
+    }
+
     public Identifiable GetTarget() {
-        return Database.instance.GetNPC(ID);
+        return Database.instance.GetNPC(GetID());
     }
 
     public ITargetable GetTargetComponent() {
@@ -298,7 +359,8 @@ public class NPCBehaviour : EntityBehaviour, ICombatable, ITargetable, ICastable
     }
 
     private void OnApplicationQuit() {
-        npcData.currentHealth = npcData.maxHealth;
-        npcData.currentMana = npcData.maxMana;
+        npc.currentHealth = npc.maxHealth;
+        npc.currentMana = npc.maxMana;
     }
+    #endregion
 }

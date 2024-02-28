@@ -1,6 +1,8 @@
+using FishNet.Demo.AdditiveScenes;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Rendering;
 
 public class InformationText : FloatingText
 {
@@ -8,36 +10,36 @@ public class InformationText : FloatingText
     public Color neutralColor = Color.yellow;
     public Color hostileColor = Color.red;
     public Color deadColor = Color.gray;
-    public EntityBehaviour entityBehaviour;
 
     protected override void Awake() {
         base.Awake();
     }
 
-    public override void Initialize(EntityBehaviour entity) {
-        entityBehaviour = entity;
-    }
-
-    protected override void Update() {
-        if (entityBehaviour as EntityBehaviour) {
-            EntityBehaviour characterBehavior = entityBehaviour as EntityBehaviour;
-            /*
-            if (characterBehavior != null) {
-                Player characterAsPlayer = characterBehavior.characterData as Player;
-                NPC characterAsNPC = characterBehavior.characterData as NPC;
-                textMesh.text = characterBehavior.characterData.name;
-                if (characterBehavior.state == EntityBehaviour.State.Dead) {
-                    textMesh.color = deadColor;
-                } else if (characterAsPlayer != null || (characterAsNPC != null && characterAsNPC.status == NPC.NPCStatus.Friendly)) {
-                    textMesh.color = friendlyColor;
-                } else if (characterAsNPC != null && (characterAsNPC.status == NPC.NPCStatus.NeutralFriendly || characterAsNPC.status == NPC.NPCStatus.Neutral)) {
-                    textMesh.color = neutralColor;
-                } else if (characterAsNPC != null && characterAsNPC.status == NPC.NPCStatus.Hostile) {
-                    textMesh.color = hostileColor;
-                }
+    public override void Initialize(ITargetable entity) {
+        Identifiable entityData = Database.instance.GetTarget(entity);
+        if (entityData as Player != null) {
+            Player player = entityData as Player;
+            textMesh.text = player.name;
+            if (player.targetStatus == TargetStatus.Dead) {
+                textMesh.color = deadColor;
+            } else if (player.targetType == TargetType.Player) {
+                textMesh.color = friendlyColor;
             }
-            */
+        } else {
+            NPC npc = entityData as NPC;
+            textMesh.text = npc.name;
+            if (npc.targetStatus == TargetStatus.Dead || npc.targetStatus == TargetStatus.Object) {
+                textMesh.color = deadColor;
+            } else if (npc.targetType == TargetType.Ally || npc.targetType == TargetType.Companion || npc.targetType == TargetType.Friendly) {
+                textMesh.color = friendlyColor;
+            } else if (npc.targetType == TargetType.Neutral) {
+                textMesh.color = neutralColor;
+            } else if (npc.targetType == TargetType.Hostile) {
+                textMesh.color = hostileColor;
+            }
         }
+    }
+    protected override void Update() {
     }
 
     public void SetColor(Color color) {

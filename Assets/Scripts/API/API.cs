@@ -11,8 +11,12 @@ public class API : NetworkBehaviour {
     public static API instance;
 
     private void Awake() {
-        instance = this;
-        Debug.Log("API Loaded.");
+        if (instance != null) {
+            Destroy(gameObject);
+        } else {
+            instance = this;
+            Debug.Log("API Loaded.");
+        }
     }
 
     // This script is an API that connects the Client to the Server.

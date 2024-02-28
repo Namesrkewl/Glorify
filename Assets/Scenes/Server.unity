@@ -279,7 +279,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7cc09b62c42e48a4785cb95dcea70d7c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  connectionType: 0
+  connectionType: 2
 --- !u!114 &1424052073491116387
 MonoBehaviour:
   m_ObjectHideFlags: 0

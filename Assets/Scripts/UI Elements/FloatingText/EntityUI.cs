@@ -24,7 +24,7 @@ public class EntityUI : UIElement {
         combatUI.AddCombatText(message);
     }
 
-    public void CreateInformationText(EntityBehaviour entity) {
+    public void CreateInformationText(ITargetable entity) {
         informationUI.worldObjectTransform = worldObjectTransform;
         informationUI.AddInformationText(entity);
     }

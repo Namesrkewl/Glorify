@@ -5,12 +5,16 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class SpellManager : MonoBehaviour
+public class SpellManager : NetworkBehaviour
 {
     public static SpellManager instance;
 
     private void Awake() {
-        instance = this;
+        if (instance != null) {
+            Destroy(gameObject);
+        } else {
+            instance = this;
+        }
     }
 
     //UpdateSpellDescriptions(player);

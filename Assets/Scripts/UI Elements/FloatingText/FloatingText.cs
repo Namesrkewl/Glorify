@@ -16,7 +16,7 @@ public class FloatingText : MonoBehaviour {
         textMesh.text = text;
     }
 
-    public virtual void Initialize(EntityBehaviour entity) {
+    public virtual void Initialize(ITargetable entity) {
 
     }
 

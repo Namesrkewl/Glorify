@@ -43,7 +43,7 @@ public class Spell : PlayerAction, Identifiable {
         //playerBehaviour.HandleSpell(this);
     }
 
-    public virtual IEnumerator Cast(PlayerBehaviour playerBehaviour, EntityBehaviour targetBehavior) {
+    public virtual IEnumerator Cast(ICastable playerBehaviour, ICastable targetBehavior) {
         yield return null;
     }
 

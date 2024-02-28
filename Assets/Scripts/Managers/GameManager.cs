@@ -13,11 +13,13 @@ public class GameManager : NetworkBehaviour {
     #endregion
 
     private void Awake() {
-        if (!base.IsServerInitialized)
-            return;
-
-        LoadAllPlayerClasses();
-        UpdateAllClasses();
+        if (instance != null) {
+            Destroy(gameObject);
+        } else {
+            instance = this;
+            LoadAllPlayerClasses();
+            UpdateAllClasses();
+        }
     }
 
 
