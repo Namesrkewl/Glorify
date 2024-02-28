@@ -47,24 +47,20 @@ public class API : NetworkBehaviour {
         }
     }
 
-    public void Login(string name) {
+    public void Login(string name, string pass) {
         Debug.Log($"Processing Login...");
-        ProcessLogin(name);
+        ProcessLogin(name, pass);
     }
 
     [TargetRpc] 
-    private void CompleteLogin(NetworkConnection conn, int ID) {
-        if (ID > 0) {
-            Debug.Log("Login Successful!");
-            Client.instance.SetID(ID);
-            if (Client.instance.mainMenu.activeSelf) {
-                Client.instance.mainMenu.SetActive(false);
-                Debug.Log("Disabled the main menu!");
-            }
-            LoginPlayer();
-        } else {
-            Debug.Log("Login Unsuccessful.");
+    public void CompleteLogin(NetworkConnection conn, Key key) {
+        Debug.Log("Login Successful!");
+        Client.instance.SetKey(key);
+        if (Client.instance.mainMenu.activeSelf) {
+            Client.instance.mainMenu.SetActive(false);
+            Debug.Log("Disabled the main menu!");
         }
+        LoginPlayer();
     }
 
     #endregion
@@ -76,17 +72,21 @@ public class API : NetworkBehaviour {
     }
 
     [ServerRpc(RequireOwnership = false)]
-    private void ProcessLogin(string name, NetworkConnection sender = null) {
-        Player player = Database.instance.GetPlayer(Database.instance.GetPlayerID(name));
+    private void ProcessLogin(string name, string pass, NetworkConnection sender = null) {
+        Credentials credentials = new Credentials();
+        credentials.username = name;
+        credentials.password = pass;
+        Key key = Database.instance.GetUser(credentials);
+        Player player = Database.instance.GetPlayer(key) ?? null;
         Debug.Log($"Current Player available: {player != null}");
-        Debug.Log(Database.instance.GetPlayerID(name));
-        if (player == null) {
-            player = PlayerManager.instance.CreatePlayer(name);
+        if (player == null && !Database.instance.CheckAvailability(credentials)) {
+            Debug.Log("Username taken!");
+            return;
+        } else if (player == null) {
+            PlayerManager.instance.CreatePlayer(name, credentials, sender);
+        } else {
+            CompleteLogin(sender, player.key);
         }
-        Debug.Log("We Returned To Process Login.");
-        Debug.Log(sender);
-        Debug.Log(LocalConnection);
-        CompleteLogin(sender, player.GetID());
     }
 
     [ServerRpc(RequireOwnership = false)]

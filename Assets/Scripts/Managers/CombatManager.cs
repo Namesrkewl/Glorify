@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using FishNet.Connection;
 using FishNet.Object;
+using static UnityEngine.GraphicsBuffer;
 
 public class CombatManager : NetworkBehaviour {
 
@@ -23,28 +24,15 @@ public class CombatManager : NetworkBehaviour {
         }
     }
 
-    public void SendDamage(IDamageable _target, int damage) {
-        Identifiable target = Database.instance.GetTarget(_target as ITargetable);
-        EntityUI targetUI = floatingTextManager.GetEntityUI(_target as ITargetable);
-        if (target as Player != null) {
-            Player targetAsPlayer = target as Player;
-            targetAsPlayer.currentHealth -= damage;
-            if (damage > 0) {
-                targetAsPlayer.currentHealth = Mathf.Max(targetAsPlayer.currentHealth, 0);
-            } else {
-                targetAsPlayer.currentHealth = Mathf.Min(targetAsPlayer.currentHealth, targetAsPlayer.maxHealth);
-            }
-            floatingTextManager.CreateCombatText(targetUI, (damage * -1).ToString());
+    public void SendDamage(ITargetable targetObject, int damage) {
+        Character target = Database.instance.GetTarget(targetObject);
+        EntityUI targetUI = floatingTextManager.GetEntityUI(targetObject);
+        target.currentHealth -= damage;
+        if (damage > 0) {
+            target.currentHealth = Mathf.Max(target.currentHealth, 0);
         } else {
-            NPC targetAsNPC = target as NPC;
-            targetAsNPC.currentHealth -= damage;
-            if (damage > 0) {
-                targetAsNPC.currentHealth = Mathf.Max(targetAsNPC.currentHealth, 0);
-            } else {
-                targetAsNPC.currentHealth = Mathf.Min(targetAsNPC.currentHealth, targetAsNPC.maxHealth);
-            }
-            floatingTextManager.CreateCombatText(targetUI, (damage * -1).ToString());
+            target.currentHealth = Mathf.Min(target.currentHealth, target.maxHealth);
         }
-        
+        floatingTextManager.CreateCombatText(targetUI, (damage * -1).ToString());
     }
 }

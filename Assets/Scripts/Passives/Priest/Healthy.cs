@@ -4,22 +4,17 @@ using UnityEngine;
 [CreateAssetMenu(fileName = "Healthy", menuName = "Passive/Priest/Healthy")]
 public class Healthy : Spell {
     public float healthIncreasePercentage = 0.1f; // 10% increase
-    /*
-    public override IEnumerator Cast(ICastable _caster, ICastable _target) {
-        Identifiable caster = Database.instance.GetTarget(_caster as ITargetable);
-        Identifiable target = Database.instance.GetTarget(_target as ITargetable);
-        int healthIncrease = (int)(targetBehaviour.npc.maxHealth * healthIncreasePercentage);
-        targetBehaviour.npc.maxHealth += healthIncrease;
-        targetBehaviour.npc.currentHealth += healthIncrease;
-        yield return null;
-        
-    }*/
+
+    public override void Cast(ITargetable _caster, ITargetable _target) {
+        base.Cast(_caster, _target);
+        int healthIncrease = (int)(target.maxHealth * healthIncreasePercentage);
+        target.maxHealth += healthIncrease;
+        target.currentHealth += healthIncrease;        
+    }
 
     public override void RemoveEffect(Character character) {
-        //Player player = character as Player;
-        Player player = new Player();
-        int healthDecrease = (int)(player.maxHealth / healthIncreasePercentage);
-        player.maxHealth -= healthDecrease;
-        player.currentHealth -= healthDecrease;
+        int healthDecrease = (int)(character.maxHealth / healthIncreasePercentage);
+        character.maxHealth -= healthDecrease;
+        character.currentHealth -= healthDecrease;
     }
 }

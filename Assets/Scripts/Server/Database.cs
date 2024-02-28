@@ -5,6 +5,8 @@ using FishNet.Object;
 using FishNet.Connection;
 using FishNet.Object.Synchronizing;
 using System.ComponentModel;
+using System.Linq;
+using FishNet.Demo.AdditiveScenes;
 
 
 public class Database : NetworkBehaviour {
@@ -14,114 +16,74 @@ public class Database : NetworkBehaviour {
             Destroy(gameObject);
         } else {
             instance = this;
+            UpdateDictionaries();
+        }
+    }
+
+    private void UpdateDictionaries() {
+        playerSearch.Clear();
+        npcSearch.Clear();
+        foreach (Player player in players) {
+            playerSearch.Add(player.key, player);
+        }
+        foreach (NPC npc in npcs) {
+            npcSearch.Add(npc.key, npc);
         }
     }
 
     #region Players
-    private readonly SyncDictionary<int, Player> players = new SyncDictionary<int, Player>();
-    private readonly SyncDictionary<string, int> playerIDs = new SyncDictionary<string, int>();
-    private readonly SyncDictionary<int, Key> playerKeys = new SyncDictionary<int, Key>();
+    public readonly SyncList<Player> players = new SyncList<Player>();
+    public readonly List<Credentials> credentials = new List<Credentials>();
+    private readonly Dictionary<Key, Player> playerSearch = new Dictionary<Key, Player>();
+    private readonly Dictionary<Credentials, Key> users = new Dictionary<Credentials, Key>();
 
-    public Player GetPlayer(int ID) {
-        players.TryGetValue(ID, out Player player);
+    public Player GetPlayer(Key key) {
+        playerSearch.TryGetValue(key, out Player player);
         return player;
     }
 
-    public void AddPlayer(Player player) {
-        players.Add(player.GetID(), player);
+    public bool CheckAvailability(Credentials input) {
+        if (credentials.Any(c => c.username == input.username)) {
+            Debug.Log("Duplicate found!");
+            return false;
+        } else {
+            Debug.Log("Name available!");
+            return true;
+        }
     }
 
-    public void RemovePlayer(int ID) {
-        players.Remove(ID);
-    }
-
-    public Dictionary<int, Player> GetAllPlayers() {
-        return players.Collection;
-    }
-
-    public int GetPlayerID(string name) {
-        playerIDs.TryGetValue(name, out int ID);
-        return ID;
-    }
-
-    public void AddPlayerID(Player player) {
-        playerIDs.Add(player.name, player.GetID());
-    }
-
-    public Dictionary<string, int> GetAllPlayerIDs() {
-        return playerIDs.Collection;
-    }
-
-    public int GetPlayerCount() {
-        return playerIDs.Count;
-    }
-
-    public Key GetPlayerKey(int ID) {
-        playerKeys.TryGetValue(ID, out Key key);
+    public Key GetUser(Credentials credentials) {
+        users.TryGetValue(credentials, out Key key);
         return key;
     }
 
-    public void AddPlayerKey(int ID, Key key) {
-        playerKeys.Add(ID, key);
-    }
-
-    public Dictionary<int, Key> GetAllPlayerKeys() {
-        return playerKeys.Collection;
+    public void AddPlayer(Player player, Credentials _credentials) {
+        players.Add(player);
+        playerSearch.Add(player.key, player);
+        credentials.Add(_credentials);
+        users.Add(_credentials, player.key);
     }
 
     #endregion
 
     #region NPCs
-    private readonly SyncDictionary<int, NPC> npcs = new SyncDictionary<int, NPC>();
-    private readonly SyncDictionary<string, int> npcIDs = new SyncDictionary<string, int>();
+    public readonly List<NPC> npcs = new List<NPC>();
+    private readonly Dictionary<Key, NPC> npcSearch = new Dictionary<Key, NPC>();
 
-    public NPC GetNPC(int ID) {
-        npcs.TryGetValue(ID, out NPC npc);
+    public NPC GetNPC(Key key) {
+        npcSearch.TryGetValue(key, out NPC npc);
         return npc;
-    }
-
-    public void AddNPC(NPC npc) {
-        npcs.Add(npc.GetID(), npc);
-    }
-
-    public void RemoveNPC(int ID) {
-        npcs.Remove(ID);
-    }
-
-    public int GetNPCID(string name) {
-        npcIDs.TryGetValue(name, out int ID);
-        return ID;
-    }
-
-    public void AddNPCID(NPC npc) {
-        npcIDs.Add(npc.name, npc.GetID());
-    }
-
-    public Dictionary<string, int> GetAllNPCIDs() {
-        return npcIDs.Collection;
-    }
-
-    public int GetNPCCount() {
-        return npcIDs.Count;
     }
 
     #endregion
 
     #region Spells
-    private readonly SyncDictionary<int, Spell> spells = new SyncDictionary<int, Spell>();
-    private readonly SyncDictionary<string, int> spellIDs = new SyncDictionary<string, int>();
+    private readonly Dictionary<int, Spell> spells = new Dictionary<int, Spell>();
+    private readonly Dictionary<string, int> spellIDs = new Dictionary<string, int>();
 
     public Spell GetSpell(int ID) {
         spells.TryGetValue(ID, out Spell spell);
         return spell;
-    }
-
-    public void AddSpell(Spell spell) {
-        spells.Add(spell.GetID(), spell);
-    }
-
-    public void RemoveSpell(int ID) {
-        spells.Remove(ID);
     }
 
     public int GetSpellID(string name) {
@@ -130,11 +92,11 @@ public class Database : NetworkBehaviour {
     }
 
     public void AddSpellID(Spell spell) {
-        spellIDs.Add(spell.name, spell.GetID());
+        //spellIDs.Add(spell.name, spell.GetID());
     }
 
     public Dictionary<string, int> GetAllSpellIDs() {
-        return spellIDs.Collection;
+        return spellIDs;
     }
 
     public int GetSpellCount() {
@@ -144,8 +106,8 @@ public class Database : NetworkBehaviour {
     #endregion
 
     #region Items
-    private readonly SyncDictionary<int, Item> items = new SyncDictionary<int, Item>();
-    private readonly SyncDictionary<string, int> itemIDs = new SyncDictionary<string, int>();
+    private readonly Dictionary<int, Item> items = new Dictionary<int, Item>();
+    private readonly Dictionary<string, int> itemIDs = new Dictionary<string, int>();
 
     public Item GetItem(int ID) {
         items.TryGetValue(ID, out Item item);
@@ -153,7 +115,7 @@ public class Database : NetworkBehaviour {
     }
 
     public void AddItem(Item item) {
-        items.Add(item.GetID(), item);
+        //items.Add(item.GetKey(), item);
     }
 
     public void RemoveItem(int ID) {
@@ -165,12 +127,8 @@ public class Database : NetworkBehaviour {
         return ID;
     }
 
-    public void AddItemID(Item item) {
-        itemIDs.Add(item.name, item.GetID());
-    }
-
     public Dictionary<string, int> GetAllItemIDs() {
-        return itemIDs.Collection;
+        return itemIDs;
     }
     public int GetItemCount() {
         return itemIDs.Count;
@@ -178,14 +136,14 @@ public class Database : NetworkBehaviour {
 
     #endregion
 
-    public Identifiable GetTarget(ITargetable target) {
-        Identifiable entity = null;
-        int ID = target.GetID();
+    public Character GetTarget(ITargetable target) {
+        Character character = null;
+        Key key = target.GetKey();
         if (target as PlayerBehaviour) {
-            entity = GetPlayer(ID);
+            character = GetPlayer(key);
         } else if (target as NPCBehaviour) {
-            entity = GetNPC(ID);
+            character = GetNPC(key);
         }
-        return entity;
+        return character;
     }
 }

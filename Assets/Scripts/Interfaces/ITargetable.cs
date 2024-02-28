@@ -3,8 +3,8 @@ using System.Collections.Generic;
 using UnityEngine;
 
 public interface ITargetable {
-    int GetID();
-    Identifiable GetTarget();
+    Key GetKey();
+    Character GetTarget();
 
     ITargetable GetTargetComponent();
 

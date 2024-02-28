@@ -5,14 +5,14 @@ public class Client : MonoBehaviour {
 
     public static Client instance;
     public GameObject mainMenu;
-    public TMP_InputField loginUsername;
-    private int ID;
+    public TMP_InputField username;
+    public TMP_InputField password;
+    private Key key;
 
     private void Awake() {
         if (instance != null) {
             Destroy(gameObject);
         } else {
-            Debug.Log("Set Client instance");
             instance = this;
             mainMenu.SetActive(true);
             LoadAPI();
@@ -20,15 +20,15 @@ public class Client : MonoBehaviour {
     }
 
     public void Login() {
-        Debug.Log("Test");
-        if (Input.GetKeyDown(KeyCode.Return) || Input.GetKeyDown(KeyCode.KeypadEnter)) {
-            if (loginUsername.text == "") {
-                Debug.Log("Invalid Username!");
-                return;
-            } else {
-                Debug.Log(loginUsername.text);
-                API.instance.Login(loginUsername.text);
-            }
+        if (username.text == "") {
+            Debug.Log("Invalid Username!");
+            return;
+        } else if (password.text == "") {
+            Debug.Log("Invalid Password!");
+            return;
+        } else {
+            Debug.Log(username.text);
+            API.instance.Login(username.text, password.text);
         }
     }
 
@@ -38,11 +38,11 @@ public class Client : MonoBehaviour {
         }
     }
 
-    public int GetID() {
-        return ID;
+    public Key GetKey() {
+        return key;
     }
 
-    public void SetID(int input) {
-        ID = input;
+    public void SetKey(Key _key) {
+        key = _key;
     }
 }

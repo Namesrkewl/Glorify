@@ -3,6 +3,9 @@ using UnityEngine;
 using FishNet.Connection;
 using FishNet.Object;
 using FishNet.Managing.Logging;
+using System.Linq;
+using UnityEditor;
+using FishNet.Object.Synchronizing;
 
 public class PlayerManager : NetworkBehaviour {
 
@@ -226,30 +229,22 @@ public class PlayerManager : NetworkBehaviour {
         */
     }
     #endregion
-    
+
     [Server(Logging = LoggingType.Off)]
-    public Player CreatePlayer(string name) {
+    public void CreatePlayer(string name, Credentials credentials, NetworkConnection sender) {
         Debug.Log("Creating New Player!");
         Player player = new Player();
-        player.name = name;
+        player.key.name = name;
+        List<Player> sameNamedPlayers = Database.instance.players.Where(p => p.key.name == player.key.name).ToList();
+        List<int> excludedIDs = sameNamedPlayers.Select(p => p.key.ID).ToList();
+        do {
+            player.key.ID = Random.Range(0, 9999999);
+        } while (excludedIDs.Contains(player.key.ID));
         player.location = new Vector3(2700, 12, 2200);
         player.scale = Vector3.one;
         player.rotation = Quaternion.identity;
-        int newID = Database.instance.GetPlayerCount() + 100;
-        while (Database.instance.GetPlayer(newID) != null) {
-            newID++;
-        }
-        player.SetID(newID);
-        Database.instance.AddPlayer(player);
-        Database.instance.AddPlayerID(player);
-        Debug.Log(Database.instance.GetPlayerCount());
-        /* Debug.Log(newID);
-         Debug.Log(player);
-         Debug.Log(player.name);
-         Debug.Log(input);
-         Debug.Log(Database.instance.GetPlayer(player.GetID()).name);
-         */
-        return player;
+        Database.instance.AddPlayer(player, credentials);
+        API.instance.CompleteLogin(sender, Database.instance.GetPlayer(player.key).key);
     }
 
     #region Rpcs

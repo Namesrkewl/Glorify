@@ -22,7 +22,6 @@ public class NPCBehaviour : NetworkBehaviour, ICombatable, ICastable, IAbleToAtt
     private Vector3 lastAttackPosition; // Last position where the NPC attacked the player
     private Vector3 originalPosition;
     private TargetType initialStatus;
-    private int ID;
     public NPC npc;
     #endregion
 
@@ -46,7 +45,6 @@ public class NPCBehaviour : NetworkBehaviour, ICombatable, ICastable, IAbleToAtt
 
         // Set the obstacle avoidance type to none or low
         agent.obstacleAvoidanceType = ObstacleAvoidanceType.NoObstacleAvoidance;
-        //npc = Database.instance.GetNPC(ID);
     }
 
     private void Update() {
@@ -68,7 +66,6 @@ public class NPCBehaviour : NetworkBehaviour, ICombatable, ICastable, IAbleToAtt
     }
 
     public void SetStartingValues() {
-        Debug.Log("Hi Nerd");
         //npc.currentHealth = npc.maxHealth;
         //npc.currentMana = npc.maxMana;
     }
@@ -161,27 +158,13 @@ public class NPCBehaviour : NetworkBehaviour, ICombatable, ICastable, IAbleToAtt
     }
 
     private float CalculateCombatRange(ICombatable _target) {
-        Identifiable target = Database.instance.GetTarget(_target);
-        
-        if (target as Player != null) {
-            Player targetAsPlayer = target as Player;
-            int levelDifference = Mathf.Abs(targetAsPlayer.level - npc.level);
-            if ( targetAsPlayer.level >= npc.level) {
-                return aggroRange - Mathf.Min(levelDifference, 5);
-            } else {
-                return aggroRange + Mathf.Min(levelDifference, 5);
-            }
+        Character target = Database.instance.GetTarget(_target);
+        int levelDifference = Mathf.Abs(target.level - npc.level);
+        if (target.level >= npc.level) {
+            return aggroRange - Mathf.Min(levelDifference, 5);
         } else {
-            NPC targetAsNPC = target as NPC;
-            int levelDifference = Mathf.Abs(targetAsNPC.level - npc.level);
-            if (targetAsNPC.level >= npc.level) {
-                return aggroRange - Mathf.Min(levelDifference, 5);
-            } else {
-                return aggroRange + Mathf.Min(levelDifference, 5);
-            }
+            return aggroRange + Mathf.Min(levelDifference, 5);
         }
-
-        
     }
     private bool IsTargetInAttackRange(GameObject target) {
         return Vector3.Distance(transform.position, target.transform.position) <= npc.autoAttackRange - 2;
@@ -217,24 +200,12 @@ public class NPCBehaviour : NetworkBehaviour, ICombatable, ICastable, IAbleToAtt
     }
 
     private void PerformAutoAttack(ICombatable _target) {
-        Identifiable target = Database.instance.GetTarget(_target);
-       
-        if (target as Player != null) {
-            Player targetAsPlayer = target as Player;
-            if (target != null && targetAsPlayer.currentHealth > 0) {
-                // Auto-attack logic here...
-                Debug.Log("Performed");
-                int damage = UnityEngine.Random.Range(npc.autoAttackDamageMin, npc.autoAttackDamageMax);
-                combatManager.SendDamage(_target as IDamageable, damage);
-            }
-        } else {
-            NPC targetAsNPC = target as NPC;
-            if (target != null && targetAsNPC.currentHealth > 0) {
-                // Auto-attack logic here...
-                Debug.Log("Performed");
-                int damage = UnityEngine.Random.Range(npc.autoAttackDamageMin, npc.autoAttackDamageMax);
-                combatManager.SendDamage(_target as IDamageable, damage);
-            }
+        Character target = Database.instance.GetTarget(_target);
+        if (target != null && target.currentHealth > 0) {
+            // Auto-attack logic here...
+            Debug.Log("Performed");
+            int damage = UnityEngine.Random.Range(npc.autoAttackDamageMin, npc.autoAttackDamageMax);
+            combatManager.SendDamage(_target, damage);
         }
     }
 
@@ -334,12 +305,12 @@ public class NPCBehaviour : NetworkBehaviour, ICombatable, ICastable, IAbleToAtt
     #endregion
 
     #region Interfaces
-    public int GetID() {
-        return 0;
+    public Key GetKey() {
+        return npc.key;
     }
 
-    public Identifiable GetTarget() {
-        return Database.instance.GetNPC(GetID());
+    public Character GetTarget() {
+        return Database.instance.GetNPC(GetKey());
     }
 
     public ITargetable GetTargetComponent() {
@@ -347,7 +318,7 @@ public class NPCBehaviour : NetworkBehaviour, ICombatable, ICastable, IAbleToAtt
     }
 
     public TargetType GetTargetType() {
-        return Database.instance.GetNPC(ID).targetType;
+        return Database.instance.GetNPC(npc.key).targetType;
     }
 
     public TargetStatus GetTargetStatus() {

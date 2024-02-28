@@ -25574,7 +25574,6 @@ MonoBehaviour:
   moveSpeed: 7.1
   maxAttackRange: 50
   aggroRange: 10
-  npc: {fileID: 0}
 --- !u!136 &1224530593
 CapsuleCollider:
   m_ObjectHideFlags: 0
@@ -26318,7 +26317,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &1261425127
 Transform:
   m_ObjectHideFlags: 0
@@ -26375,7 +26374,6 @@ MonoBehaviour:
   moveSpeed: 7.1
   maxAttackRange: 50
   aggroRange: 10
-  npc: {fileID: 11400000, guid: 89c8c064740340543a87af0934e1f8b4, type: 2}
 --- !u!136 &1261425130
 CapsuleCollider:
   m_ObjectHideFlags: 0
@@ -28661,7 +28659,6 @@ MonoBehaviour:
   moveSpeed: 7.1
   maxAttackRange: 50
   aggroRange: 10
-  npc: {fileID: 0}
 --- !u!195 &1553720423
 NavMeshAgent:
   m_ObjectHideFlags: 0
@@ -29078,7 +29075,6 @@ MonoBehaviour:
   moveSpeed: 7.1
   maxAttackRange: 50
   aggroRange: 10
-  npc: {fileID: 0}
 --- !u!136 &1630318951
 CapsuleCollider:
   m_ObjectHideFlags: 0
@@ -33102,7 +33098,6 @@ MonoBehaviour:
   moveSpeed: 7.1
   maxAttackRange: 50
   aggroRange: 10
-  npc: {fileID: 0}
 --- !u!136 &1974042543
 CapsuleCollider:
   m_ObjectHideFlags: 0

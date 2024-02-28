@@ -3,14 +3,14 @@ using UnityEngine;
 
 [CreateAssetMenu(fileName = "Guiding Bolt", menuName = "Spell/Priest/Guiding Bolt")]
 public class GuidingBolt : Spell {
-    /*
-    public override IEnumerator Cast(PlayerBehaviour playerBehaviour, EntityBehaviour targetBehaviour) {
-        if (targetBehaviour.npc.currentHealth > 0) {
-            CombatManager.instance.SendDamage(targetBehaviour, damage);
-            //playerBehaviour.playerData.Value.currentMana -= manaCost;
+
+    public override void Cast(ITargetable _caster, ITargetable _target) {
+        base.Cast(_caster, _target);
+        if (target.currentHealth > 0) {
+            CombatManager.instance.SendDamage(_target, damage);
+            caster.currentMana -= manaCost;
         }
-        yield return null;
-    } */
+    }
 
     public override void UpdateDescription() {
         description = $"The target takes {damage} damage.";

@@ -19,7 +19,7 @@ public class InformationText : FloatingText
         Identifiable entityData = Database.instance.GetTarget(entity);
         if (entityData as Player != null) {
             Player player = entityData as Player;
-            textMesh.text = player.name;
+            textMesh.text = player.key.name;
             if (player.targetStatus == TargetStatus.Dead) {
                 textMesh.color = deadColor;
             } else if (player.targetType == TargetType.Player) {
@@ -27,7 +27,7 @@ public class InformationText : FloatingText
             }
         } else {
             NPC npc = entityData as NPC;
-            textMesh.text = npc.name;
+            textMesh.text = npc.key.name;
             if (npc.targetStatus == TargetStatus.Dead || npc.targetStatus == TargetStatus.Object) {
                 textMesh.color = deadColor;
             } else if (npc.targetType == TargetType.Ally || npc.targetType == TargetType.Companion || npc.targetType == TargetType.Friendly) {

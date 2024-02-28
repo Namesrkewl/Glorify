@@ -35,16 +35,18 @@ public class Spell : PlayerAction, Identifiable {
     public int range;
     public bool needsLineOfSight;
     public bool isGlobalCooldown;
+    public Character caster, target;
     public DamageTypes damageType;
-    private int spellID;
+    public Key key;
     // Other spell properties like damage, duration, etc., can be added here.
 
     public override void ExecuteAction(PlayerBehaviour playerBehaviour) {
         //playerBehaviour.HandleSpell(this);
     }
 
-    public virtual IEnumerator Cast(ICastable playerBehaviour, ICastable targetBehavior) {
-        yield return null;
+    public virtual void Cast(ITargetable _caster, ITargetable _target) {
+        caster = Database.instance.GetTarget(_caster);
+        target = Database.instance.GetTarget(_target);
     }
 
     public virtual void RemoveEffect(Character character) {
@@ -55,10 +57,15 @@ public class Spell : PlayerAction, Identifiable {
 
     }
 
-    public virtual int GetID() {
-        return spellID;
+    public Spell() {
+        key = new Key();
     }
-    public virtual void SetID(int input) {
-        spellID = input;
+
+    public Key GetKey() {
+        return key;
+    }
+
+    public void SetKey(Key _key) {
+        key = _key;
     }
 }

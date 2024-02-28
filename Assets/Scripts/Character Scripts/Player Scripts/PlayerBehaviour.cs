@@ -3,7 +3,7 @@ using UnityEngine;
 
 [RequireComponent(typeof(PlayerMovement))]
 [RequireComponent(typeof(PlayerTargeting))]
-public class PlayerBehaviour : NetworkBehaviour, ICombatable, IDamageable, ICastable, IAbleToAttack, IAbleToCast {
+public class PlayerBehaviour : NetworkBehaviour, ICombatable, ICastable, IAbleToAttack, IAbleToCast {
     private PlayerTargeting playerTargeting;
     private PlayerMovement playerMovement;
 
@@ -17,12 +17,12 @@ public class PlayerBehaviour : NetworkBehaviour, ICombatable, IDamageable, ICast
     }
 
     private void UpdatePlayer() {
-        PlayerManager.instance.UpdatePlayer(Database.instance.GetPlayer(GetID()));
+        PlayerManager.instance.UpdatePlayer(Database.instance.GetPlayer(GetKey()));
     }
 
     //[ServerRpc]
     public void EnterCombat(ICombatable target) {
-        Player player = Database.instance.GetPlayer(GetID());
+        Player player = Database.instance.GetPlayer(GetKey());
         if (!player.aggroList.Contains(target)) {
             player.aggroList.Add(target);
             player.combatStatus = CombatStatus.InCombat;
@@ -33,7 +33,7 @@ public class PlayerBehaviour : NetworkBehaviour, ICombatable, IDamageable, ICast
     }
 
     public void ExitCombat(ICombatable target) {
-        Player player = Database.instance.GetPlayer(GetID());
+        Player player = Database.instance.GetPlayer(GetKey());
         if (player.aggroList.Contains(target)) {
             player.aggroList.Remove(target);
 
@@ -42,19 +42,19 @@ public class PlayerBehaviour : NetworkBehaviour, ICombatable, IDamageable, ICast
         }
     }
 
-    public int GetID() {
-        return Client.instance.GetID();
+    public Key GetKey() {
+        return Client.instance.GetKey();
     }
 
-    public Identifiable GetTarget() {
-        return Database.instance.GetPlayer(GetID());
+    public Character GetTarget() {
+        return Database.instance.GetPlayer(GetKey());
     }
     public ITargetable GetTargetComponent() {
         return this;
     }
 
     public TargetType GetTargetType() {
-        return Database.instance.GetPlayer(GetID()).targetType;
+        return Database.instance.GetPlayer(GetKey()).targetType;
     }
 
     public TargetStatus GetTargetStatus() {

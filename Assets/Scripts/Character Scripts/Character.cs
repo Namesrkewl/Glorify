@@ -1,12 +1,12 @@
+using FishNet.Demo.AdditiveScenes;
 using System;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
-[CreateAssetMenu(fileName = "New NPC", menuName = "Character/NPC")]
-public class NPC : ScriptableObject, Identifiable {
-    [NonSerialized] public Image characterImage;
-    public new string name;
+public class Character : Identifiable {
+    [System.NonSerialized] public Image image;
+    public Key key;
     public TargetType targetType;
     public Races characterRace;
     public TargetStatus targetStatus;
@@ -28,27 +28,17 @@ public class NPC : ScriptableObject, Identifiable {
     public List<DamageTypes> weaknesses;
     public List<DamageTypes> resistances;
     public List<DamageTypes> immunities;
-    public Rarity rarity;
-    public int wealth;
-    public float experience;
-    public List<Item> dropTable;
     [NonSerialized] public List<ICombatable> aggroList = new List<ICombatable>();
-    private int npcID;
 
-    public enum Rarity {
-        Normal,
-        Rare,
-        Elite,
-        Boss
+    public Character() {
+        key = new Key();
     }
 
-    // Other properties and methods specific to NPCs
-    public int GetID() {
-        return npcID;
+    public Key GetKey() {
+        return key;
     }
 
-    public void SetID(int input) { 
-        npcID = input;
+    public void SetKey(Key _key) {
+        key = _key;
     }
-
 }

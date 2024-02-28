@@ -1,11 +1,12 @@
 using UnityEngine;
+using UnityEngine.InputSystem;
 
 [CreateAssetMenu(fileName = "New Item", menuName = "Inventory/Item")]
 public class Item : ScriptableObject, Identifiable {
     public new string name;
     [System.NonSerialized] public Sprite Icon;
     public ItemType Type;
-    private int itemID;
+    public Key key;
 
     public enum ItemType {
         Armor,
@@ -34,11 +35,11 @@ public class Item : ScriptableObject, Identifiable {
 
     // Add additional methods to handle item behaviours as needed
 
-    public int GetID() {
-        return itemID;
+    public Key GetKey() {
+        return key;
     }
 
-    public void SetID(int input) {
-        itemID = input;
+    public void SetKey(Key _key) {
+        key = _key;
     }
 }
