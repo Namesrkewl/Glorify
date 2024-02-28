@@ -58,6 +58,10 @@ public class NPCBehaviour : NetworkBehaviour, ICombatable, ICastable, IAbleToAtt
         } else {
             return;
         }
+        Debug.Log(npc.aggroList.Count);
+        if (npc.aggroList.Count > 0) {
+            //Debug.Log(npc.aggroList[0]);
+        }
         CheckForEnemiesInRange();
         HandleCombatState();
     }
@@ -239,6 +243,7 @@ public class NPCBehaviour : NetworkBehaviour, ICombatable, ICastable, IAbleToAtt
     #region Combat Logic
     // New method to determine whether to stop combat
     private bool ShouldStopCombat(ICombatable target) {
+        if (target == null) return true;
         return Vector3.Distance(npc.originalPosition, target.GetTargetObject().transform.position) > npc.maxAttackRange;
     }
 
