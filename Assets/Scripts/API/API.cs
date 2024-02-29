@@ -34,7 +34,6 @@ public class API : NetworkBehaviour {
                 Client.instance.mainMenu.SetActive(true);
             }
         }
-        Debug.Log(UnityEngine.SceneManagement.SceneManager.sceneCount);
         for (int i = 0; i < UnityEngine.SceneManagement.SceneManager.sceneCount; i++) {
             UnityEngine.SceneManagement.Scene scene = UnityEngine.SceneManagement.SceneManager.GetSceneAt(i);
             //Debug.Log($"{scene.name} found.");

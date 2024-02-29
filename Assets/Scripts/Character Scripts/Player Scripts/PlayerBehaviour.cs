@@ -3,6 +3,7 @@ using FishNet.Demo.AdditiveScenes;
 using FishNet.Managing.Logging;
 using FishNet.Object;
 using System;
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
@@ -59,6 +60,15 @@ public class PlayerBehaviour : NetworkBehaviour, ICombatable, ICastable, IAbleTo
     public void ServerExitCombat(NetworkBehaviour target) {
         Player player = Database.instance.GetPlayer(GetKey());
         ExitCombat(target, player);
+    }
+
+    [ServerRpc]
+    public void ExitAllCombat() {
+        Player player = Database.instance.GetPlayer(GetKey());
+        var tempTargets = new List<ICombatable>(player.aggroList);
+        foreach (ICombatable target in tempTargets) {
+            ExitCombat(target as NetworkBehaviour, player);
+        }
     }
 
     public Key GetKey() {
