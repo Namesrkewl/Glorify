@@ -28,3 +28,10 @@ public enum CombatStatus {
     InCombat,
     Resetting
 }
+
+public enum ActionState {
+    Idle,
+    AutoAttacking,
+    Casting,
+    Restricted
+}

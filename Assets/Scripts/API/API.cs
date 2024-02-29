@@ -9,6 +9,7 @@ using UnityEngine;
 public class API : NetworkBehaviour {
 
     public static API instance;
+    public Key clientKey;
 
     private void Awake() {
         if (instance != null) {
@@ -30,7 +31,7 @@ public class API : NetworkBehaviour {
     public override void OnStopClient() {
         Debug.Log("Connection Stopped!");
         if (Client.instance != null) {
-            if (!Client.instance.mainMenu.activeSelf) {
+            if (!Client.instance.mainMenu.activeSelf ? true : false) {
                 Client.instance.mainMenu.SetActive(true);
             }
         }
@@ -54,7 +55,7 @@ public class API : NetworkBehaviour {
     [TargetRpc] 
     public void CompleteLogin(NetworkConnection conn, Key key) {
         Debug.Log("Login Successful!");
-        Client.instance.SetKey(key);
+        clientKey = key;
         if (Client.instance.mainMenu.activeSelf) {
             Client.instance.mainMenu.SetActive(false);
             Debug.Log("Disabled the main menu!");

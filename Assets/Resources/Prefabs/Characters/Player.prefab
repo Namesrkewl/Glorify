@@ -14,11 +14,11 @@ GameObject:
   - component: {fileID: 66217266422708038}
   - component: {fileID: 66217266422708039}
   - component: {fileID: 66217266422708036}
-  - component: {fileID: 66217266422708037}
   - component: {fileID: 66217266422708034}
   - component: {fileID: 66217266422708035}
   - component: {fileID: 7643392635919447686}
   - component: {fileID: 138203605176907269}
+  - component: {fileID: 3153021733640087511}
   m_Layer: 6
   m_Name: Player
   m_TagString: Player
@@ -155,34 +155,6 @@ MonoBehaviour:
   _networkObjectCache: {fileID: 66217266422708035}
   highlightMaterial: {fileID: 2100000, guid: a0b6e01120b9ecb4f8a23ef6dfbe2b81, type: 2}
   autoAttackHighlightMaterial: {fileID: 2100000, guid: aac9c7d0c91167f4b96ac610a3afbac3, type: 2}
---- !u!114 &66217266422708037
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 66217266422708094}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 5efe476686b9d984a85c0ea176310b77, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  skinnedMeshRenderers:
-  - {fileID: 784185447005852417}
-  - {fileID: 9164307855685657614}
-  - {fileID: 2795746818447324093}
-  - {fileID: 3697153085422657453}
-  - {fileID: 8800156119320097544}
-  - {fileID: 4959712033961344468}
-  - {fileID: 9004686095983708432}
-  - {fileID: 3838502470707165689}
-  - {fileID: 8988281394253290306}
-  - {fileID: 7998525185324217277}
-  - {fileID: 1165376676980269099}
-  - {fileID: 1539732656259053349}
-  - {fileID: 6979620163281567676}
-  - {fileID: 3089702679726768916}
-  originalCharacterSkin: {fileID: 1753639932139335750}
 --- !u!23 &66217266422708034
 MeshRenderer:
   m_ObjectHideFlags: 0
@@ -245,10 +217,34 @@ MonoBehaviour:
   - {fileID: 66217266422708039}
   - {fileID: 66217266422708036}
   - {fileID: 7643392635919447686}
+  - {fileID: 3153021733640087511}
   - {fileID: 66217265584506254}
   - {fileID: 66217267334442835}
   <SerializedRootNetworkBehaviour>k__BackingField: {fileID: 0}
-  <NestedRootNetworkBehaviours>k__BackingField: []
+  <NestedRootNetworkBehaviours>k__BackingField:
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
   SerializedTransformProperties:
     Position: {x: 2700, y: 16.8, z: 2143.9}
     Rotation: {x: -0, y: -0, z: -0, w: 1}
@@ -326,6 +322,39 @@ MonoBehaviour:
   _observerConditions:
   - {fileID: 11400000, guid: 2033f54fd2794464bae08fa5a55c8996, type: 2}
   - {fileID: 11400000, guid: 5f33eb0e5b83b5546822cfe42a305657, type: 2}
+--- !u!114 &3153021733640087511
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 66217266422708094}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f7140239062282c4eab01dc7f9f325dd, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _componentIndexCache: 4
+  _addedNetworkObject: {fileID: 66217266422708035}
+  _networkObjectCache: {fileID: 66217266422708035}
+  skinnedMeshRenderers:
+  - {fileID: 784185447005852417}
+  - {fileID: 9164307855685657614}
+  - {fileID: 2795746818447324093}
+  - {fileID: 3697153085422657453}
+  - {fileID: 8800156119320097544}
+  - {fileID: 4959712033961344468}
+  - {fileID: 9004686095983708432}
+  - {fileID: 1539732656259053349}
+  - {fileID: 6979620163281567676}
+  - {fileID: 3089702679726768916}
+  - {fileID: 8988281394253290306}
+  - {fileID: 7998525185324217277}
+  - {fileID: 1165376676980269099}
+  - {fileID: 3838502470707165689}
+  originalCharacterSkin: {fileID: 1753639932139335750}
+  cubeSize: 0.2
+  totalCubes: 50
 --- !u!1 &66217267334442839
 GameObject:
   m_ObjectHideFlags: 0
@@ -431,7 +460,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 376d7706786a86b48a99a6010b5255f7, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _componentIndexCache: 5
+  _componentIndexCache: 6
   _addedNetworkObject: {fileID: 66217266422708035}
   _networkObjectCache: {fileID: 66217266422708035}
   thisCamera: {fileID: 66217267334442837}
@@ -521,8 +550,44 @@ PrefabInstance:
       propertyPath: m_IsActive
       value: 1
       objectReference: {fileID: 0}
+    - target: {fileID: 3388840107371486329, guid: 60770bdb4dc667c45bea53db0339dc05, type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3688722674990396637, guid: 60770bdb4dc667c45bea53db0339dc05, type: 3}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 3716317115370018060, guid: 60770bdb4dc667c45bea53db0339dc05, type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4108629495336714649, guid: 60770bdb4dc667c45bea53db0339dc05, type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4116401870129570769, guid: 60770bdb4dc667c45bea53db0339dc05, type: 3}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 4540229000190281644, guid: 60770bdb4dc667c45bea53db0339dc05, type: 3}
       propertyPath: m_CullingMode
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 7093791603881671045, guid: 60770bdb4dc667c45bea53db0339dc05, type: 3}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 7110436774692112344, guid: 60770bdb4dc667c45bea53db0339dc05, type: 3}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 7410130793860079635, guid: 60770bdb4dc667c45bea53db0339dc05, type: 3}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 7945953894594096990, guid: 60770bdb4dc667c45bea53db0339dc05, type: 3}
+      propertyPath: m_IsActive
       value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 8047095701261929936, guid: 60770bdb4dc667c45bea53db0339dc05, type: 3}
@@ -574,7 +639,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cb9c555e89cf6264990b011a0961899b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _componentIndexCache: 4
+  _componentIndexCache: 5
   _addedNetworkObject: {fileID: 66217266422708035}
   _networkObjectCache: {fileID: 66217266422708035}
 --- !u!137 &2795746818447324093 stripped

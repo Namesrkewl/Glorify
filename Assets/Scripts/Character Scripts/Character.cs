@@ -12,6 +12,7 @@ public class Character : Identifiable {
     public Races characterRace;
     public TargetStatus targetStatus;
     public CombatStatus combatStatus;
+    public ActionState actionState;
     public int level;
     public float maxHealth;
     public float currentHealth;

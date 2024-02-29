@@ -7,7 +7,6 @@ public class Client : MonoBehaviour {
     public GameObject mainMenu;
     public TMP_InputField username;
     public TMP_InputField password;
-    private Key key;
 
     private void Awake() {
         if (instance != null) {
@@ -36,13 +35,5 @@ public class Client : MonoBehaviour {
         if (!UnityEngine.SceneManagement.SceneManager.GetSceneByName("API").isLoaded) {
             UnityEngine.SceneManagement.SceneManager.LoadScene("API", UnityEngine.SceneManagement.LoadSceneMode.Additive);
         }
-    }
-
-    public Key GetKey() {
-        return key;
-    }
-
-    public void SetKey(Key _key) {
-        key = _key;
     }
 }

@@ -3,6 +3,8 @@ using System.Linq;
 using UnityEngine;
 using FishNet.Connection;
 using FishNet.Object;
+using FishNet.Object.Synchronizing;
+using Unity.VisualScripting;
 
 public class PlayerTargeting : NetworkBehaviour {
     private List<ITargetable> validTargets = new List<ITargetable>();
@@ -16,6 +18,7 @@ public class PlayerTargeting : NetworkBehaviour {
     private ITargetable lastClickedTarget;
     private CameraManager cameraManager;
     private PlayerBehaviour playerBehaviour;
+    private bool isValidTarget;
     public bool IsAutoAttacking { get; private set; }
 
     public override void OnStartClient() {
@@ -29,7 +32,6 @@ public class PlayerTargeting : NetworkBehaviour {
     }
 
     void Update() {
-        /*
         if (!base.IsClientInitialized)
             return;
         UpdateValidTargets();
@@ -37,7 +39,6 @@ public class PlayerTargeting : NetworkBehaviour {
         HandleTabTargeting();
         HandleCancelInput();
         CheckTargetDistance();
-        */
     }
 
     private void HandleMouseInput() {
@@ -160,15 +161,55 @@ public class PlayerTargeting : NetworkBehaviour {
 
     private void UpdateValidTargets() {
         validTargets.Clear();
-        foreach (var target in FindObjectsOfType<MonoBehaviour>().OfType<ITargetable>()) {
+        // Calculate the camera's frustum planes.
+        Plane[] planes = GeometryUtility.CalculateFrustumPlanes(cameraManager.thisCamera);
+        // Find all colliders within a sphere centered at the camera's position, up to MAX_TARGET_RANGE.
+        Collider[] collidersInView = Physics.OverlapSphere(cameraManager.thisCamera.transform.position, MAX_TARGET_RANGE);
+
+        foreach (Collider collider in collidersInView) {
+            // Check if the collider's bounds are within the camera's view frustum.
+            if (!GeometryUtility.TestPlanesAABB(planes, collider.bounds)) continue; // Skip if collider is not in camera view.
+
+            ITargetable target = collider.GetComponent<ITargetable>();
+            if (target == null) continue; // Skip if the object does not implement ITargetable.
+
             GameObject targetObject = target.GetTargetObject();
-            if (IsWithinCameraView(targetObject.transform) && (target.GetTargetStatus() == TargetStatus.Alive) &&
-                Vector3.Distance(transform.position, targetObject.transform.position) <= MAX_TARGET_RANGE &&
-                (target.GetTargetType() == TargetType.Neutral || target.GetTargetType() == TargetType.Hostile)) {
-                validTargets.Add(target);
+            if (targetObject == null) continue; // Safety check.
+
+            Vector3 directionToTarget = (targetObject.transform.position - cameraManager.thisCamera.transform.position).normalized;
+            float angleToTarget = Vector3.Angle(cameraManager.thisCamera.transform.forward, directionToTarget);
+            float distanceToTarget = Vector3.Distance(cameraManager.thisCamera.transform.position, targetObject.transform.position);
+
+            // Check if target is within FOV (90 degrees) and max range.
+            if (angleToTarget <= 45f && distanceToTarget <= MAX_TARGET_RANGE + Vector3.Distance(transform.position, cameraManager.thisCamera.transform.position)) {
+                // Raycast to check for obstacles.
+                RaycastHit hit;
+                if (Physics.Raycast(cameraManager.thisCamera.transform.position, directionToTarget, out hit, MAX_TARGET_RANGE)) {
+                    // Check if the hit object is the target object.
+                    if (hit.collider.gameObject == targetObject) {
+                        isValidTarget = false;
+                        CheckValidTarget((target as Object).GameObject());
+                        if (isValidTarget) {
+                            validTargets.Add(target);
+                        }
+                    }
+                }
             }
         }
         SortTargetsByCameraDirection();
+    }
+
+    [ServerRpc]
+    public void CheckValidTarget(GameObject targetObject, NetworkConnection sender = null) {
+        ITargetable target = targetObject.GetComponent<ITargetable>();
+        if (target.GetTargetStatus() == TargetStatus.Alive && (target.GetTargetType() == TargetType.Neutral || target.GetTargetType() == TargetType.Hostile)) {
+            ConfirmValidTarget(sender, true);
+        }
+    }
+
+    [TargetRpc]
+    public void ConfirmValidTarget(NetworkConnection receiver, bool validity) {
+        isValidTarget = validity;
     }
 
     private void SortTargetsByCameraDirection() {

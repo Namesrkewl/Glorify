@@ -32,5 +32,8 @@ public class Player : Character  {
         location = new Vector3(2700, 12, 2200);
         scale = Vector3.one;
         rotation = Quaternion.identity;
+        targetStatus = TargetStatus.Alive;
+        combatStatus = CombatStatus.OutOfCombat;
+        actionState = ActionState.Idle;
     }
 }

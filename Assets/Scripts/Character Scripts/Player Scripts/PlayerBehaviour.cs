@@ -1,7 +1,9 @@
+using FishNet.CodeGenerating;
 using FishNet.Connection;
 using FishNet.Demo.AdditiveScenes;
 using FishNet.Managing.Logging;
 using FishNet.Object;
+using FishNet.Object.Synchronizing;
 using System;
 using System.Collections.Generic;
 using UnityEngine;
@@ -9,13 +11,28 @@ using UnityEngine.InputSystem;
 
 [RequireComponent(typeof(PlayerMovement))]
 [RequireComponent(typeof(PlayerTargeting))]
+[RequireComponent(typeof(MeshShatter))]
 public class PlayerBehaviour : NetworkBehaviour, ICombatable, ICastable, IAbleToAttack, IAbleToCast {
     private PlayerTargeting playerTargeting;
     private PlayerMovement playerMovement;
+    [AllowMutableSyncType]
+    public SyncVar<Key> key;
+
 
     private void Awake() {
         playerTargeting = GetComponent<PlayerTargeting>();
         playerMovement = GetComponent<PlayerMovement>();
+    }
+
+    public override void OnStartClient() {
+        base.OnStartClient();
+        SetKey(API.instance.clientKey.name, API.instance.clientKey.ID);
+    }
+
+    [ServerRpc]
+    private void SetKey(string _name, int _ID) {
+        Key newKey = new Key { name = _name, ID = _ID };
+        key.Value = newKey;
     }
 
     private void Update() {
@@ -72,22 +89,23 @@ public class PlayerBehaviour : NetworkBehaviour, ICombatable, ICastable, IAbleTo
     }
 
     public Key GetKey() {
-        return Client.instance.GetKey();
+        return key.Value;
     }
 
+
     public Character GetTarget() {
-        return Database.instance.GetPlayer(GetKey());
+        return Database.instance.GetPlayer(key.Value);
     }
     public ITargetable GetTargetComponent() {
         return this;
     }
 
     public TargetType GetTargetType() {
-        return Database.instance.GetPlayer(GetKey()).targetType;
+        return TargetType.Player;
     }
 
     public TargetStatus GetTargetStatus() {
-        return Database.instance.GetPlayer(GetKey()).targetStatus;
+        return Database.instance.GetPlayer(key.Value).targetStatus;
     }
 
     public GameObject GetTargetObject() {

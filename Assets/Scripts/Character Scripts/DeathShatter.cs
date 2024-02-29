@@ -58,13 +58,13 @@ public class DeathShatter : MonoBehaviour {
             objectsToShatter.Add(child);
             materials.Add(skinnedMeshRenderers[i].material);
         }
-        MeshShatter.instance.ShatterMesh(objectsToShatter, materials);
+        //MeshShatter.ShatterMesh(objectsToShatter, materials);
         originalCharacterSkin.SetActive(false);
         shatteredCharacterObject.SetActive(false);
     }
 
     private void ShatterUnskinned() {
-        MeshShatter.instance.ShatterMesh(gameObject, GetComponent<MeshRenderer>().material);
+        //MeshShatter.instance.ShatterMesh(gameObject, GetComponent<MeshRenderer>().material);
         GetComponent<MeshRenderer>().enabled = false;
     }
 
