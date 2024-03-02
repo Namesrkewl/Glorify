@@ -118,7 +118,6 @@ public class PlayerTargeting : NetworkBehaviour {
         RaycastHit[] hits;
         float rayDistance = MAX_TARGET_RANGE + Vector3.Distance(transform.position, cameraManager.transform.position);
         hits = Physics.RaycastAll(cameraManager.transform.position, directionToTarget.normalized, rayDistance);
-        Debug.DrawRay(cameraManager.transform.position, directionToTarget.normalized * rayDistance, Color.red, 2.0f);
 
         // Sort hits by distance to ensure closest hit is checked first.
         System.Array.Sort(hits, (a, b) => a.distance.CompareTo(b.distance));

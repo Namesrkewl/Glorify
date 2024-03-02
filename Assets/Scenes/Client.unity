@@ -175,6 +175,50 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 6787219553578086300, guid: 75b04aa3ef117254ca67a1daa9797a13, type: 3}
+      propertyPath: m_MoveAction
+      value: 
+      objectReference: {fileID: -7581096423324337530, guid: 4fffe05d315a1484a87da587bce4ddee, type: 3}
+    - target: {fileID: 6787219553578086300, guid: 75b04aa3ef117254ca67a1daa9797a13, type: 3}
+      propertyPath: m_PointAction
+      value: 
+      objectReference: {fileID: 175491585849897196, guid: 4fffe05d315a1484a87da587bce4ddee, type: 3}
+    - target: {fileID: 6787219553578086300, guid: 75b04aa3ef117254ca67a1daa9797a13, type: 3}
+      propertyPath: m_ActionsAsset
+      value: 
+      objectReference: {fileID: -944628639613478452, guid: 4fffe05d315a1484a87da587bce4ddee, type: 3}
+    - target: {fileID: 6787219553578086300, guid: 75b04aa3ef117254ca67a1daa9797a13, type: 3}
+      propertyPath: m_CancelAction
+      value: 
+      objectReference: {fileID: 7138231833395052014, guid: 4fffe05d315a1484a87da587bce4ddee, type: 3}
+    - target: {fileID: 6787219553578086300, guid: 75b04aa3ef117254ca67a1daa9797a13, type: 3}
+      propertyPath: m_SubmitAction
+      value: 
+      objectReference: {fileID: -802639095372443938, guid: 4fffe05d315a1484a87da587bce4ddee, type: 3}
+    - target: {fileID: 6787219553578086300, guid: 75b04aa3ef117254ca67a1daa9797a13, type: 3}
+      propertyPath: m_LeftClickAction
+      value: 
+      objectReference: {fileID: 3341905416140053314, guid: 4fffe05d315a1484a87da587bce4ddee, type: 3}
+    - target: {fileID: 6787219553578086300, guid: 75b04aa3ef117254ca67a1daa9797a13, type: 3}
+      propertyPath: m_RightClickAction
+      value: 
+      objectReference: {fileID: -1521385179267192117, guid: 4fffe05d315a1484a87da587bce4ddee, type: 3}
+    - target: {fileID: 6787219553578086300, guid: 75b04aa3ef117254ca67a1daa9797a13, type: 3}
+      propertyPath: m_MiddleClickAction
+      value: 
+      objectReference: {fileID: -3417709504077874001, guid: 4fffe05d315a1484a87da587bce4ddee, type: 3}
+    - target: {fileID: 6787219553578086300, guid: 75b04aa3ef117254ca67a1daa9797a13, type: 3}
+      propertyPath: m_ScrollWheelAction
+      value: 
+      objectReference: {fileID: -1784013589979321736, guid: 4fffe05d315a1484a87da587bce4ddee, type: 3}
+    - target: {fileID: 6787219553578086300, guid: 75b04aa3ef117254ca67a1daa9797a13, type: 3}
+      propertyPath: m_TrackedDevicePositionAction
+      value: 
+      objectReference: {fileID: -998679893760198549, guid: 4fffe05d315a1484a87da587bce4ddee, type: 3}
+    - target: {fileID: 6787219553578086300, guid: 75b04aa3ef117254ca67a1daa9797a13, type: 3}
+      propertyPath: m_TrackedDeviceOrientationAction
+      value: 
+      objectReference: {fileID: 8261777478985913747, guid: 4fffe05d315a1484a87da587bce4ddee, type: 3}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
