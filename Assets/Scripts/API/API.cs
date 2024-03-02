@@ -12,6 +12,7 @@ public class API : NetworkBehaviour {
     public static API instance;
     public Key clientKey;
     public AudioSource audioSource;
+    public ChatManager chatManager;
 
     private void Awake() {
         if (instance != null) {
@@ -19,6 +20,7 @@ public class API : NetworkBehaviour {
         } else {
             instance = this;
             audioSource = GetComponent<AudioSource>();
+            chatManager = GetComponent<ChatManager>();
             Debug.Log("API Loaded.");
         }
     }
@@ -39,7 +41,7 @@ public class API : NetworkBehaviour {
             }
         }
         if (ChatManager.instance != null) {
-            ChatManager.instance.gameObject.SetActive(false);
+            ChatManager.instance.container.SetActive(false);
         }
         for (int i = 0; i < UnityEngine.SceneManagement.SceneManager.sceneCount; i++) {
             UnityEngine.SceneManagement.Scene scene = UnityEngine.SceneManagement.SceneManager.GetSceneAt(i);

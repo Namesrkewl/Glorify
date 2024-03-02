@@ -12,12 +12,14 @@ public class ChatManager: MonoBehaviour {
     public static ChatManager instance;
     public Transform chatHolder;
     public GameObject msgElement;
+    public GameObject container;
     public TMP_InputField playerMessage;
     public PlayerControls playerControls;
     private bool tryingToFocus = false; // New flag to track focus intent
 
     private void Awake() {
         instance = this;
+        container.SetActive(false);
     }
 
     private void OnEnable() {
@@ -64,10 +66,14 @@ public class ChatManager: MonoBehaviour {
 
         playerMessage.text = "";
 
-        if (InstanceFinder.IsServerStarted)
+        if (InstanceFinder.IsServerStarted) {
             InstanceFinder.ServerManager.Broadcast(msg);
-        else if (InstanceFinder.IsClientStarted)
+        }
+        else if (InstanceFinder.IsClientStarted) {
+            Debug.Log("Client up");
             InstanceFinder.ClientManager.Broadcast(msg);
+
+        }
     }
 
     private void OnMessageRecieved(Message msg, Channel channel) {
@@ -76,6 +82,7 @@ public class ChatManager: MonoBehaviour {
     }
 
     private void OnClientMessageRecieved(NetworkConnection networkConnection, Message msg, Channel channel) {
+        Debug.Log("Server up");
         InstanceFinder.ServerManager.Broadcast(msg);
     }
 

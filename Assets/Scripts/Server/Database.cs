@@ -92,7 +92,6 @@ public class Database : NetworkBehaviour {
     }
 
     private void players_OnChange(SyncListOperation op, int index, Player oldPlayer, Player newPlayer, bool asServer) {
-        Debug.Log("Call it back");
         switch (op) {
             /* An object was added to the list. Index
             * will be where it was added, which will be the end
@@ -115,7 +114,6 @@ public class Database : NetworkBehaviour {
             * newItem is the item which now has it's place. */
             case SyncListOperation.Set:
                 UIManager.instance.UpdatePlayerInformation(GetClient(newPlayer.key), newPlayer);
-                Debug.Log("Player Updated!");
                 break;
             /* All objects have been cleared. Index, oldValue,
             * and newValue are default. */

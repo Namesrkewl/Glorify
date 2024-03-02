@@ -30,7 +30,7 @@ public class PlayerBehaviour : NetworkBehaviour, ICombatable, ICastable, IAbleTo
             return;
         base.OnStartClient();
         SetKey(API.instance.clientKey);
-        ChatManager.instance.gameObject.SetActive(true);
+        ChatManager.instance.container.SetActive(true);
         PlayerManager.instance.SetPlayer(this);
         UpdatePlayerInformation(API.instance.clientKey);
         ChatManager.instance.playerControls = playerMovement.playerControls;
@@ -63,7 +63,6 @@ public class PlayerBehaviour : NetworkBehaviour, ICombatable, ICastable, IAbleTo
         Database.instance.UpdatePlayer(Database.instance.GetPlayer(_key));
     }
 
-    [ObserversRpc]
     private void EnterCombat(NetworkBehaviour target, Player player) {
         ICombatable combatant = target as ICombatable;
         if (!player.aggroList.Contains(combatant)) {
@@ -82,7 +81,6 @@ public class PlayerBehaviour : NetworkBehaviour, ICombatable, ICastable, IAbleTo
 
     }
 
-    [ObserversRpc]
     public void ExitCombat(NetworkBehaviour target, Player player) {
         ICombatable combatant = target as ICombatable;
         if (player.aggroList.Contains(combatant)) {

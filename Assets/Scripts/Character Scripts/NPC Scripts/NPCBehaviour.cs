@@ -138,13 +138,16 @@ public class NPCBehaviour : NetworkBehaviour, ICombatable, ICastable, IAbleToAtt
 
     [Server(Logging = LoggingType.Off)]
     private void CheckForEnemiesInRange() {
-        // Logic to detect players within aggro range and add them to combat list
         if (npc.currentHealth > 0 && npc.combatStatus != CombatStatus.Resetting && npc.combatStatus != CombatStatus.InCombat) {
-            foreach (var target in FindObjectsOfType<MonoBehaviour>().OfType<ICombatable>().Where(c => !ReferenceEquals(c, this))) {
-                GameObject targetObject = target.GetTargetObject();
-                if (Vector3.Distance(transform.position, targetObject.transform.position) <= CalculateCombatRange(target) && IsLineOfSightClear(targetObject) && target.GetTargetStatus() != TargetStatus.Dead) {
-                    NetworkBehaviour _target = target as NetworkBehaviour;
-                    EnterCombat(_target);
+            Collider[] hitColliders = Physics.OverlapSphere(transform.position, npc.aggroRange);
+            foreach (var hitCollider in hitColliders) {
+                ICombatable target = hitCollider.GetComponent<ICombatable>();
+                if (target != null && !ReferenceEquals(target, this)) {
+                    GameObject targetObject = target.GetTargetObject();
+                    if (Vector3.Distance(transform.position, targetObject.transform.position) <= CalculateAggroRange(target) && IsLineOfSightClear(targetObject) && target.GetTargetStatus() != TargetStatus.Dead) {
+                        NetworkBehaviour _target = target as NetworkBehaviour;
+                        EnterCombat(_target);
+                    }
                 }
             }
         }
@@ -166,7 +169,6 @@ public class NPCBehaviour : NetworkBehaviour, ICombatable, ICastable, IAbleToAtt
         if (npc.aggroList.Count == 0) {
             StartCoroutine(ResetPosition());
         } else {
-            npc.combatStatus = CombatStatus.InCombat;
             var target = npc.aggroList[0];
             if (npc.actionState == ActionState.Idle) {
                 npc.actionState = ActionState.AutoAttacking;
@@ -197,7 +199,7 @@ public class NPCBehaviour : NetworkBehaviour, ICombatable, ICastable, IAbleToAtt
     }
 
     [Server(Logging = LoggingType.Off)]
-    private float CalculateCombatRange(ICombatable _target) {
+    private float CalculateAggroRange(ICombatable _target) {
         Character target = Database.instance.GetTarget(_target);
         if (target == null) {
             return 0;
@@ -252,8 +254,7 @@ public class NPCBehaviour : NetworkBehaviour, ICombatable, ICastable, IAbleToAtt
         Character target = Database.instance.GetTarget(_target);
         if (target != null && target.currentHealth > 0) {
             // Auto-attack logic here...
-            Debug.Log("Performed");
-            int damage = UnityEngine.Random.Range(npc.minAutoAttackDamage, npc.maxAutoAttackDamage);
+            int damage = Random.Range(npc.minAutoAttackDamage, npc.maxAutoAttackDamage);
             combatManager.SendDamage(_target, damage);
         }
     }
@@ -300,7 +301,7 @@ public class NPCBehaviour : NetworkBehaviour, ICombatable, ICastable, IAbleToAtt
 
     // Overriding methods...
 
-    [ObserversRpc]
+    [Server(Logging = LoggingType.Off)]
     private void EnterCombat(NetworkBehaviour target) {
         ICombatable combatant = target as ICombatable;
         if (!npc.aggroList.Contains(combatant)) {
@@ -317,7 +318,7 @@ public class NPCBehaviour : NetworkBehaviour, ICombatable, ICastable, IAbleToAtt
         EnterCombat(target);
     }
 
-    [ObserversRpc]
+    [Server(Logging = LoggingType.Off)]
     public void ExitCombat(NetworkBehaviour target) {
         ICombatable combatant = target as ICombatable;
         if (npc.aggroList.Contains(combatant)) {
@@ -352,7 +353,6 @@ public class NPCBehaviour : NetworkBehaviour, ICombatable, ICastable, IAbleToAtt
     #region Death Logic
     [Server(Logging = LoggingType.Off)]
     private void Death() {
-        Debug.Log("Running Death");
         npc.targetStatus = TargetStatus.Dead;
         // Create a temporary list to store characters to exit combat with
         var tempTargets = new List<ICombatable>(npc.aggroList);
