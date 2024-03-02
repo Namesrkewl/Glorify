@@ -5,20 +5,20 @@ using FishNet.Connection;
 using FishNet.Object;
 using FishNet.Object.Synchronizing;
 using Unity.VisualScripting;
+using static UnityEngine.GraphicsBuffer;
 
 public class PlayerTargeting : NetworkBehaviour {
-    private List<ITargetable> validTargets = new List<ITargetable>();
+    private List<GameObject> validTargets = new List<GameObject>();
     private int targetIndex = -1;
-    private ITargetable currentTarget;
+    private GameObject currentTarget;
     public Material highlightMaterial;
     public Material autoAttackHighlightMaterial;
     private Material originalMaterial;
     private Renderer targetRenderer;
     private const float MAX_TARGET_RANGE = 50.0f;
-    private ITargetable lastClickedTarget;
+    private GameObject lastClickedTarget;
     private CameraManager cameraManager;
     private PlayerBehaviour playerBehaviour;
-    private bool isValidTarget;
     public bool IsAutoAttacking { get; private set; }
 
     public override void OnStartClient() {
@@ -52,10 +52,8 @@ public class PlayerTargeting : NetworkBehaviour {
     private void SelectWithMouse(bool isRightClick) {
         Ray ray = cameraManager.thisCamera.ScreenPointToRay(Input.mousePosition);
         RaycastHit hit;
-        Debug.Log("Clicked!");
         if (Physics.Raycast(ray, out hit, MAX_TARGET_RANGE + Vector3.Distance(transform.position, cameraManager.transform.position))) {
             GameObject hitObject = hit.collider.gameObject;
-            Debug.Log(hitObject);
             if (hitObject != null) {
                 SelectTarget(hitObject, true, isRightClick, true);
             }
@@ -63,46 +61,79 @@ public class PlayerTargeting : NetworkBehaviour {
     }
 
     private void SelectTarget(GameObject targetObject, bool isClick, bool isRightClick, bool reset) {
-        ITargetable target = targetObject.GetComponent<ITargetable>();
-        Debug.Log(target);
-        if (target != null) {
-            if (currentTarget != target) {
+        if (targetObject.IsDestroyed() || targetObject == null)
+            return;
+        if (targetObject.GetComponent<ITargetable>() != null) {
+            if (currentTarget != targetObject) {
                 ClearTarget(reset);
-                currentTarget = target;
+                currentTarget = targetObject;
                 targetRenderer = targetObject.GetComponent<Renderer>();
                 originalMaterial = targetRenderer.material;
                 UpdateHighlight(false);
                 if (isClick) {
-                    lastClickedTarget = target;
+                    lastClickedTarget = currentTarget;
                 }
-                //Debug.Log("Currently Targeting: " + currentTargetGameObject.transform.parent.name);
             }
 
-            /*
-            if (isRightClick && (npcBehaviour.npcData.status == NPC.NPCStatus.Hostile || npcBehaviour.npcData.status == NPC.NPCStatus.Neutral)) {
-                StartAutoAttack();
+            if (isRightClick) {
+                ConfirmValidTarget(targetObject);
             }
-            */
         }
     }
+
+    [ServerRpc]
+    private void ConfirmValidTarget(GameObject targetObject,  NetworkConnection sender = null) {
+        ITargetable target = targetObject.GetComponent<ITargetable>();
+        if (target.GetTargetStatus() == TargetStatus.Alive && (target.GetTargetType() == TargetType.Neutral || target.GetTargetType() == TargetType.Hostile)) {
+            AttackTarget(sender);
+        }
+    }
+
+    [TargetRpc]
+    private void AttackTarget(NetworkConnection receiver) {
+        StartAutoAttack();
+    }
+
 
     private void HandleTabTargeting() {
         if (Input.GetButtonDown("Target Enemy") && (validTargets.Count > 0)) {
             MoveLastClickedTargetToEnd();
-            foreach (var target in validTargets)
-                Debug.Log(target.GetTargetObject().transform.parent.name);
-            targetIndex = (targetIndex + 1) % validTargets.Count;
-            ITargetable newTarget = validTargets[targetIndex];
-            if (newTarget != currentTarget) {
-                StopAutoAttack();
-                SelectTarget(newTarget.GetTargetObject(), false, false, false);
-            } else if (validTargets.Count > 1) {
+            for (int i = 0; i < validTargets.Count; i++) {
                 targetIndex = (targetIndex + 1) % validTargets.Count;
-                newTarget = validTargets[targetIndex];
-                StopAutoAttack();
-                SelectTarget(newTarget.GetTargetObject(), false, false, false);
+                GameObject newTarget = validTargets[targetIndex];
+                if (newTarget != currentTarget && CheckTargetLineOfSight(newTarget)) {
+                    StopAutoAttack();
+                    SelectTarget(newTarget, false, false, false);
+                    break;
+                }
             }
         }
+    }
+
+    private bool CheckTargetLineOfSight(GameObject target) {
+        GameObject targetObject = target;
+        Vector3 directionToTarget = targetObject.transform.position - cameraManager.transform.position;
+
+        // Raycast to check for obstacles.
+        RaycastHit[] hits;
+        float rayDistance = MAX_TARGET_RANGE + Vector3.Distance(transform.position, cameraManager.transform.position);
+        hits = Physics.RaycastAll(cameraManager.transform.position, directionToTarget.normalized, rayDistance);
+        Debug.DrawRay(cameraManager.transform.position, directionToTarget.normalized * rayDistance, Color.red, 2.0f);
+
+        // Sort hits by distance to ensure closest hit is checked first.
+        System.Array.Sort(hits, (a, b) => a.distance.CompareTo(b.distance));
+
+        foreach (var hit in hits) {
+            // Ignore the hit if it's this GameObject.
+            if (hit.collider.gameObject == gameObject) continue;
+            // Check if the hit object is the target object.
+            if (hit.collider.gameObject == targetObject) {
+                return true;
+            } else {
+                return false;
+            }
+        }
+        return false;
     }
 
     public void StartAutoAttack() {
@@ -151,8 +182,8 @@ public class PlayerTargeting : NetworkBehaviour {
     }
 
     private void UpdateHighlight(bool isAttacking) {
-        if (currentTarget != null) {
-            targetRenderer = currentTarget.GetTargetObject().GetComponent<Renderer>();
+        if (currentTarget != null && !currentTarget.IsDestroyed()) {
+            targetRenderer = currentTarget.GetComponent<Renderer>();
             if (targetRenderer != null) {
                 targetRenderer.material = isAttacking ? autoAttackHighlightMaterial : highlightMaterial;
             }
@@ -160,61 +191,67 @@ public class PlayerTargeting : NetworkBehaviour {
     }
 
     private void UpdateValidTargets() {
-        validTargets.Clear();
+        List<GameObject> potentialTargets = new List<GameObject>();
         // Calculate the camera's frustum planes.
         Plane[] planes = GeometryUtility.CalculateFrustumPlanes(cameraManager.thisCamera);
         // Find all colliders within a sphere centered at the camera's position, up to MAX_TARGET_RANGE.
-        Collider[] collidersInView = Physics.OverlapSphere(cameraManager.thisCamera.transform.position, MAX_TARGET_RANGE);
+        Collider[] collidersInView = Physics.OverlapSphere(cameraManager.thisCamera.transform.position, MAX_TARGET_RANGE + Vector3.Distance(transform.position, cameraManager.transform.position));
 
         foreach (Collider collider in collidersInView) {
             // Check if the collider's bounds are within the camera's view frustum.
+            if (collider)
             if (!GeometryUtility.TestPlanesAABB(planes, collider.bounds)) continue; // Skip if collider is not in camera view.
 
             ITargetable target = collider.GetComponent<ITargetable>();
             if (target == null) continue; // Skip if the object does not implement ITargetable.
-
-            GameObject targetObject = target.GetTargetObject();
-            if (targetObject == null) continue; // Safety check.
-
-            Vector3 directionToTarget = (targetObject.transform.position - cameraManager.thisCamera.transform.position).normalized;
-            float angleToTarget = Vector3.Angle(cameraManager.thisCamera.transform.forward, directionToTarget);
-            float distanceToTarget = Vector3.Distance(cameraManager.thisCamera.transform.position, targetObject.transform.position);
-
-            // Check if target is within FOV (90 degrees) and max range.
-            if (angleToTarget <= 45f && distanceToTarget <= MAX_TARGET_RANGE + Vector3.Distance(transform.position, cameraManager.thisCamera.transform.position)) {
-                // Raycast to check for obstacles.
-                RaycastHit hit;
-                if (Physics.Raycast(cameraManager.thisCamera.transform.position, directionToTarget, out hit, MAX_TARGET_RANGE)) {
-                    // Check if the hit object is the target object.
-                    if (hit.collider.gameObject == targetObject) {
-                        isValidTarget = false;
-                        CheckValidTarget((target as Object).GameObject());
-                        if (isValidTarget) {
-                            validTargets.Add(target);
-                        }
-                    }
-                }
-            }
+            if (target.GetTargetObject() == gameObject) continue;
+            potentialTargets.Add(target.GetTargetObject());
         }
-        SortTargetsByCameraDirection();
+        if (potentialTargets.Count > 0) {
+            ConfirmValidTargets(potentialTargets);
+        } else {
+            validTargets = new List<GameObject>();
+        }
     }
 
     [ServerRpc]
-    public void CheckValidTarget(GameObject targetObject, NetworkConnection sender = null) {
-        ITargetable target = targetObject.GetComponent<ITargetable>();
-        if (target.GetTargetStatus() == TargetStatus.Alive && (target.GetTargetType() == TargetType.Neutral || target.GetTargetType() == TargetType.Hostile)) {
-            ConfirmValidTarget(sender, true);
+    public void ConfirmValidTargets(List<GameObject> targetObjects, NetworkConnection sender = null) {
+        Debug.Log("Got To Confirmation");
+        List<GameObject> confirmedTargets = new List<GameObject>();
+        foreach (GameObject targetObject in targetObjects) {
+            if (targetObject.IsDestroyed())
+                continue;
+            ITargetable target = targetObject.GetComponent<ITargetable>();
+            if (target as PlayerBehaviour != null && target.GetKey().name == null)
+                continue;
+            if (target.GetTargetStatus() == TargetStatus.Alive && (target.GetTargetType() == TargetType.Neutral || target.GetTargetType() == TargetType.Hostile)) {
+                confirmedTargets.Add(targetObject);
+            }
+        }
+        if (confirmedTargets.Count > 0) {
+            AddValidTargets(sender, confirmedTargets);
         }
     }
 
     [TargetRpc]
-    public void ConfirmValidTarget(NetworkConnection receiver, bool validity) {
-        isValidTarget = validity;
+    private void AddValidTargets(NetworkConnection receiver, List<GameObject> targetObjects) {
+        Debug.Log("Got To Add");
+        List<GameObject> _validTargets = new List<GameObject>();
+        foreach (GameObject targetObject in targetObjects) {
+            if (targetObject.IsDestroyed())
+                continue;
+            _validTargets.Add(targetObject);
+        }
+        if (_validTargets.Count > 0) {
+            validTargets = _validTargets;
+            SortTargetsByCameraDirection();
+        }
+        
     }
 
     private void SortTargetsByCameraDirection() {
         validTargets = validTargets.OrderBy(t =>
-            Vector3.Angle(cameraManager.thisCamera.transform.forward, t.GetTargetObject().transform.position - cameraManager.thisCamera.transform.position)
+            Vector3.Angle(cameraManager.thisCamera.transform.forward, t.transform.position - cameraManager.thisCamera.transform.position)
         ).ToList();
     }
 
@@ -223,8 +260,8 @@ public class PlayerTargeting : NetworkBehaviour {
         return viewportPosition.z > 0 && viewportPosition.x > 0 && viewportPosition.x < 1 && viewportPosition.y > 0 && viewportPosition.y < 1;
     }
 
-    public ITargetable GetCurrentTarget() {
-        if (currentTarget != null) {
+    public GameObject GetCurrentTarget() {
+        if (currentTarget != null && !currentTarget.IsDestroyed()) {
             return currentTarget;
         } else {
             //return playerBehaviour.playerData.Value;
@@ -234,7 +271,7 @@ public class PlayerTargeting : NetworkBehaviour {
 
     private void CheckTargetDistance() {
         if (currentTarget != null) {
-            if (Vector3.Distance(transform.position, currentTarget.GetTargetObject().transform.position) > MAX_TARGET_RANGE) {
+            if (Vector3.Distance(transform.position, currentTarget.transform.position) > MAX_TARGET_RANGE) {
                 ClearTarget(true);
             }
         }

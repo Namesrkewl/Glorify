@@ -4,6 +4,7 @@ using FishNet.Demo.AdditiveScenes;
 using FishNet.Managing.Logging;
 using FishNet.Object;
 using FishNet.Object.Synchronizing;
+using GameKit.Dependencies.Utilities;
 using System;
 using System.Collections.Generic;
 using UnityEngine;
@@ -27,6 +28,8 @@ public class PlayerBehaviour : NetworkBehaviour, ICombatable, ICastable, IAbleTo
     public override void OnStartClient() {
         base.OnStartClient();
         SetKey(API.instance.clientKey.name, API.instance.clientKey.ID);
+        ChatManager.instance.gameObject.SetActive(true);
+        ChatManager.instance.playerControls = playerMovement.playerControls;
     }
 
     [ServerRpc]

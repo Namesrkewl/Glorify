@@ -36,11 +36,14 @@ public class PlayerMovement : NetworkBehaviour {
     // Ground check layer mask (optional)
     public LayerMask groundLayer;
 
+    private void Awake() {
+        playerControls = new PlayerControls();
+    }
+
     public override void OnStartClient() {
         base.OnStartClient();
         if (base.IsOwner) {
             controller = GetComponent<CharacterController>();
-            playerControls = new PlayerControls();
             playerCamera = GetComponentInChildren<Camera>(true);
             groundLayer = 1;
             currentStamina = maxStamina;
@@ -73,6 +76,12 @@ public class PlayerMovement : NetworkBehaviour {
     void Update() {
         if (!base.IsClientInitialized)
             return;
+
+        if (ChatManager.instance.playerMessage.isFocused) {
+            playerControls.Disable();
+        } else {
+            playerControls.Enable();
+        }
 
         // Ground detection using raycasting
         isGrounded = CheckGrounded();

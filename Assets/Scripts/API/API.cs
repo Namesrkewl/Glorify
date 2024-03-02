@@ -30,10 +30,13 @@ public class API : NetworkBehaviour {
 
     public override void OnStopClient() {
         Debug.Log("Connection Stopped!");
-        if (Client.instance != null) {
-            if (!Client.instance.mainMenu.activeSelf ? true : false) {
+        if (Client.instance.mainMenu != null) {
+            if (!Client.instance.mainMenu.activeSelf) {
                 Client.instance.mainMenu.SetActive(true);
             }
+        }
+        if (ChatManager.instance != null) {
+            ChatManager.instance.gameObject.SetActive(false);
         }
         for (int i = 0; i < UnityEngine.SceneManagement.SceneManager.sceneCount; i++) {
             UnityEngine.SceneManagement.Scene scene = UnityEngine.SceneManagement.SceneManager.GetSceneAt(i);

@@ -5,6 +5,7 @@ public class Client : MonoBehaviour {
 
     public static Client instance;
     public GameObject mainMenu;
+    public GameObject chatManager;
     public TMP_InputField username;
     public TMP_InputField password;
 
@@ -14,6 +15,7 @@ public class Client : MonoBehaviour {
         } else {
             instance = this;
             mainMenu.SetActive(true);
+            chatManager.SetActive(false);
             LoadAPI();
         }
     }
