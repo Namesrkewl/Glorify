@@ -9,7 +9,6 @@ public class GameManager : NetworkBehaviour {
     public static GameManager instance;
     public List<PlayerClass> playerClasses = new List<PlayerClass>();
 
-
     #endregion
 
     private void Awake() {
@@ -19,9 +18,21 @@ public class GameManager : NetworkBehaviour {
             instance = this;
             LoadAllPlayerClasses();
             UpdateAllClasses();
+            // Get the AudioSource component attached to this GameObject
         }
     }
 
+    public override void OnStartClient() {
+        base.OnStartClient();
+        // Load the audio clip
+        AudioClip clip = Resources.Load<AudioClip>("Media/Big Fantasy RPG Music Bundle/Market/Market_FULL_TRACK");
+        if (clip != null) {
+            API.instance.audioSource.clip = clip;
+            API.instance.audioSource.Play();
+        } else {
+            Debug.LogError("Failed to load audio clip.");
+        }
+    }
 
     private void LoadAllPlayerClasses() {
         // Assuming you have a folder named "PlayerClasses" in Resources
@@ -36,5 +47,4 @@ public class GameManager : NetworkBehaviour {
             playerClass.UpdateClass();
         }
     }
-
 }

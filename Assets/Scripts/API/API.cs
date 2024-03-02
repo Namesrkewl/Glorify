@@ -1,5 +1,6 @@
 using FishNet;
 using FishNet.Connection;
+using FishNet.Managing.Server;
 using FishNet.Object;
 using System.Collections.Generic;
 using System.Linq;
@@ -10,12 +11,14 @@ public class API : NetworkBehaviour {
 
     public static API instance;
     public Key clientKey;
+    public AudioSource audioSource;
 
     private void Awake() {
         if (instance != null) {
             Destroy(gameObject);
         } else {
             instance = this;
+            audioSource = GetComponent<AudioSource>();
             Debug.Log("API Loaded.");
         }
     }
@@ -48,6 +51,7 @@ public class API : NetworkBehaviour {
                 }
             }
         }
+        audioSource.Stop();
     }
 
     public void Login(string name, string pass) {
@@ -88,6 +92,18 @@ public class API : NetworkBehaviour {
         } else if (player == null) {
             PlayerManager.instance.CreatePlayer(name, credentials, sender);
         } else {
+            NetworkConnection loggedInClient = Database.instance.GetClient(key);
+            if (loggedInClient != null) {
+                ServerManager.Clients.TryGetValue(loggedInClient.ClientId, out NetworkConnection target);
+                if (target != null) {
+                    Debug.Log("Kicking old client!");
+                    loggedInClient.Kick(KickReason.Unset, loggingType: FishNet.Managing.Logging.LoggingType.Off);
+                    Database.instance.RemoveClient(key);
+                } else {
+                    Database.instance.RemoveClient(key);
+                }
+            }
+            Database.instance.AddClient(key, sender);
             CompleteLogin(sender, player.key);
         }
     }

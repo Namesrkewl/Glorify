@@ -31,6 +31,8 @@
         /// Client is behaving unusually, such as providing multiple invalid states. This may not be an attack but there is no way to know with certainty.
         /// </summary>
         UnusualActivity = 6,
+
+        LoggedOut = 7
     }
 
 }

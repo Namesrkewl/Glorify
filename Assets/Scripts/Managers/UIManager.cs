@@ -6,8 +6,12 @@ using System.Collections;
 using UnityEngine.InputSystem;
 using FishNet.Object;
 using FishNet.Object.Synchronizing;
+using FishNet.Connection;
+using FishNet.Managing.Logging;
 
 public class UIManager : NetworkBehaviour {
+
+    public static UIManager instance;
 
     [Header("UI Elements")]
     public TMP_Text characterNameText;
@@ -34,22 +38,14 @@ public class UIManager : NetworkBehaviour {
 
     [Header("Combat Info")]
     public GameObject combatInfoPrefab; // Prefab for displaying combat information
-
-    private Player playerData;
-    private PlayerBehaviour playerBehaviour;
     private PlayerMovement playerMovement;
     public PlayerControls playerControls;
     public InputActionMap ui;
 
     private void Awake() {
+        instance = this;
         playerControls = new PlayerControls();
         LeanTween.init(1000); // Initializing LeanTween with a larger amount of tweening spaces
-    }
-
-    public void SetPlayer(PlayerBehaviour _playerBehaviour) {
-        playerBehaviour = _playerBehaviour;
-        //playerData = playerBehaviour.playerData.Value; // Reference to the player data
-        playerMovement = playerBehaviour.GetComponent<PlayerMovement>();
     }
 
     private void OnEnable() {
@@ -61,39 +57,48 @@ public class UIManager : NetworkBehaviour {
         ui.Disable();
     }
 
+    public override void OnStartClient() {
+        base.OnStartClient();
+    }
+
     void Update() {
         if (base.IsClientInitialized)
-            UpdateUI(); // Continuously update UI elements
+            return;
+            //UpdateUI(); // Continuously update UI elements
     }
 
     private void UpdateUI() {
-        //characterNameText.text = playerData.name;
-        // Update character portrait if applicable
+        // characterNameText.text = playerData.name;
+        // Update character portrait if applicable  
         // characterPortrait.sprite = ...;
 
         //UpdatePlayerInformation();
     }
-    
-    private void UpdatePlayerInformation() {
-        UpdateHealthBar(playerData.currentHealth / playerData.maxHealth);
-        UpdateManaBar(playerData.currentMana / playerData.maxMana);
-        UpdateStaminaBar(playerMovement.currentStamina / playerMovement.maxStamina);
-        UpdateExperienceBar(playerData.currentExperience / playerData.maxExperience);
-        UpdateLevel();
-        UpdateClass();
-        UpdateBuffsAndDebuffs();
+
+    [TargetRpc]
+    public void UpdatePlayerInformation(NetworkConnection receiver, Player player) {
+        characterNameText.text = player.key.name;
+        UpdateHealthBar(player);
+        UpdateManaBar(player);
+        UpdateStaminaBar(100);
+        UpdateExperienceBar(player);
+        UpdateLevel(player);
+        UpdateClass(player);
+        UpdateBuffsAndDebuffs(player);
     }
 
-    private void UpdateHealthBar(float newHealthPercentage) {
+    private void UpdateHealthBar(Player player) {
+        float newHealthPercentage = player.currentHealth / player.maxHealth;
         healthBar.value = newHealthPercentage;
         healthPercentageText.text = Mathf.RoundToInt(newHealthPercentage * 100) + "%";
-        healthNumericText.text = $"{(int)playerData.currentHealth}/{(int)playerData.maxHealth}";
+        healthNumericText.text = $"{(int)player.currentHealth}/{(int)player.maxHealth}";
     }
 
-    private void UpdateManaBar(float newManaPercentage) {
+    private void UpdateManaBar(Player player) {
+        float newManaPercentage = player.currentMana / player.maxMana;
         manaBar.value = newManaPercentage;
         manaPercentageText.text = Mathf.RoundToInt(newManaPercentage * 100) + "%";
-        manaNumericText.text = $"{(int)playerData.currentMana}/{(int)playerData.maxMana}";
+        manaNumericText.text = $"{(int)player.currentMana}/{(int)player.maxMana}";
     }
 
     private void UpdateStaminaBar(float newStaminaPercentage) {
@@ -107,21 +112,22 @@ public class UIManager : NetworkBehaviour {
         }
     }
 
-    private void UpdateExperienceBar(float newExperiencePercentage) {
+    private void UpdateExperienceBar(Player player) {
+        float newExperiencePercentage = player.currentExperience / player.maxExperience;
         experienceBar.value = newExperiencePercentage;
         experiencePercentageText.text = Mathf.RoundToInt(newExperiencePercentage * 100) + "%";
-        experienceNumericText.text = $"{(int)playerData.currentExperience}/{(int)playerData.maxExperience}";
+        experienceNumericText.text = $"{(int)player.currentExperience}/{(int)player.maxExperience}";
     }
 
-    private void UpdateLevel() {
-        levelText.text = $"Level {playerData.level}";
+    private void UpdateLevel(Player player) {
+        levelText.text = $"Level {player.level}";
     }
 
-    private void UpdateClass() {
-        classText.text = $"{playerData.playerClass.playerClass}";
+    private void UpdateClass(Player player) {
+        classText.text = $"{player.classEnum}";
     }
 
-    private void UpdateBuffsAndDebuffs() {
+    private void UpdateBuffsAndDebuffs(Player player) {
         // Implement logic to update buffs and debuffs
         // You might need to iterate through the player's active status effects
     }
@@ -135,21 +141,6 @@ public class UIManager : NetworkBehaviour {
         // Implement additional positioning or animation logic for combat info
     }
     
-    /*
-    public void UpdateHealth(int newHealth) {
-        float newHealthPercentage = newHealth / (float)playerData.maxHealth;
-        LeanTween.value(gameObject, healthBar.value, newHealthPercentage, 0.5f)
-            .setOnUpdate((float val) => UpdateHealthBar(val));
-    }
-
-    
-    public void UpdateMana(int newMana) {
-        float newManaPercentage = newMana / (float)playerData.maxMana;
-        LeanTween.value(gameObject, manaBar.value, newManaPercentage, 0.5f)
-            .setOnUpdate((float val) => UpdateManaBar(val));
-    }
-    */
-
     public IEnumerator ShowCastBar(Spell spell) {
         Debug.Log("Called Show Cast Bar");
         castBar.gameObject.SetActive(true);

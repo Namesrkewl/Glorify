@@ -27,8 +27,6 @@ public class NPCBehaviour : NetworkBehaviour, ICombatable, ICastable, IAbleToAtt
         if (!base.IsServerInitialized)
             return;
 
-        Debug.Log(gameObject.name);
-
         meshShatter = GetComponent<MeshShatter>();
         combatManager = FindObjectOfType<CombatManager>();
         agent = GetComponent<NavMeshAgent>();
@@ -239,7 +237,6 @@ public class NPCBehaviour : NetworkBehaviour, ICombatable, ICastable, IAbleToAtt
     private void HandleAutoAttack(ICombatable target) {
         if (IsTargetInRangeAndVisible(target)) {
             if (npc.autoAttackTimer <= 0f) {
-                Debug.Log("Attacked");
                 PerformAutoAttack(target);
                 npc.autoAttackTimer = CalculateAutoAttackCooldown();
             } else {
@@ -311,7 +308,7 @@ public class NPCBehaviour : NetworkBehaviour, ICombatable, ICastable, IAbleToAtt
             npc.combatStatus = CombatStatus.InCombat;
 
             // Notify the other character to enter combat
-            combatant.ServerEnterCombat(this);
+            if (!target.IsDestroyed() && target.IsOwner) combatant.ServerEnterCombat(this);
         }
     }
 
@@ -327,7 +324,7 @@ public class NPCBehaviour : NetworkBehaviour, ICombatable, ICastable, IAbleToAtt
             npc.aggroList.Remove(combatant);
 
             // Notify the other character to exit combat
-            if (!target.IsDestroyed()) combatant.ServerExitCombat(this);
+            if (!target.IsDestroyed() && target.IsOwner) combatant.ServerExitCombat(this);
         }
     }
 

@@ -215,10 +215,9 @@ public class PlayerTargeting : NetworkBehaviour {
 
     [ServerRpc]
     public void ConfirmValidTargets(List<GameObject> targetObjects, NetworkConnection sender = null) {
-        Debug.Log("Got To Confirmation");
         List<GameObject> confirmedTargets = new List<GameObject>();
         foreach (GameObject targetObject in targetObjects) {
-            if (targetObject.IsDestroyed())
+            if (targetObject.IsDestroyed() || targetObject == null)
                 continue;
             ITargetable target = targetObject.GetComponent<ITargetable>();
             if (target as PlayerBehaviour != null && target.GetKey().name == null)
@@ -234,7 +233,6 @@ public class PlayerTargeting : NetworkBehaviour {
 
     [TargetRpc]
     private void AddValidTargets(NetworkConnection receiver, List<GameObject> targetObjects) {
-        Debug.Log("Got To Add");
         List<GameObject> _validTargets = new List<GameObject>();
         foreach (GameObject targetObject in targetObjects) {
             if (targetObject.IsDestroyed())

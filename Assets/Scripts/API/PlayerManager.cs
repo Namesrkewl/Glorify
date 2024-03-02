@@ -6,10 +6,13 @@ using FishNet.Managing.Logging;
 using System.Linq;
 using UnityEditor;
 using FishNet.Object.Synchronizing;
+using UnityEngine.InputSystem;
+using GameKit.Dependencies.Utilities;
 
 public class PlayerManager : NetworkBehaviour {
 
     public static PlayerManager instance;
+    private PlayerBehaviour playerBehaviour;
 
     private void Awake() {
         if (instance != null) {
@@ -26,22 +29,29 @@ public class PlayerManager : NetworkBehaviour {
     #endregion
 
     // Update is called once per frame
+    
+    private void Update() {
+        if (IsClientInitialized)
+            if (playerBehaviour != null && !gameObject.IsDestroyed())
+                UpdatePlayer(API.instance.clientKey);
+    }
 
-    [Server(Logging = LoggingType.Off)]
-    public void UpdatePlayer(Player player) {
-        
-        
-        UpdateCombatState(player);
-        HandleRegeneration(player);
+    public void SetPlayer(PlayerBehaviour _playerBehaviour) {
+        playerBehaviour = _playerBehaviour;
+    }
 
-        if (player.currentExperience >= player.maxExperience) {
-            LevelUp(player);
-        }
+    [ServerRpc(RequireOwnership = false)]
+    public void UpdatePlayer(Key key) {
+        
+        UpdateCombatState(key);
+        HandleRegeneration(key);
+        LevelUp(key);
+        
         /*
         if (player.aggroList.Count > 0) {
             //Debug.Log($"Enemies in combat with the player: {player.aggroList.Count}");
         }*/
-        
+
 
         /*
         if (player.playerStatus == Player.PlayerStatus.Dead) {
@@ -53,29 +63,36 @@ public class PlayerManager : NetworkBehaviour {
     }
 
     [Server(Logging = LoggingType.Off)]
-    private void LevelUp(Player player) {
-        player.currentExperience -= player.maxExperience;
-        player.level++;
-        //player.playerClass.SetClass(this); // Update class on level up
-        player.currentHealth = player.maxHealth;
-        player.currentMana = player.maxMana;
+    private void LevelUp(Key key) {
+        Player player = Database.instance.GetPlayer(key);
+        if (player.currentExperience >= player.maxExperience) {
+            player.currentExperience -= player.maxExperience;
+            player.level++;
+            //player.playerClass.SetClass(this); // Update class on level up
+            player.currentHealth = player.maxHealth;
+            player.currentMana = player.maxMana;
+            Database.instance.UpdatePlayer(player);
+        }
     }
 
     [Server(Logging = LoggingType.Off)]
-    public void ChangeClass(Player player, PlayerClass.Classes newClass) {
-        player.playerClass.playerClass = newClass;
+    public void ChangeClass(Key key, Classes newClass) {
+        Player player = Database.instance.GetPlayer(key);
+        player.classEnum = newClass;
         //player.playerClass.SetClass(this); // Update class on class change
+        Database.instance.UpdatePlayer(player);
     }
 
     #region Resource Generation Logic
-    private void HandleRegeneration(Player player) {
-        HandleHealthRegeneration(player);
-        HandleManaRegeneration(player);
+    private void HandleRegeneration(Key key) {
+        HandleHealthRegeneration(key);
+        HandleManaRegeneration(key);
     }
 
     [Server(Logging = LoggingType.Off)]
-    private void HandleHealthRegeneration(Player player) {
-        if (player.currentHealth > 0) {
+    private void HandleHealthRegeneration(Key key) {
+        Player player = Database.instance.GetPlayer(key);
+        if (player.currentHealth > 0 && player.currentHealth < player.maxHealth) {
             if (player.isSafe) {
                 // Out of combat regeneration
                 float healthRegenPerSecond = GetHealthRegeneration(player) / 10f; // Amount regenerated per second
@@ -85,19 +102,24 @@ public class PlayerManager : NetworkBehaviour {
                 float healthRegenPerSecond = GetCombatHealthRegeneration(player) / 10f; // Amount regenerated per second
                 player.currentHealth = Mathf.Min(player.currentHealth + (healthRegenPerSecond * Time.deltaTime), player.maxHealth);
             }
+            Database.instance.UpdatePlayer(player);
         }
     }
 
     [Server(Logging = LoggingType.Off)]
-    private void HandleManaRegeneration(Player player) {
-        if (player.isSafe) {
-            // Out of combat regeneration
-            float manaRegenPerSecond = GetManaRegeneration(player) / 10f; // Amount regenerated per second
-            player.currentMana = Mathf.Min(player.currentMana + (manaRegenPerSecond * Time.deltaTime), player.maxMana);
-        } else {
-            // In combat regeneration
-            float manaRegenPerSecond = GetCombatManaRegeneration(player) / 10f; // Amount regenerated per second
-            player.currentMana = Mathf.Min(player.currentMana + (manaRegenPerSecond * Time.deltaTime), player.maxMana);
+    private void HandleManaRegeneration(Key key) {
+        Player player = Database.instance.GetPlayer(key);
+        if (player.currentMana < player.maxMana) {
+            if (player.isSafe) {
+                // Out of combat regeneration
+                float manaRegenPerSecond = GetManaRegeneration(player) / 10f; // Amount regenerated per second
+                player.currentMana = Mathf.Min(player.currentMana + (manaRegenPerSecond * Time.deltaTime), player.maxMana);
+            } else {
+                // In combat regeneration
+                float manaRegenPerSecond = GetCombatManaRegeneration(player) / 10f; // Amount regenerated per second
+                player.currentMana = Mathf.Min(player.currentMana + (manaRegenPerSecond * Time.deltaTime), player.maxMana);
+            }
+            Database.instance.UpdatePlayer(player);
         }
     }
     #endregion
@@ -171,26 +193,24 @@ public class PlayerManager : NetworkBehaviour {
 
     // Add methods for combat, taking damage, etc. as needed
     [Server(Logging = LoggingType.Off)]
-    public void SetClass(Player player) {
+    public void SetClass(Key key) {
+        Player player = Database.instance.GetPlayer(key);
         //player.playerClass.SetClass(this);
+        Database.instance.UpdatePlayer(player);
     }
 
     #region Combat Logic
 
-    [Server(Logging = LoggingType.Off)]
-    public void EnterCombatWith(Player player, ICombatable receiver) {
-        // Additional NPC or Player specific logic for entering combat
-    }
-
-    [Server(Logging = LoggingType.Off)]
-    public void ExitCombatWith(Player player, ICombatable receiver) {
-        // Additional NPC or Player specific logic for exiting combat
-    }
     // This method is called to check if the player should exit combat.
 
     [Server(Logging = LoggingType.Off)]
-    private void UpdateCombatState(Player player) {
-        /*
+    private void UpdateCombatState(Key key) {
+        Player player = Database.instance.GetPlayer(key);
+
+        if (player.isSafe && player.aggroList.Count == 0) {
+            return;
+        }
+
         if (player.aggroList.Count == 0 && player.combatStatus == CombatStatus.InCombat) {
             player.combatStatus = CombatStatus.OutOfCombat;
             player.regenerationCooldownTimer = 0f; // Start regeneration cooldown when combat ends
@@ -206,27 +226,27 @@ public class PlayerManager : NetworkBehaviour {
                 player.isSafe = true;
             }
         }
-        */
+        Database.instance.UpdatePlayer(player);
     }
     #endregion
 
     #region Death Logic
 
     [Server(Logging = LoggingType.Off)]
-    private void Death(Player player) {
+    private void Death(Key key) {
+        Player player = Database.instance.GetPlayer(key);
         player.targetStatus = TargetStatus.Dead;
         // Create a temporary list to store characters to exit combat with
         var tempCharacters = new List<ICombatable>(player.aggroList);
-
-        foreach (var character in tempCharacters) {
-            ExitCombatWith(player, character);
-        }
+            
+        playerBehaviour.ExitAllCombat();
 
         /*
         if (player.deathShatter) {
             player.deathShatter.ShatterCharacter();
         }
         */
+        Database.instance.UpdatePlayer(player);
     }
     #endregion
 
@@ -241,6 +261,8 @@ public class PlayerManager : NetworkBehaviour {
             player.key.ID = Random.Range(0, 9999999);
         } while (excludedIDs.Contains(player.key.ID));
         Database.instance.AddPlayer(player, credentials);
+        Database.instance.AddClient(player.key, sender);
+        Debug.Log("Added client to list");
         API.instance.CompleteLogin(sender, Database.instance.GetPlayer(player.key).key);
     }
 

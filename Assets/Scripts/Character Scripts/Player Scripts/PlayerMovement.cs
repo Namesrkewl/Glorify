@@ -20,17 +20,17 @@ public class PlayerMovement : NetworkBehaviour {
     public Vector2 turnInput;
     private Vector3 playerVelocity;
     private Vector3 moveDirection;
-    private bool isGrounded;
+    public bool isGrounded;
     private Camera playerCamera;
     private bool isAutoRunning = false; // Flag for auto-run state
     private bool wasVerticalInput = false; // Flag to track if there was vertical input in the last frame
     public PlayerControls playerControls;
-    private InputAction move;
-    private InputAction turn;
-    private InputAction jump;
-    private InputAction sprint;
-    private InputAction autoRun;
-    private UIManager uiManager;
+    public InputAction move;
+    public InputAction turn;
+    public InputAction jump;
+    public InputAction sprint;
+    public InputAction autoRun;
+    public UIManager uiManager;
     #endregion
 
     // Ground check layer mask (optional)

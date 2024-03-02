@@ -192,6 +192,10 @@ PrefabInstance:
       value: 5
       objectReference: {fileID: 0}
     - target: {fileID: 6066515289985037367, guid: e8efb909865474e4da8ededf76cfb3b9, type: 3}
+      propertyPath: _networkBehaviours.Array.data[1]
+      value: 
+      objectReference: {fileID: 0}
+    - target: {fileID: 6066515289985037367, guid: e8efb909865474e4da8ededf76cfb3b9, type: 3}
       propertyPath: _networkBehaviours.Array.data[3]
       value: 
       objectReference: {fileID: 326297886}
@@ -199,7 +203,8 @@ PrefabInstance:
       propertyPath: _networkBehaviours.Array.data[4]
       value: 
       objectReference: {fileID: 326297889}
-    m_RemovedComponents: []
+    m_RemovedComponents:
+    - {fileID: 3692779220536331241, guid: e8efb909865474e4da8ededf76cfb3b9, type: 3}
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
     m_AddedComponents:
@@ -246,7 +251,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: bb27605d707177748be8c644390ab693, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _componentIndexCache: 4
+  _componentIndexCache: 3
   _addedNetworkObject: {fileID: 326297888}
   _networkObjectCache: {fileID: 326297888}
   playerPrefab: {fileID: 66217266422708094, guid: 0b3464507f280d543b296e42161710c0, type: 3}

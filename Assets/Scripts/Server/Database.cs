@@ -19,6 +19,7 @@ public class Database : NetworkBehaviour {
         } else {
             instance = this;
             UpdateDictionaries();
+            players.OnChange += players_OnChange;
         }
     }
 
@@ -27,12 +28,15 @@ public class Database : NetworkBehaviour {
         foreach (Player player in players) {
             playerSearch.Add(player.key, player);
         }
+        clientSearch.Clear();
     }
 
     #region Players
-    [AllowMutableSyncType] private SyncList<Player> players = new SyncList<Player>();
+    [AllowMutableSyncType]
+    private SyncList<Player> players = new SyncList<Player>();
     private readonly List<Credentials> credentials = new List<Credentials>();
     private readonly Dictionary<Key, Player> playerSearch = new Dictionary<Key, Player>();
+    private readonly Dictionary<Key, NetworkConnection> clientSearch = new Dictionary<Key, NetworkConnection>();
     private readonly Dictionary<Credentials, Key> users = new Dictionary<Credentials, Key>();
 
     public Player GetPlayer(Key key) {
@@ -62,12 +66,70 @@ public class Database : NetworkBehaviour {
         users.Add(_credentials, player.key);
     }
 
+    public void UpdatePlayer(Player player) {
+        players.Dirty(player);
+    }
+
     public int GetPlayerCount() {
         return players.Count;
     }
 
-    public List<Player> GetAllPlayers() {
-        return players.Collection;
+    public SyncList<Player> GetAllPlayers() {
+        return players;
+    }
+
+    public NetworkConnection GetClient(Key key) {
+        clientSearch.TryGetValue(key, out NetworkConnection client);
+        return client;
+    }
+
+    public void AddClient(Key key, NetworkConnection client) {
+        clientSearch.Add(key, client);
+    }
+
+    public void RemoveClient(Key key) {
+        clientSearch.Remove(key);
+    }
+
+    private void players_OnChange(SyncListOperation op, int index, Player oldPlayer, Player newPlayer, bool asServer) {
+        Debug.Log("Call it back");
+        switch (op) {
+            /* An object was added to the list. Index
+            * will be where it was added, which will be the end
+            * of the list, while newItem is the value added. */
+            case SyncListOperation.Add:
+                break;
+            /* An object was removed from the list. Index
+            * is from where the object was removed. oldItem
+            * will contain the removed item. */
+            case SyncListOperation.RemoveAt:
+                break;
+            /* An object was inserted into the list. Index
+            * is where the obejct was inserted. newItem
+            * contains the item inserted. */
+            case SyncListOperation.Insert:
+                break;
+            /* An object replaced another. Index
+            * is where the object was replaced. oldItem
+            * is the item that was replaced, while
+            * newItem is the item which now has it's place. */
+            case SyncListOperation.Set:
+                UIManager.instance.UpdatePlayerInformation(GetClient(newPlayer.key), newPlayer);
+                Debug.Log("Player Updated!");
+                break;
+            /* All objects have been cleared. Index, oldValue,
+            * and newValue are default. */
+            case SyncListOperation.Clear:
+                break;
+            /* When complete calls all changes have been
+            * made to the collection. You may use this
+            * to refresh information in relation to
+            * the list changes, rather than doing so
+            * after every entry change. Like Clear
+            * Index, oldItem, and newItem are all default. */
+            case SyncListOperation.Complete:
+                break;
+        }
     }
 
     #endregion
@@ -82,5 +144,6 @@ public class Database : NetworkBehaviour {
             return null;
         }
     }
+
 
 }

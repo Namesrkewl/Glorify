@@ -1,21 +1,22 @@
 using System.Collections.Generic;
 using UnityEngine;
 
+public enum Classes {
+    Alchemist,
+    Enchanter,
+    Hunter,
+    Mage,
+    Monk,
+    Paladin,
+    Priest,
+    Rogue,
+    Unspecialized,
+    Warrior,
+    Weaponsmith
+}
+
 public class PlayerClass : ScriptableObject {
-    public Classes playerClass;
-    public enum Classes {
-        Alchemist,
-        Enchanter,
-        Hunter,
-        Mage,
-        Monk,
-        Paladin,
-        Priest,
-        Rogue,
-        Unspecialized,
-        Warrior,
-        Weaponsmith
-    }
+
     public List<Spell> Passives;
     public List<Spell> Spells;
 

@@ -26,24 +26,41 @@ public class PlayerBehaviour : NetworkBehaviour, ICombatable, ICastable, IAbleTo
     }
 
     public override void OnStartClient() {
+        if (!IsOwner)
+            return;
         base.OnStartClient();
-        SetKey(API.instance.clientKey.name, API.instance.clientKey.ID);
+        SetKey(API.instance.clientKey);
         ChatManager.instance.gameObject.SetActive(true);
+        PlayerManager.instance.SetPlayer(this);
+        UpdatePlayerInformation(API.instance.clientKey);
         ChatManager.instance.playerControls = playerMovement.playerControls;
+        
+    }
+
+    [ServerRpc(RequireOwnership = true)]
+    private void SetKey(Key _key, NetworkConnection sender = null) {
+        key.Value = _key;
+    }
+
+    [ServerRpc(RequireOwnership = true)]
+    private void UpdatePlayerInformation(Key _key, NetworkConnection sender = null) {
+        UIManager.instance.UpdatePlayerInformation(sender, Database.instance.GetPlayer(_key));
+    }
+
+    
+    private void Update() {
+        if (!IsOwner)
+            return;
+        if (Input.GetKeyDown(KeyCode.Backspace)) {
+            Debug.Log("Lost 10 HP!");
+            LoseHealth(key.Value);
+        }
     }
 
     [ServerRpc]
-    private void SetKey(string _name, int _ID) {
-        Key newKey = new Key { name = _name, ID = _ID };
-        key.Value = newKey;
-    }
-
-    private void Update() {
-        //UpdatePlayer();
-    }
-
-    private void UpdatePlayer() {
-        PlayerManager.instance.UpdatePlayer(Database.instance.GetPlayer(GetKey()));
+    private void LoseHealth(Key _key, NetworkConnection sender = null) {
+        Database.instance.GetPlayer(_key).currentHealth -= 10;
+        Database.instance.UpdatePlayer(Database.instance.GetPlayer(_key));
     }
 
     [ObserversRpc]
