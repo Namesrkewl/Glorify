@@ -14,8 +14,8 @@ using UnityEngine.InputSystem;
 [RequireComponent(typeof(PlayerTargeting))]
 [RequireComponent(typeof(MeshShatter))]
 public class PlayerBehaviour : NetworkBehaviour, ICombatable, ICastable, IAbleToAttack, IAbleToCast {
-    private PlayerTargeting playerTargeting;
-    private PlayerMovement playerMovement;
+    public PlayerTargeting playerTargeting;
+    public PlayerMovement playerMovement;
     [AllowMutableSyncType]
     public SyncVar<Key> key;
 
@@ -45,6 +45,8 @@ public class PlayerBehaviour : NetworkBehaviour, ICombatable, ICastable, IAbleTo
     [ServerRpc(RequireOwnership = true)]
     private void UpdatePlayerInformation(Key _key, NetworkConnection sender = null) {
         UIManager.instance.UpdatePlayerInformation(sender, Database.instance.GetPlayer(_key));
+        UIManager.instance.playerMovement = playerMovement;
+        UIManager.instance.playerTargeting = playerTargeting;
     }
 
     
@@ -54,6 +56,9 @@ public class PlayerBehaviour : NetworkBehaviour, ICombatable, ICastable, IAbleTo
         if (Input.GetKeyDown(KeyCode.Backspace)) {
             Debug.Log("Lost 10 HP!");
             LoseHealth(key.Value);
+        } else if (Input.GetKeyDown(KeyCode.Equals)) {
+            Debug.Log("Lost 10 Mana!");
+            LoseMana(key.Value);
         }
     }
 
@@ -62,8 +67,13 @@ public class PlayerBehaviour : NetworkBehaviour, ICombatable, ICastable, IAbleTo
         Database.instance.GetPlayer(_key).currentHealth -= 10;
         Database.instance.UpdatePlayer(Database.instance.GetPlayer(_key));
     }
+    [ServerRpc]
+    private void LoseMana(Key _key, NetworkConnection sender = null) {
+        Database.instance.GetPlayer(_key).currentMana -= 10;
+        Database.instance.UpdatePlayer(Database.instance.GetPlayer(_key));
+    }
 
-    private void EnterCombat(NetworkBehaviour target, Player player) {
+    public void EnterCombat(NetworkBehaviour target, Player player) {
         ICombatable combatant = target as ICombatable;
         if (!player.aggroList.Contains(combatant)) {
             player.aggroList.Add(combatant);
@@ -129,30 +139,4 @@ public class PlayerBehaviour : NetworkBehaviour, ICombatable, ICastable, IAbleTo
     public GameObject GetTargetObject() {
         return gameObject;
     }
-
-    /*
-    #region Server RPCs
-
-    [ServerRpc(RequireOwnership = false)]
-    private void ServerPerformAutoAttack(Player player, GameObject targetObject, NetworkConnection sender = null) {
-        if (targetObject != null) {
-            EntityBehaviour targetBehavior = targetObject.GetComponent<EntityBehaviour>();
-            if (targetBehavior != null && targetBehavior.npc.currentHealth > 0) {
-                EnterCombatWith(player, targetBehavior as NPCBehaviour); // Enter combat with the target
-
-                // Auto-attack logic here...
-                int damage = Random.Range(player.minAutoAttackDamage, player.maxAutoAttackDamage);
-                CombatManager.instance.SendDamage(targetBehavior, damage);
-                ConfirmAutoAttack(player);
-            }
-        }
-    }
-
-    #endregion
-
-    [ObserversRpc]
-    private void ConfirmAutoAttack(Player player) {
-        Debug.Log($"{name} Auto Attacked!");
-    }
-    */
 }

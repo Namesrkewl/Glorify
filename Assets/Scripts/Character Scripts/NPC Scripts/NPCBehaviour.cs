@@ -18,7 +18,7 @@ public class NPCBehaviour : NetworkBehaviour, ICombatable, ICastable, IAbleToAtt
     #region Variables
     protected MeshShatter meshShatter;
     public CombatManager combatManager;
-    private NavMeshAgent agent;
+    public NavMeshAgent agent;
     public NPC npc;
 
     #endregion
@@ -26,6 +26,8 @@ public class NPCBehaviour : NetworkBehaviour, ICombatable, ICastable, IAbleToAtt
     public override void OnStartServer() {
         if (!base.IsServerInitialized)
             return;
+
+        base.OnStartServer();
 
         meshShatter = GetComponent<MeshShatter>();
         combatManager = FindObjectOfType<CombatManager>();
@@ -188,7 +190,7 @@ public class NPCBehaviour : NetworkBehaviour, ICombatable, ICastable, IAbleToAtt
                 // Apply the rotation to the gameObject
                 transform.rotation = targetRotation;
                 if (IsTargetInAttackRange(targetObject) && IsLineOfSightClear(targetObject)) {
-                    //agent.SetDestination(transform.position);
+                    agent.SetDestination(transform.position);
                 } else {
                     PathToTarget(targetObject);
                 }

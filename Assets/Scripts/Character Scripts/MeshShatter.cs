@@ -82,9 +82,9 @@ public class MeshShatter : NetworkBehaviour {
             MeshFilter meshFilter = child.AddComponent<MeshFilter>();
             MeshRenderer meshRenderer = child.AddComponent<MeshRenderer>();
             meshFilter.mesh = characterMeshes[i];
-            meshRenderer.material = skinnedMeshRenderers[i].material;
+            meshRenderer.sharedMaterial = skinnedMeshRenderers[i].sharedMaterial;
             objectsToShatter.Add(child);
-            materials.Add(skinnedMeshRenderers[i].material);
+            materials.Add(skinnedMeshRenderers[i].sharedMaterial);
         }
         ShatterMesh(objectsToShatter, true);
         originalCharacterSkin.SetActive(false);
@@ -123,12 +123,13 @@ public class MeshShatter : NetworkBehaviour {
                 MeshFilter meshFilter = child.AddComponent<MeshFilter>();
                 MeshRenderer meshRenderer = child.AddComponent<MeshRenderer>();
                 meshFilter.mesh = characterMeshes[i];
-                meshRenderer.material = skinnedMeshRenderers[i].material;
+                meshRenderer.sharedMaterial = skinnedMeshRenderers[i].sharedMaterial;
             }
         } else {
             statue.AddComponent<MeshFilter>().mesh = GetComponent<MeshFilter>().mesh;
             statue.AddComponent<MeshRenderer>().material = GetComponent<MeshRenderer>().material;
             statue.transform.position = transform.position;
+            statue.transform.localRotation = transform.localRotation; // Adjust as necessary
         }
     }
 

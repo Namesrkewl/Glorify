@@ -35,12 +35,12 @@ public class API : NetworkBehaviour {
 
     public override void OnStopClient() {
         Debug.Log("Connection Stopped!");
-        if (Client.instance.mainMenu != null) {
+        if (Client.instance.mainMenu != null && !Client.instance.mainMenu.IsDestroyed()) {
             if (!Client.instance.mainMenu.activeSelf) {
                 Client.instance.mainMenu.SetActive(true);
             }
         }
-        if (ChatManager.instance != null) {
+        if (ChatManager.instance.container != null && !ChatManager.instance.container.IsDestroyed()) {
             ChatManager.instance.container.SetActive(false);
         }
         for (int i = 0; i < UnityEngine.SceneManagement.SceneManager.sceneCount; i++) {

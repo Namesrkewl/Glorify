@@ -28,6 +28,7 @@ public class Character : Identifiable {
     public Vector3 location;
     public Vector3 scale;
     public Quaternion rotation;
+    public GameObject currentTarget;
     public List<DamageTypes> weaknesses;
     public List<DamageTypes> resistances;
     public List<DamageTypes> immunities;

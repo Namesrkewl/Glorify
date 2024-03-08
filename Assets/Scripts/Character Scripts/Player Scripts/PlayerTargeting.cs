@@ -6,11 +6,12 @@ using FishNet.Object;
 using FishNet.Object.Synchronizing;
 using Unity.VisualScripting;
 using static UnityEngine.GraphicsBuffer;
+using FishNet.Managing.Logging;
 
 public class PlayerTargeting : NetworkBehaviour {
     private List<GameObject> validTargets = new List<GameObject>();
     private int targetIndex = -1;
-    private GameObject currentTarget;
+    public GameObject currentTarget;
     public Material highlightMaterial;
     public Material autoAttackHighlightMaterial;
     private Material originalMaterial;
@@ -19,7 +20,6 @@ public class PlayerTargeting : NetworkBehaviour {
     private GameObject lastClickedTarget;
     private CameraManager cameraManager;
     private PlayerBehaviour playerBehaviour;
-    public bool IsAutoAttacking { get; private set; }
 
     public override void OnStartClient() {
         base.OnStartClient();
@@ -76,22 +76,19 @@ public class PlayerTargeting : NetworkBehaviour {
             }
 
             if (isRightClick) {
-                ConfirmValidTarget(targetObject);
+                StartAutoAttack(targetObject);
             }
         }
     }
 
     [ServerRpc]
-    private void ConfirmValidTarget(GameObject targetObject,  NetworkConnection sender = null) {
+    private void StartAutoAttack(GameObject targetObject) {
         ITargetable target = targetObject.GetComponent<ITargetable>();
         if (target.GetTargetStatus() == TargetStatus.Alive && (target.GetTargetType() == TargetType.Neutral || target.GetTargetType() == TargetType.Hostile)) {
-            AttackTarget(sender);
+            Player player = Database.instance.GetPlayer(GetComponent<PlayerBehaviour>().key.Value);
+            player.actionState = ActionState.AutoAttacking;
+            UpdateHighlight(true);
         }
-    }
-
-    [TargetRpc]
-    private void AttackTarget(NetworkConnection receiver) {
-        StartAutoAttack();
     }
 
 
@@ -102,7 +99,7 @@ public class PlayerTargeting : NetworkBehaviour {
                 targetIndex = (targetIndex + 1) % validTargets.Count;
                 GameObject newTarget = validTargets[targetIndex];
                 if (newTarget != currentTarget && CheckTargetLineOfSight(newTarget)) {
-                    StopAutoAttack();
+                    StopAttack();
                     SelectTarget(newTarget, false, false, false);
                     break;
                 }
@@ -135,15 +132,11 @@ public class PlayerTargeting : NetworkBehaviour {
         return false;
     }
 
-    public void StartAutoAttack() {
-        IsAutoAttacking = true;
-        UpdateHighlight(true);
-        // Possibly trigger some event or call in PlayerBehaviour
-    }
-
-    public void StopAutoAttack() {
-        if (IsAutoAttacking) {
-            IsAutoAttacking = false;
+    [ServerRpc]
+    public void StopAttack() {
+        Player player = Database.instance.GetPlayer(GetComponent<PlayerBehaviour>().key.Value);
+        if (player.actionState == ActionState.AutoAttacking || player.actionState == ActionState.Casting) {
+            player.actionState = ActionState.Idle;
             UpdateHighlight(false);
             // Possibly trigger some event or call in PlayerBehaviour
         }
@@ -151,11 +144,8 @@ public class PlayerTargeting : NetworkBehaviour {
 
     private void HandleCancelInput() {
         if (Input.GetButtonDown("Cancel")) {
-            if (IsAutoAttacking) {
-                StopAutoAttack();
-            } else {
-                ClearTarget(true);
-            }
+            StopAttack();
+            ClearTarget(true);
         }
     }
 
@@ -166,7 +156,6 @@ public class PlayerTargeting : NetworkBehaviour {
             targetRenderer = null;
         }
         currentTarget = null;
-        IsAutoAttacking = false;
         if (reset) {
             targetIndex = -1; // Reset the target index
         }

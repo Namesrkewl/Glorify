@@ -8,6 +8,7 @@ using UnityEditor;
 using FishNet.Object.Synchronizing;
 using UnityEngine.InputSystem;
 using GameKit.Dependencies.Utilities;
+using FishNet.Demo.AdditiveScenes;
 
 public class PlayerManager : NetworkBehaviour {
 
@@ -33,7 +34,7 @@ public class PlayerManager : NetworkBehaviour {
     private void Update() {
         if (IsClientInitialized)
             if (playerBehaviour != null && !gameObject.IsDestroyed())
-                UpdatePlayer(API.instance.clientKey);
+                UpdatePlayer(API.instance.clientKey, playerBehaviour.playerTargeting.currentTarget);
     }
 
     public void SetPlayer(PlayerBehaviour _playerBehaviour) {
@@ -41,12 +42,15 @@ public class PlayerManager : NetworkBehaviour {
     }
 
     [ServerRpc(RequireOwnership = false)]
-    public void UpdatePlayer(Key key) {
-        
-        UpdateCombatState(key);
-        HandleRegeneration(key);
-        LevelUp(key);
-        
+    public void UpdatePlayer(Key key, GameObject currentTarget) {
+        Player player = Database.instance.GetPlayer(key);
+        UpdateCombatState(player);
+        HandleRegeneration(player);
+        LevelUp(player);
+        UpdateCurrentTarget(player, currentTarget);
+        HandleAutoAttack(player, currentTarget);
+
+
         /*
         if (player.aggroList.Count > 0) {
             //Debug.Log($"Enemies in combat with the player: {player.aggroList.Count}");
@@ -63,8 +67,7 @@ public class PlayerManager : NetworkBehaviour {
     }
 
     [Server(Logging = LoggingType.Off)]
-    private void LevelUp(Key key) {
-        Player player = Database.instance.GetPlayer(key);
+    private void LevelUp(Player player) {
         if (player.currentExperience >= player.maxExperience) {
             player.currentExperience -= player.maxExperience;
             player.level++;
@@ -84,14 +87,13 @@ public class PlayerManager : NetworkBehaviour {
     }
 
     #region Resource Generation Logic
-    private void HandleRegeneration(Key key) {
-        HandleHealthRegeneration(key);
-        HandleManaRegeneration(key);
+    private void HandleRegeneration(Player player) {
+        HandleHealthRegeneration(player);
+        HandleManaRegeneration(player);
     }
 
     [Server(Logging = LoggingType.Off)]
-    private void HandleHealthRegeneration(Key key) {
-        Player player = Database.instance.GetPlayer(key);
+    private void HandleHealthRegeneration(Player player) {
         if (player.currentHealth > 0 && player.currentHealth < player.maxHealth) {
             if (player.isSafe) {
                 // Out of combat regeneration
@@ -107,8 +109,7 @@ public class PlayerManager : NetworkBehaviour {
     }
 
     [Server(Logging = LoggingType.Off)]
-    private void HandleManaRegeneration(Key key) {
-        Player player = Database.instance.GetPlayer(key);
+    private void HandleManaRegeneration(Player player) {
         if (player.currentMana < player.maxMana) {
             if (player.isSafe) {
                 // Out of combat regeneration
@@ -204,9 +205,7 @@ public class PlayerManager : NetworkBehaviour {
     // This method is called to check if the player should exit combat.
 
     [Server(Logging = LoggingType.Off)]
-    private void UpdateCombatState(Key key) {
-        Player player = Database.instance.GetPlayer(key);
-
+    private void UpdateCombatState(Player player) {
         if (player.isSafe && player.aggroList.Count == 0) {
             return;
         }
@@ -228,6 +227,90 @@ public class PlayerManager : NetworkBehaviour {
         }
         Database.instance.UpdatePlayer(player);
     }
+    #endregion
+
+    #region Auto Attack Logic
+
+    [Server(Logging = LoggingType.Off)]
+    private void HandleAutoAttack(Player player, GameObject currentTarget) {
+        if (player.actionState == ActionState.AutoAttacking && IsTargetInRangeAndVisible(player, currentTarget)) {
+            if (player.autoAttackTimer <= 0f) {
+                PerformAutoAttack(player, currentTarget);
+                player.autoAttackTimer = CalculateAutoAttackCooldown(player);
+            } else {
+                player.autoAttackTimer -= Time.deltaTime;
+            }
+        } else {
+            player.autoAttackTimer -= Time.deltaTime;
+        }
+    }
+
+    [Server(Logging = LoggingType.Off)]
+    private void PerformAutoAttack(Player player, GameObject currentTarget) {
+        ServerPerformAutoAttack(player, currentTarget);
+    }
+
+    [Server(Logging = LoggingType.Off)]
+    private bool IsTargetInRangeAndVisible(Player player, GameObject currentTarget) {
+        if (currentTarget == null) return false;
+
+        float distanceToTarget = Vector3.Distance(transform.position, currentTarget.transform.position);
+        if (distanceToTarget > player.autoAttackRange) return false;
+
+        // Calculate direction to target
+        Vector3 directionToTarget = (currentTarget.transform.position - transform.position).normalized;
+
+        // Check if target is in front of the player
+        float angleToTarget = Vector3.Angle(transform.forward, directionToTarget);
+        if (angleToTarget > 45) return false; // Assuming 90 degree field of view (45 degrees on either side of forward direction)
+
+        // Perform raycast to check line of sight
+        RaycastHit hit;
+        if (Physics.Raycast(transform.position, directionToTarget, out hit, player.autoAttackRange)) {
+            return hit.collider.gameObject == currentTarget;
+        }
+
+        return false;
+    }
+
+    [Server(Logging = LoggingType.Off)]
+    private float CalculateAutoAttackCooldown(Player player) {
+        float hasteEffect = 1.0f + (player.haste / 100.0f);
+        return Mathf.Max(player.autoAttackCooldown / hasteEffect, 0.5f);
+    }
+
+    [Server(Logging = LoggingType.Off)]
+    private void UpdateCurrentTarget(Player player, GameObject currentTarget) {
+        if (player.currentTarget != currentTarget) {
+            player.currentTarget = currentTarget;
+            Database.instance.UpdatePlayer(player);
+        }
+    }
+
+    #region Server RPCs
+
+    [ServerRpc(RequireOwnership = true)]
+    private void ServerPerformAutoAttack(Player player, GameObject targetObject, NetworkConnection sender = null) {
+        if (targetObject != null && !targetObject.IsDestroyed()) {
+            ICombatable target = targetObject.GetComponent<ICombatable>();
+            if (target != null && target.GetTarget().currentHealth > 0) {
+                playerBehaviour.EnterCombat(target as NetworkBehaviour, player); // Enter combat with the target
+
+                // Auto-attack logic here...
+                int damage = UnityEngine.Random.Range(player.minAutoAttackDamage, player.maxAutoAttackDamage);
+                CombatManager.instance.SendDamage(target, damage);
+                ConfirmAutoAttack(player);
+            }
+        }
+    }
+
+    #endregion
+
+    [ObserversRpc]
+    private void ConfirmAutoAttack(Player player) {
+        Debug.Log($"{name} Auto Attacked!");
+    }
+
     #endregion
 
     #region Death Logic

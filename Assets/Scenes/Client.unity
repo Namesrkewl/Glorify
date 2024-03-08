@@ -241,9 +241,9 @@ MonoBehaviour:
   _ipv4BindAddress: 
   _enableIpv6: 1
   _ipv6BindAddress: 
-  _port: 7770
+  _port: 32038
   _maximumClients: 1000000
-  _clientAddress: localhost
+  _clientAddress: 4165659b949a.pr.edgegap.net
 --- !u!114 &1563997336
 MonoBehaviour:
   m_ObjectHideFlags: 0

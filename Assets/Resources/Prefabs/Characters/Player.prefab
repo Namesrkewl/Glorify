@@ -108,6 +108,8 @@ MonoBehaviour:
   _componentIndexCache: 0
   _addedNetworkObject: {fileID: 66217266422708035}
   _networkObjectCache: {fileID: 66217266422708035}
+  playerTargeting: {fileID: 0}
+  playerMovement: {fileID: 0}
 --- !u!114 &66217266422708039
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -136,6 +138,53 @@ MonoBehaviour:
   staminaDrainRate: 50
   moveInput: {x: 0, y: 0}
   turnInput: {x: 0, y: 0}
+  isGrounded: 0
+  move:
+    m_Name: Move
+    m_Type: 0
+    m_ExpectedControlType: 
+    m_Id: cdaf5973-cc49-4f87-9fbf-7b318707c6d6
+    m_Processors: 
+    m_Interactions: 
+    m_SingletonActionBindings: []
+    m_Flags: 0
+  turn:
+    m_Name: Turn
+    m_Type: 0
+    m_ExpectedControlType: 
+    m_Id: be00080c-984c-4245-bf30-04189439c8c3
+    m_Processors: 
+    m_Interactions: 
+    m_SingletonActionBindings: []
+    m_Flags: 0
+  jump:
+    m_Name: Jump
+    m_Type: 0
+    m_ExpectedControlType: 
+    m_Id: 5692f9f6-74c6-4c90-a4f6-169ff7c13a50
+    m_Processors: 
+    m_Interactions: 
+    m_SingletonActionBindings: []
+    m_Flags: 0
+  sprint:
+    m_Name: Sprint
+    m_Type: 0
+    m_ExpectedControlType: 
+    m_Id: 7d5428b8-9db5-4f05-837f-39ce47ece580
+    m_Processors: 
+    m_Interactions: 
+    m_SingletonActionBindings: []
+    m_Flags: 0
+  autoRun:
+    m_Name: Auto Run
+    m_Type: 0
+    m_ExpectedControlType: 
+    m_Id: 1d99908c-5eb9-478e-b129-3d37064240ea
+    m_Processors: 
+    m_Interactions: 
+    m_SingletonActionBindings: []
+    m_Flags: 0
+  uiManager: {fileID: 0}
   groundLayer:
     serializedVersion: 2
     m_Bits: 0
@@ -154,6 +203,7 @@ MonoBehaviour:
   _componentIndexCache: 2
   _addedNetworkObject: {fileID: 66217266422708035}
   _networkObjectCache: {fileID: 66217266422708035}
+  currentTarget: {fileID: 0}
   highlightMaterial: {fileID: 2100000, guid: a0b6e01120b9ecb4f8a23ef6dfbe2b81, type: 2}
   autoAttackHighlightMaterial: {fileID: 2100000, guid: aac9c7d0c91167f4b96ac610a3afbac3, type: 2}
 --- !u!23 &66217266422708034
@@ -331,6 +381,12 @@ MonoBehaviour:
   - {fileID: 7998525185324217277}
   - {fileID: 1165376676980269099}
   - {fileID: 3838502470707165689}
+  - {fileID: 4586387656004402879}
+  - {fileID: 8180094709737638020}
+  - {fileID: 2008662535309358004}
+  - {fileID: 570208842181567079}
+  - {fileID: 6883794315456233918}
+  - {fileID: 3750636604941308298}
   originalCharacterSkin: {fileID: 1753639932139335750}
   cubeSize: 0.2
   totalCubes: 50
@@ -349,9 +405,7 @@ MonoBehaviour:
   _componentIndexCache: 5
   _addedNetworkObject: {fileID: 66217266422708035}
   _networkObjectCache: {fileID: 66217266422708035}
-  animator: {fileID: 4605320364604900249}
   playerMovement: {fileID: 66217266422708039}
-  avatar: {fileID: 1753639932139335750}
 --- !u!1 &66217267334442839
 GameObject:
   m_ObjectHideFlags: 0
@@ -603,6 +657,11 @@ PrefabInstance:
       insertIndex: -1
       addedObject: {fileID: 3649542575295749448}
   m_SourcePrefab: {fileID: 100100000, guid: 60770bdb4dc667c45bea53db0339dc05, type: 3}
+--- !u!137 &570208842181567079 stripped
+SkinnedMeshRenderer:
+  m_CorrespondingSourceObject: {fileID: 505117477704164946, guid: 60770bdb4dc667c45bea53db0339dc05, type: 3}
+  m_PrefabInstance: {fileID: 66217266544444469}
+  m_PrefabAsset: {fileID: 0}
 --- !u!137 &784185447005852417 stripped
 SkinnedMeshRenderer:
   m_CorrespondingSourceObject: {fileID: 723598234050729780, guid: 60770bdb4dc667c45bea53db0339dc05, type: 3}
@@ -649,6 +708,11 @@ MonoBehaviour:
   _interpolation: 2
   _clientAuthoritative: 1
   _sendToOwner: 0
+--- !u!137 &2008662535309358004 stripped
+SkinnedMeshRenderer:
+  m_CorrespondingSourceObject: {fileID: 1948778455749293953, guid: 60770bdb4dc667c45bea53db0339dc05, type: 3}
+  m_PrefabInstance: {fileID: 66217266544444469}
+  m_PrefabAsset: {fileID: 0}
 --- !u!137 &2795746818447324093 stripped
 SkinnedMeshRenderer:
   m_CorrespondingSourceObject: {fileID: 2749232806715078536, guid: 60770bdb4dc667c45bea53db0339dc05, type: 3}
@@ -664,9 +728,19 @@ SkinnedMeshRenderer:
   m_CorrespondingSourceObject: {fileID: 3721571313622080408, guid: 60770bdb4dc667c45bea53db0339dc05, type: 3}
   m_PrefabInstance: {fileID: 66217266544444469}
   m_PrefabAsset: {fileID: 0}
+--- !u!137 &3750636604941308298 stripped
+SkinnedMeshRenderer:
+  m_CorrespondingSourceObject: {fileID: 3812209527860467135, guid: 60770bdb4dc667c45bea53db0339dc05, type: 3}
+  m_PrefabInstance: {fileID: 66217266544444469}
+  m_PrefabAsset: {fileID: 0}
 --- !u!137 &3838502470707165689 stripped
 SkinnedMeshRenderer:
   m_CorrespondingSourceObject: {fileID: 3868127983488515532, guid: 60770bdb4dc667c45bea53db0339dc05, type: 3}
+  m_PrefabInstance: {fileID: 66217266544444469}
+  m_PrefabAsset: {fileID: 0}
+--- !u!137 &4586387656004402879 stripped
+SkinnedMeshRenderer:
+  m_CorrespondingSourceObject: {fileID: 4561406473548200586, guid: 60770bdb4dc667c45bea53db0339dc05, type: 3}
   m_PrefabInstance: {fileID: 66217266544444469}
   m_PrefabAsset: {fileID: 0}
 --- !u!95 &4605320364604900249 stripped
@@ -679,6 +753,11 @@ SkinnedMeshRenderer:
   m_CorrespondingSourceObject: {fileID: 4917701622192142817, guid: 60770bdb4dc667c45bea53db0339dc05, type: 3}
   m_PrefabInstance: {fileID: 66217266544444469}
   m_PrefabAsset: {fileID: 0}
+--- !u!137 &6883794315456233918 stripped
+SkinnedMeshRenderer:
+  m_CorrespondingSourceObject: {fileID: 6873449838243890571, guid: 60770bdb4dc667c45bea53db0339dc05, type: 3}
+  m_PrefabInstance: {fileID: 66217266544444469}
+  m_PrefabAsset: {fileID: 0}
 --- !u!137 &6979620163281567676 stripped
 SkinnedMeshRenderer:
   m_CorrespondingSourceObject: {fileID: 6933247439074507657, guid: 60770bdb4dc667c45bea53db0339dc05, type: 3}
@@ -687,6 +766,11 @@ SkinnedMeshRenderer:
 --- !u!137 &7998525185324217277 stripped
 SkinnedMeshRenderer:
   m_CorrespondingSourceObject: {fileID: 8064601164280428424, guid: 60770bdb4dc667c45bea53db0339dc05, type: 3}
+  m_PrefabInstance: {fileID: 66217266544444469}
+  m_PrefabAsset: {fileID: 0}
+--- !u!137 &8180094709737638020 stripped
+SkinnedMeshRenderer:
+  m_CorrespondingSourceObject: {fileID: 8173690880039308465, guid: 60770bdb4dc667c45bea53db0339dc05, type: 3}
   m_PrefabInstance: {fileID: 66217266544444469}
   m_PrefabAsset: {fileID: 0}
 --- !u!137 &8800156119320097544 stripped

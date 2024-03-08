@@ -38,7 +38,8 @@ public class UIManager : NetworkBehaviour {
 
     [Header("Combat Info")]
     public GameObject combatInfoPrefab; // Prefab for displaying combat information
-    private PlayerMovement playerMovement;
+    public PlayerMovement playerMovement;
+    public PlayerTargeting playerTargeting;
     public PlayerControls playerControls;
     public InputActionMap ui;
 
@@ -85,6 +86,7 @@ public class UIManager : NetworkBehaviour {
         UpdateLevel(player);
         UpdateClass(player);
         UpdateBuffsAndDebuffs(player);
+        UpdateCurrentTarget(player);
     }
 
     private void UpdateHealthBar(Player player) {
@@ -130,6 +132,10 @@ public class UIManager : NetworkBehaviour {
     private void UpdateBuffsAndDebuffs(Player player) {
         // Implement logic to update buffs and debuffs
         // You might need to iterate through the player's active status effects
+    }
+
+    private void UpdateCurrentTarget(Player player) {
+        
     }
 
     public void DisplayCombatInfo(string info, Color color) {
