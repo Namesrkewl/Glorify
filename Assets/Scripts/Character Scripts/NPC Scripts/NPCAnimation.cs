@@ -22,10 +22,8 @@ public class NPCAnimation : NetworkBehaviour {
 
     [Server(Logging = LoggingType.Off)]
     void Update() {
-        Debug.Log("Test");
         if (!base.IsServerInitialized)
             return;
-        Debug.Log("Made");
 
         // Update animation parameters
         //Debug.Log(playerMovement.horizontal);
@@ -37,21 +35,16 @@ public class NPCAnimation : NetworkBehaviour {
     void SetMovementAnimation() {
         bool isMoving = false;
 
-
         // Check for NavMeshAgent-based movement
         if (npcBehaviour.agent != null && npcBehaviour.agent.velocity.magnitude > 0) {
             isMoving = true;
-            Debug.Log("Agent");
         }
         // Check for direct transform manipulation movement
         else if (Vector3.Distance(transform.position, lastPosition) > movementThreshold) {
             isMoving = true;
-            Debug.Log("Manual");
         } else {
-            Debug.Log("Standing Here I Realize");
-        }
 
-        Debug.Log(isMoving);
+        }
 
         animator.SetBool("Run Forward", isMoving);
 

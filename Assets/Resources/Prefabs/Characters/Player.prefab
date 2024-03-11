@@ -204,8 +204,9 @@ MonoBehaviour:
   _addedNetworkObject: {fileID: 66217266422708035}
   _networkObjectCache: {fileID: 66217266422708035}
   currentTarget: {fileID: 0}
-  highlightMaterial: {fileID: 2100000, guid: a0b6e01120b9ecb4f8a23ef6dfbe2b81, type: 2}
-  autoAttackHighlightMaterial: {fileID: 2100000, guid: aac9c7d0c91167f4b96ac610a3afbac3, type: 2}
+  arrowPrefab: {fileID: 4033213462839429708, guid: 5fb0f4d12717fd34e9b5cf442b8a994e, type: 3}
+  normalArrowMaterial: {fileID: 2100000, guid: 895439f95aac2e143ae136c4b204a913, type: 2}
+  autoAttackArrowMaterial: {fileID: 2100000, guid: 412d8b84ba7553144abfd28349cada64, type: 2}
 --- !u!23 &66217266422708034
 MeshRenderer:
   m_ObjectHideFlags: 0

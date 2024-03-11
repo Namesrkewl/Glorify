@@ -7,24 +7,23 @@ using FishNet.Object.Synchronizing;
 using Unity.VisualScripting;
 using static UnityEngine.GraphicsBuffer;
 using FishNet.Managing.Logging;
+using GameKit.Dependencies.Utilities;
 
 public class PlayerTargeting : NetworkBehaviour {
     private List<GameObject> validTargets = new List<GameObject>();
     private int targetIndex = -1;
     public GameObject currentTarget;
-    public Material highlightMaterial;
-    public Material autoAttackHighlightMaterial;
-    private Material originalMaterial;
-    private Renderer targetRenderer;
     private const float MAX_TARGET_RANGE = 50.0f;
     private GameObject lastClickedTarget;
     private CameraManager cameraManager;
-    private PlayerBehaviour playerBehaviour;
+    public GameObject arrowPrefab; // Reference to the arrow prefab
+    private GameObject arrowInstance; // Instance of the arrow object
+    public Material normalArrowMaterial;
+    public Material autoAttackArrowMaterial;
 
     public override void OnStartClient() {
         base.OnStartClient();
         if (base.IsOwner) {
-            playerBehaviour = GetComponent<PlayerBehaviour>();
             cameraManager = GetComponentInChildren<CameraManager>(true);
         } else {
             GetComponent<PlayerTargeting>().enabled = false;
@@ -63,13 +62,20 @@ public class PlayerTargeting : NetworkBehaviour {
     private void SelectTarget(GameObject targetObject, bool isClick, bool isRightClick, bool reset) {
         if (targetObject.IsDestroyed() || targetObject == null)
             return;
+
         if (targetObject.GetComponent<ITargetable>() != null) {
             if (currentTarget != targetObject) {
                 ClearTarget(reset);
                 currentTarget = targetObject;
-                targetRenderer = targetObject.GetComponent<Renderer>();
-                originalMaterial = targetRenderer.material;
-                UpdateHighlight(false);
+
+                if (arrowPrefab != null) {
+                    // Correctly create the rotation so the arrow faces the same y rotation as the target and points downwards (90 degrees on the x axis)
+                    Quaternion arrowRotation = Quaternion.Euler(90, currentTarget.transform.eulerAngles.y, 0);
+                    // Instantiate the arrow with the correct rotation
+                    arrowInstance = Instantiate(arrowPrefab, Vector3.zero, arrowRotation, currentTarget.transform);
+                    UpdateArrowMaterial(false); // Default to normal material when a new target is selected
+                }
+
                 if (isClick) {
                     lastClickedTarget = currentTarget;
                 }
@@ -82,15 +88,43 @@ public class PlayerTargeting : NetworkBehaviour {
     }
 
     [ServerRpc]
-    private void StartAutoAttack(GameObject targetObject) {
+    private void StartAutoAttack(GameObject targetObject, NetworkConnection sender = null) {
         ITargetable target = targetObject.GetComponent<ITargetable>();
         if (target.GetTargetStatus() == TargetStatus.Alive && (target.GetTargetType() == TargetType.Neutral || target.GetTargetType() == TargetType.Hostile)) {
             Player player = Database.instance.GetPlayer(GetComponent<PlayerBehaviour>().key.Value);
             player.actionState = ActionState.AutoAttacking;
-            UpdateHighlight(true);
+            UpdateArrowMaterial(sender, true); // Change to auto-attack material
         }
     }
 
+    [ServerRpc]
+    public void StopAttack(NetworkConnection sender = null) {
+        Player player = Database.instance.GetPlayer(GetComponent<PlayerBehaviour>().key.Value);
+        if (player.actionState == ActionState.AutoAttacking || player.actionState == ActionState.Casting) {
+            player.actionState = ActionState.Idle;
+            UpdateArrowMaterial(sender, false);
+            // Possibly trigger some event or call in PlayerBehaviour
+        }
+    }
+
+    [TargetRpc]
+    private void UpdateArrowMaterial(NetworkConnection receiver, bool isAttacking) {
+        if (arrowInstance != null) {
+            Renderer arrowRenderer = arrowInstance.GetComponent<Renderer>();
+            if (arrowRenderer != null) {
+                arrowRenderer.material = isAttacking ? autoAttackArrowMaterial : normalArrowMaterial;
+            }
+        }
+    }
+
+    private void UpdateArrowMaterial(bool isAttacking) {
+        if (arrowInstance != null) {
+            Renderer arrowRenderer = arrowInstance.GetComponent<Renderer>();
+            if (arrowRenderer != null) {
+                arrowRenderer.material = isAttacking ? autoAttackArrowMaterial : normalArrowMaterial;
+            }
+        }
+    }
 
     private void HandleTabTargeting() {
         if (Input.GetButtonDown("Target Enemy") && (validTargets.Count > 0)) {
@@ -132,16 +166,6 @@ public class PlayerTargeting : NetworkBehaviour {
         return false;
     }
 
-    [ServerRpc]
-    public void StopAttack() {
-        Player player = Database.instance.GetPlayer(GetComponent<PlayerBehaviour>().key.Value);
-        if (player.actionState == ActionState.AutoAttacking || player.actionState == ActionState.Casting) {
-            player.actionState = ActionState.Idle;
-            UpdateHighlight(false);
-            // Possibly trigger some event or call in PlayerBehaviour
-        }
-    }
-
     private void HandleCancelInput() {
         if (Input.GetButtonDown("Cancel")) {
             StopAttack();
@@ -149,11 +173,11 @@ public class PlayerTargeting : NetworkBehaviour {
         }
     }
 
+    // Modifications in ClearTarget to remove the arrow
     private void ClearTarget(bool reset) {
-        if (targetRenderer != null) {
-            // Revert the material to its original
-            targetRenderer.material = originalMaterial;
-            targetRenderer = null;
+        if (arrowInstance != null) {
+            Destroy(arrowInstance); // Destroy the arrow instance
+            arrowInstance = null;
         }
         currentTarget = null;
         if (reset) {
@@ -166,15 +190,6 @@ public class PlayerTargeting : NetworkBehaviour {
             validTargets.Remove(lastClickedTarget);
             validTargets.Add(lastClickedTarget);
             lastClickedTarget = null;
-        }
-    }
-
-    private void UpdateHighlight(bool isAttacking) {
-        if (currentTarget != null && !currentTarget.IsDestroyed()) {
-            targetRenderer = currentTarget.GetComponent<Renderer>();
-            if (targetRenderer != null) {
-                targetRenderer.material = isAttacking ? autoAttackHighlightMaterial : highlightMaterial;
-            }
         }
     }
 
