@@ -18,3 +18,5 @@ Tab to cycle targets, starts with target closest to camera forward
 Enter to open or send chat messages
 Buttons 1 through 0 for spells (not networked yet)
 Once aggro'd, enemies deaggro after 50 meters.
+
+A presentation with more documentation regarding the development can be found here: https://docs.google.com/presentation/d/1abzzArFt5QpZ9wD0JeRIIE1IY2MtApYWCn9AhY9X7oo/edit?usp=sharing
