@@ -33,8 +33,9 @@ public class PlayerManager : NetworkBehaviour {
     
     private void Update() {
         if (IsClientInitialized)
-            if (playerBehaviour != null && !gameObject.IsDestroyed())
-                UpdatePlayer(API.instance.clientKey, playerBehaviour.playerTargeting.currentTarget);
+            if (playerBehaviour != null && playerBehaviour.player != null && playerBehaviour.player.Value != null && !gameObject.IsDestroyed()) {
+                UpdatePlayer(playerBehaviour.player.Value, playerBehaviour.playerTargeting.currentTarget);
+            }
     }
 
     public void SetPlayer(PlayerBehaviour _playerBehaviour) {
@@ -42,8 +43,7 @@ public class PlayerManager : NetworkBehaviour {
     }
 
     [ServerRpc(RequireOwnership = false)]
-    public void UpdatePlayer(Key key, GameObject currentTarget) {
-        Player player = Database.instance.GetPlayer(key);
+    public void UpdatePlayer(Player player, GameObject currentTarget) {
         UpdateCombatState(player);
         HandleRegeneration(player);
         LevelUp(player);
@@ -52,8 +52,8 @@ public class PlayerManager : NetworkBehaviour {
 
 
         /*
-        if (player.aggroList.Count > 0) {
-            //Debug.Log($"Enemies in combat with the player: {player.aggroList.Count}");
+        if (player.GetAggroList().Count > 0) {
+            //Debug.Log($"Enemies in combat with the player: {player.GetAggroList().Count}");
         }*/
 
 
@@ -68,12 +68,12 @@ public class PlayerManager : NetworkBehaviour {
 
     [Server(Logging = LoggingType.Off)]
     private void LevelUp(Player player) {
-        if (player.currentExperience >= player.maxExperience) {
-            player.currentExperience -= player.maxExperience;
-            player.level++;
-            //player.playerClass.SetClass(this); // Update class on level up
-            player.currentHealth = player.maxHealth;
-            player.currentMana = player.maxMana;
+        if (player.GetCurrentExperience() >= player.GetMaxExperience()) {
+            player.SetCurrentExperience(player.GetCurrentExperience() - player.GetMaxExperience());
+            player.SetLevel(player.GetLevel() + 1);
+            //player.playerClass.SetClass(this); // Update class on GetLevel() up
+            player.SetCurrentHealth(player.GetMaxHealth());
+            player.SetCurrentMana(player.GetMaxMana());
             Database.instance.UpdatePlayer(player);
         }
     }
@@ -81,7 +81,7 @@ public class PlayerManager : NetworkBehaviour {
     [Server(Logging = LoggingType.Off)]
     public void ChangeClass(Key key, Classes newClass) {
         Player player = Database.instance.GetPlayer(key);
-        player.classEnum = newClass;
+        player.SetClassEnum(newClass);
         //player.playerClass.SetClass(this); // Update class on class change
         Database.instance.UpdatePlayer(player);
     }
@@ -94,15 +94,15 @@ public class PlayerManager : NetworkBehaviour {
 
     [Server(Logging = LoggingType.Off)]
     private void HandleHealthRegeneration(Player player) {
-        if (player.currentHealth > 0 && player.currentHealth < player.maxHealth) {
-            if (player.isSafe) {
+        if (player.GetCurrentHealth() > 0 && player.GetCurrentHealth() < player.GetMaxHealth()) {
+            if (player.GetIsSafe()) {
                 // Out of combat regeneration
                 float healthRegenPerSecond = GetHealthRegeneration(player) / 10f; // Amount regenerated per second
-                player.currentHealth = Mathf.Min(player.currentHealth + (healthRegenPerSecond * Time.deltaTime), player.maxHealth);
+                player.SetCurrentHealth(Mathf.Min(player.GetCurrentHealth() + (healthRegenPerSecond * Time.deltaTime), player.GetMaxHealth()));
             } else {
                 // In combat regeneration
                 float healthRegenPerSecond = GetCombatHealthRegeneration(player) / 10f; // Amount regenerated per second
-                player.currentHealth = Mathf.Min(player.currentHealth + (healthRegenPerSecond * Time.deltaTime), player.maxHealth);
+                player.SetCurrentHealth(Mathf.Min(player.GetCurrentHealth() + (healthRegenPerSecond * Time.deltaTime), player.GetMaxHealth()));
             }
             Database.instance.UpdatePlayer(player);
         }
@@ -110,15 +110,15 @@ public class PlayerManager : NetworkBehaviour {
 
     [Server(Logging = LoggingType.Off)]
     private void HandleManaRegeneration(Player player) {
-        if (player.currentMana < player.maxMana) {
-            if (player.isSafe) {
+        if (player.GetCurrentMana() < player.GetMaxMana()) {
+            if (player.GetIsSafe()) {
                 // Out of combat regeneration
                 float manaRegenPerSecond = GetManaRegeneration(player) / 10f; // Amount regenerated per second
-                player.currentMana = Mathf.Min(player.currentMana + (manaRegenPerSecond * Time.deltaTime), player.maxMana);
+                player.SetCurrentMana(Mathf.Min(player.GetCurrentMana() + (manaRegenPerSecond * Time.deltaTime), player.GetMaxMana()));
             } else {
                 // In combat regeneration
                 float manaRegenPerSecond = GetCombatManaRegeneration(player) / 10f; // Amount regenerated per second
-                player.currentMana = Mathf.Min(player.currentMana + (manaRegenPerSecond * Time.deltaTime), player.maxMana);
+                player.SetCurrentMana(Mathf.Min(player.GetCurrentMana() + (manaRegenPerSecond * Time.deltaTime), player.GetMaxMana()));
             }
             Database.instance.UpdatePlayer(player);
         }
@@ -128,32 +128,32 @@ public class PlayerManager : NetworkBehaviour {
     #region Derived Stats
     [Server(Logging = LoggingType.Off)]
     public int GetMeleeAttackPower(Player player) {
-        return player.strength + player.dexterity; // Example calculation, adjust as needed
+        return player.GetStrength() + player.GetDexterity(); // Example calculation, adjust as needed
     }
 
     [Server(Logging = LoggingType.Off)]
     public int GetRangedAttackPower(Player player) {
-        return player.dexterity; // Example calculation, adjust as needed
+        return player.GetDexterity(); // Example calculation, adjust as needed
     }
 
     [Server(Logging = LoggingType.Off)]
     public int GetSpellPower(Player player) {
-        return player.intelligence; // Example calculation, adjust as needed
+        return player.GetIntelligence(); // Example calculation, adjust as needed
     }
 
     [Server(Logging = LoggingType.Off)]
     public float GetAttackSpeed(Player player) {
-        return 1.0f / player.haste; // Example calculation, adjust as needed
+        return 1.0f / player.GetHaste(); // Example calculation, adjust as needed
     }
 
     [Server(Logging = LoggingType.Off)]
     public float GetCastingSpeed(Player player) {
-        return 1.0f - (player.haste * 0.01f); // Example calculation, adjust as needed
+        return 1.0f - (player.GetHaste() * 0.01f); // Example calculation, adjust as needed
     }
 
     [Server(Logging = LoggingType.Off)]
     public int GetHealthRegeneration(Player player) {
-        return player.vitality * 2; // Example calculation, adjust as needed
+        return player.GetVitality() * 2; // Example calculation, adjust as needed
     }
 
     [Server(Logging = LoggingType.Off)]
@@ -163,7 +163,7 @@ public class PlayerManager : NetworkBehaviour {
 
     [Server(Logging = LoggingType.Off)]
     public int GetManaRegeneration(Player player) {
-        return player.wisdom * 2; // Example calculation, adjust as needed
+        return player.GetWisdom() * 2; // Example calculation, adjust as needed
     }
 
     [Server(Logging = LoggingType.Off)]
@@ -173,7 +173,7 @@ public class PlayerManager : NetworkBehaviour {
 
     [Server(Logging = LoggingType.Off)]
     public float GetGlobalCooldown(Player player) {
-        return 1.5f / player.haste; // Example calculation, adjust as needed
+        return 1.5f / player.GetHaste(); // Example calculation, adjust as needed
     }
 
     [Server(Logging = LoggingType.Off)]
@@ -183,12 +183,12 @@ public class PlayerManager : NetworkBehaviour {
 
     [Server(Logging = LoggingType.Off)]
     public float GetPhysicalDamageReduction(Player player) {
-        return player.armor * 0.01f; // Example calculation, adjust as needed
+        return player.GetArmor() * 0.01f; // Example calculation, adjust as needed
     }
 
     [Server(Logging = LoggingType.Off)]
     public float GetMagicalDamageReduction(Player player) {
-        return player.intelligence * 0.01f; // Example calculation, adjust as needed
+        return player.GetIntelligence() * 0.01f; // Example calculation, adjust as needed
     }
     #endregion
 
@@ -206,23 +206,23 @@ public class PlayerManager : NetworkBehaviour {
 
     [Server(Logging = LoggingType.Off)]
     private void UpdateCombatState(Player player) {
-        if (player.isSafe && player.aggroList.Count == 0) {
+        if (player.GetIsSafe() && player.GetAggroList().Count == 0) {
             return;
         }
 
-        if (player.aggroList.Count == 0 && player.combatStatus == CombatStatus.InCombat) {
-            player.combatStatus = CombatStatus.OutOfCombat;
-            player.regenerationCooldownTimer = 0f; // Start regeneration cooldown when combat ends
-        } else if (player.aggroList.Count > 0) {
-            player.combatStatus = CombatStatus.InCombat;
-            player.isSafe = false; // Stop regeneration immediately when in combat
-            player.regenerationCooldownTimer = 0f; // Reset timer if in combat
+        if (player.GetAggroList().Count == 0 && player.GetCombatStatus() == CombatStatus.InCombat) {
+            player.SetCombatStatus(CombatStatus.OutOfCombat);
+            player.SetRegenerationCooldownTimer(0f); // Start regeneration cooldown when combat ends
+        } else if (player.GetAggroList().Count > 0) {
+            player.SetCombatStatus(CombatStatus.InCombat);
+            player.SetIsSafe(false); // Stop regeneration immediately when in combat
+            player.SetRegenerationCooldownTimer(0f); // Reset timer if in combat
         }
 
-        if (player.combatStatus == CombatStatus.OutOfCombat && !player.isSafe) {
-            player.regenerationCooldownTimer += Time.deltaTime;
-            if (player.regenerationCooldownTimer >= 5f) { // 5 seconds after leaving combat
-                player.isSafe = true;
+        if (player.GetCombatStatus() == CombatStatus.OutOfCombat && !player.GetIsSafe()) {
+            player.SetRegenerationCooldownTimer(player.GetRegenerationCooldownTimer() + Time.deltaTime);
+            if (player.GetRegenerationCooldownTimer() >= 5f) { // 5 seconds after leaving combat
+                player.SetIsSafe(true);
             }
         }
         Database.instance.UpdatePlayer(player);
@@ -233,15 +233,15 @@ public class PlayerManager : NetworkBehaviour {
 
     [Server(Logging = LoggingType.Off)]
     private void HandleAutoAttack(Player player, GameObject currentTarget) {
-        if (player.actionState == ActionState.AutoAttacking && IsTargetInRangeAndVisible(player, currentTarget)) {
-            if (player.autoAttackTimer <= 0f) {
+        if (player.GetActionState() == ActionState.AutoAttacking && IsTargetInRangeAndVisible(player, currentTarget)) {
+            if (player.GetAutoAttackTimer() <= 0f) {
                 PerformAutoAttack(player, currentTarget);
-                player.autoAttackTimer = CalculateAutoAttackCooldown(player);
+                player.SetAutoAttackTimer(CalculateAutoAttackCooldown(player));
             } else {
-                player.autoAttackTimer -= Time.deltaTime;
+                player.SetAutoAttackTimer(player.GetAutoAttackTimer() - Time.deltaTime);
             }
         } else {
-            player.autoAttackTimer -= Time.deltaTime;
+            player.SetAutoAttackTimer(player.GetAutoAttackTimer() - Time.deltaTime);
         }
     }
 
@@ -255,7 +255,7 @@ public class PlayerManager : NetworkBehaviour {
         if (currentTarget == null) return false;
 
         float distanceToTarget = Vector3.Distance(transform.position, currentTarget.transform.position);
-        if (distanceToTarget > player.autoAttackRange) return false;
+        if (distanceToTarget > player.GetAutoAttackRange()) return false;
 
         // Calculate direction to target
         Vector3 directionToTarget = (currentTarget.transform.position - transform.position).normalized;
@@ -266,7 +266,7 @@ public class PlayerManager : NetworkBehaviour {
 
         // Perform raycast to check line of sight
         RaycastHit hit;
-        if (Physics.Raycast(transform.position, directionToTarget, out hit, player.autoAttackRange)) {
+        if (Physics.Raycast(transform.position, directionToTarget, out hit, player.GetAutoAttackRange())) {
             return hit.collider.gameObject == currentTarget;
         }
 
@@ -275,14 +275,14 @@ public class PlayerManager : NetworkBehaviour {
 
     [Server(Logging = LoggingType.Off)]
     private float CalculateAutoAttackCooldown(Player player) {
-        float hasteEffect = 1.0f + (player.haste / 100.0f);
-        return Mathf.Max(player.autoAttackCooldown / hasteEffect, 0.5f);
+        float hasteEffect = 1.0f + (player.GetHaste() / 100.0f);
+        return Mathf.Max(player.GetAutoAttackCooldown() / hasteEffect, 0.5f);
     }
 
     [Server(Logging = LoggingType.Off)]
     private void UpdateCurrentTarget(Player player, GameObject currentTarget) {
-        if (player.currentTarget != currentTarget) {
-            player.currentTarget = currentTarget;
+        if (player.GetCurrentTarget() != currentTarget) {
+            player.SetCurrentTarget(currentTarget);
             Database.instance.UpdatePlayer(player);
         }
     }
@@ -293,11 +293,11 @@ public class PlayerManager : NetworkBehaviour {
     private void ServerPerformAutoAttack(Player player, GameObject targetObject, NetworkConnection sender = null) {
         if (targetObject != null && !targetObject.IsDestroyed()) {
             ICombatable target = targetObject.GetComponent<ICombatable>();
-            if (target != null && target.GetTarget().currentHealth > 0) {
+            if (target != null && target.GetTarget().GetCurrentHealth() > 0) {
                 playerBehaviour.EnterCombat(target as NetworkBehaviour, player); // Enter combat with the target
 
                 // Auto-attack logic here...
-                int damage = UnityEngine.Random.Range(player.minAutoAttackDamage, player.maxAutoAttackDamage);
+                int damage = UnityEngine.Random.Range(player.GetMinAutoAttackDamage(), player.GetMaxAutoAttackDamage());
                 CombatManager.instance.SendDamage(target, damage);
                 ConfirmAutoAttack(player);
             }
@@ -318,9 +318,9 @@ public class PlayerManager : NetworkBehaviour {
     [Server(Logging = LoggingType.Off)]
     private void Death(Key key) {
         Player player = Database.instance.GetPlayer(key);
-        player.targetStatus = TargetStatus.Dead;
+        player.SetTargetStatus(TargetStatus.Dead);
         // Create a temporary list to store characters to exit combat with
-        var tempCharacters = new List<ICombatable>(player.aggroList);
+        var tempCharacters = new List<ICombatable>(player.GetAggroList());
             
         playerBehaviour.ExitAllCombat();
 
@@ -337,16 +337,19 @@ public class PlayerManager : NetworkBehaviour {
     public void CreatePlayer(string name, Credentials credentials, NetworkConnection sender) {
         Debug.Log("Creating New Player!");
         Player player = new Player();
-        player.key.name = name;
-        List<Player> sameNamedPlayers = Database.instance.GetAllPlayers().Where(p => p.key.name == player.key.name).ToList();
-        List<int> excludedIDs = sameNamedPlayers.Select(p => p.key.ID).ToList();
+        player.SetName(name);
+        List<Player> sameNamedPlayers = Database.instance.GetAllPlayers().Where(p => p.GetName() == player.GetName()).ToList();
+        List<int> excludedIDs = sameNamedPlayers.Select(p => p.GetID()).ToList();
         do {
-            player.key.ID = Random.Range(0, 9999999);
-        } while (excludedIDs.Contains(player.key.ID));
+            player.SetID(Random.Range(0, 9999999));
+        } while (excludedIDs.Contains(player.GetID()));
         Database.instance.AddPlayer(player, credentials);
-        Database.instance.AddClient(player.key, sender);
+        Database.instance.AddClient(player, sender);
         Debug.Log("Added client to list");
-        API.instance.CompleteLogin(sender, Database.instance.GetPlayer(player.key).key);
+        Key key = player.key;
+        Debug.Log(key.name);
+        Debug.Log(player.GetName());
+        API.instance.CompleteLogin(sender, key);
     }
 
     #region Rpcs

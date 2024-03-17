@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Unity.VisualScripting;
 using UnityEngine;
+using UnityEngine.InputSystem;
 
 public class API : NetworkBehaviour {
 
@@ -85,8 +86,7 @@ public class API : NetworkBehaviour {
         Credentials credentials = new Credentials();
         credentials.username = name;
         credentials.password = pass;
-        Key key = Database.instance.GetUser(credentials);
-        Player player = Database.instance.GetPlayer(key) ?? null;
+        Player player = Database.instance.GetUser(credentials) ?? null;
         Debug.Log($"Current Player available: {player != null}");
         if (player == null && !Database.instance.CheckAvailability(credentials)) {
             Debug.Log("Username taken!");
@@ -94,18 +94,18 @@ public class API : NetworkBehaviour {
         } else if (player == null) {
             PlayerManager.instance.CreatePlayer(name, credentials, sender);
         } else {
-            NetworkConnection loggedInClient = Database.instance.GetClient(key);
+            NetworkConnection loggedInClient = Database.instance.GetClient(player);
             if (loggedInClient != null) {
                 ServerManager.Clients.TryGetValue(loggedInClient.ClientId, out NetworkConnection target);
                 if (target != null) {
                     Debug.Log("Kicking old client!");
                     loggedInClient.Kick(KickReason.Unset, loggingType: FishNet.Managing.Logging.LoggingType.Off);
-                    Database.instance.RemoveClient(key);
+                    Database.instance.RemoveClient(player);
                 } else {
-                    Database.instance.RemoveClient(key);
+                    Database.instance.RemoveClient(player);
                 }
             }
-            Database.instance.AddClient(key, sender);
+            Database.instance.AddClient(player, sender);
             CompleteLogin(sender, player.key);
         }
     }

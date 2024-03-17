@@ -14,9 +14,9 @@ public class Spawner : NetworkBehaviour {
     [ServerRpc(RequireOwnership = false)]
     public void SpawnPlayer(Key key, NetworkConnection sender = null) {
         Player player = Database.instance.GetPlayer(key);
-        GameObject playerObject = Instantiate(playerPrefab, player.location, player.rotation);
-        playerObject.transform.localScale = player.scale;
-        Debug.Log($"Spawning {player.key.name} with the ID {player.key.ID}!");
+        GameObject playerObject = Instantiate(playerPrefab, player.GetLocation(), player.GetRotation());
+        playerObject.transform.localScale = player.GetScale();
+        Debug.Log($"Spawning {player.GetName()} with the ID {player.GetID()}!");
         Spawn(playerObject, sender);
     }
 }

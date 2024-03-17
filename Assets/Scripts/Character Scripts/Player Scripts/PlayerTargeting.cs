@@ -91,17 +91,17 @@ public class PlayerTargeting : NetworkBehaviour {
     private void StartAutoAttack(GameObject targetObject, NetworkConnection sender = null) {
         ITargetable target = targetObject.GetComponent<ITargetable>();
         if (target.GetTargetStatus() == TargetStatus.Alive && (target.GetTargetType() == TargetType.Neutral || target.GetTargetType() == TargetType.Hostile)) {
-            Player player = Database.instance.GetPlayer(GetComponent<PlayerBehaviour>().key.Value);
-            player.actionState = ActionState.AutoAttacking;
+            Player player = GetComponent<PlayerBehaviour>().player.Value;
+            player.SetActionState(ActionState.AutoAttacking);
             UpdateArrowMaterial(sender, true); // Change to auto-attack material
         }
     }
 
     [ServerRpc]
     public void StopAttack(NetworkConnection sender = null) {
-        Player player = Database.instance.GetPlayer(GetComponent<PlayerBehaviour>().key.Value);
-        if (player.actionState == ActionState.AutoAttacking || player.actionState == ActionState.Casting) {
-            player.actionState = ActionState.Idle;
+        Player player = GetComponent<PlayerBehaviour>().player.Value;
+        if (player.GetActionState() == ActionState.AutoAttacking || player.GetActionState() == ActionState.Casting) {
+            player.SetActionState(ActionState.Idle);
             UpdateArrowMaterial(sender, false);
             // Possibly trigger some event or call in PlayerBehaviour
         }

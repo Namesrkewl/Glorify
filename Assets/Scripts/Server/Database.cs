@@ -36,8 +36,8 @@ public class Database : NetworkBehaviour {
     private SyncList<Player> players = new SyncList<Player>();
     private readonly List<Credentials> credentials = new List<Credentials>();
     private readonly Dictionary<Key, Player> playerSearch = new Dictionary<Key, Player>();
-    private readonly Dictionary<Key, NetworkConnection> clientSearch = new Dictionary<Key, NetworkConnection>();
-    private readonly Dictionary<Credentials, Key> users = new Dictionary<Credentials, Key>();
+    private readonly Dictionary<Player, NetworkConnection> clientSearch = new Dictionary<Player, NetworkConnection>();
+    private readonly Dictionary<Credentials, Player> users = new Dictionary<Credentials, Player>();
 
     public Player GetPlayer(Key key) {
         playerSearch.TryGetValue(key, out Player player);
@@ -54,19 +54,23 @@ public class Database : NetworkBehaviour {
         }
     }
 
-    public Key GetUser(Credentials credentials) {
-        users.TryGetValue(credentials, out Key key);
-        return key;
+    public Player GetUser(Credentials credentials) {
+        users.TryGetValue(credentials, out Player player);
+        return player;
     }
 
     public void AddPlayer(Player player, Credentials _credentials) {
+        Debug.Log(player.GetName());
+        Debug.Log(player.key.name);
         players.Add(player);
         playerSearch.Add(player.key, player);
         credentials.Add(_credentials);
-        users.Add(_credentials, player.key);
+        users.Add(_credentials, player);
+        playerSearch.TryGetValue(player.key, out Player _player);
     }
 
     public void UpdatePlayer(Player player) {
+        Debug.Log(players.Count);
         players.Dirty(player);
     }
 
@@ -78,17 +82,17 @@ public class Database : NetworkBehaviour {
         return players;
     }
 
-    public NetworkConnection GetClient(Key key) {
-        clientSearch.TryGetValue(key, out NetworkConnection client);
+    public NetworkConnection GetClient(Player player) {
+        clientSearch.TryGetValue(player, out NetworkConnection client);
         return client;
     }
 
-    public void AddClient(Key key, NetworkConnection client) {
-        clientSearch.Add(key, client);
+    public void AddClient(Player player, NetworkConnection client) {
+        clientSearch.Add(player, client);
     }
 
-    public void RemoveClient(Key key) {
-        clientSearch.Remove(key);
+    public void RemoveClient(Player player) {
+        clientSearch.Remove(player);
     }
 
     private void players_OnChange(SyncListOperation op, int index, Player oldPlayer, Player newPlayer, bool asServer) {
@@ -113,7 +117,7 @@ public class Database : NetworkBehaviour {
             * is the item that was replaced, while
             * newItem is the item which now has it's place. */
             case SyncListOperation.Set:
-                UIManager.instance.UpdatePlayerInformation(GetClient(newPlayer.key), newPlayer);
+                UIManager.instance.UpdatePlayerInformation(GetClient(newPlayer), newPlayer);
                 break;
             /* All objects have been cleared. Index, oldValue,
             * and newValue are default. */

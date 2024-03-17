@@ -10,10 +10,10 @@ public class ScriptableNPC : ScriptableObject {
     public int ID;
 
     private void OnValidate() {
-        if (npc.key.name != name) {
-            npc.key.name = name;
-        } else if (npc.key.ID != ID) {
-            npc.key.ID = ID;
+        if (npc.GetName() != name) {
+            npc.SetName(name);
+        } else if (npc.GetID() != ID) {
+            npc.SetID(ID);
         }        
     }
 }

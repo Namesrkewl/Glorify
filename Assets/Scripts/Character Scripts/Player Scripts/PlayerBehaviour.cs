@@ -17,7 +17,7 @@ public class PlayerBehaviour : NetworkBehaviour, ICombatable, ICastable, IAbleTo
     public PlayerTargeting playerTargeting;
     public PlayerMovement playerMovement;
     [AllowMutableSyncType]
-    public SyncVar<Key> key;
+    public SyncVar<Player> player;
 
 
     private void Awake() {
@@ -29,7 +29,7 @@ public class PlayerBehaviour : NetworkBehaviour, ICombatable, ICastable, IAbleTo
         if (!IsOwner)
             return;
         base.OnStartClient();
-        SetKey(API.instance.clientKey);
+        SetPlayer(API.instance.clientKey);
         ChatManager.instance.container.SetActive(true);
         PlayerManager.instance.SetPlayer(this);
         UpdatePlayerInformation(API.instance.clientKey);
@@ -38,13 +38,14 @@ public class PlayerBehaviour : NetworkBehaviour, ICombatable, ICastable, IAbleTo
     }
 
     [ServerRpc(RequireOwnership = true)]
-    private void SetKey(Key _key, NetworkConnection sender = null) {
-        key.Value = _key;
+    private void SetPlayer(Key key, NetworkConnection sender = null) {
+        player.Value = Database.instance.GetPlayer(key);
     }
 
     [ServerRpc(RequireOwnership = true)]
-    private void UpdatePlayerInformation(Key _key, NetworkConnection sender = null) {
-        UIManager.instance.UpdatePlayerInformation(sender, Database.instance.GetPlayer(_key));
+    private void UpdatePlayerInformation(Key key, NetworkConnection sender = null) {
+        Player player = Database.instance.GetPlayer(key);
+        UIManager.instance.UpdatePlayerInformation(sender, player);
         UIManager.instance.playerMovement = playerMovement;
         UIManager.instance.playerTargeting = playerTargeting;
     }
@@ -55,29 +56,29 @@ public class PlayerBehaviour : NetworkBehaviour, ICombatable, ICastable, IAbleTo
             return;
         if (Input.GetKeyDown(KeyCode.Backspace)) {
             Debug.Log("Lost 10 HP!");
-            LoseHealth(key.Value);
+            LoseHealth();
         } else if (Input.GetKeyDown(KeyCode.Equals)) {
             Debug.Log("Lost 10 Mana!");
-            LoseMana(key.Value);
+            LoseMana();
         }
     }
 
     [ServerRpc]
-    private void LoseHealth(Key _key, NetworkConnection sender = null) {
-        Database.instance.GetPlayer(_key).currentHealth -= 10;
-        Database.instance.UpdatePlayer(Database.instance.GetPlayer(_key));
+    private void LoseHealth(NetworkConnection sender = null) {
+        player.Value.SetCurrentHealth(player.Value.GetCurrentHealth() - 10);
+        Database.instance.UpdatePlayer(player.Value);
     }
     [ServerRpc]
-    private void LoseMana(Key _key, NetworkConnection sender = null) {
-        Database.instance.GetPlayer(_key).currentMana -= 10;
-        Database.instance.UpdatePlayer(Database.instance.GetPlayer(_key));
+    private void LoseMana(NetworkConnection sender = null) {
+        player.Value.SetCurrentMana(player.Value.GetCurrentMana() - 10);
+        Database.instance.UpdatePlayer(player.Value);
     }
 
     public void EnterCombat(NetworkBehaviour target, Player player) {
         ICombatable combatant = target as ICombatable;
-        if (!player.aggroList.Contains(combatant)) {
-            player.aggroList.Add(combatant);
-            player.combatStatus = CombatStatus.InCombat;
+        if (!player.GetAggroList().Contains(combatant)) {
+            player.GetAggroList().Add(combatant);
+            player.SetCombatStatus(CombatStatus.InCombat);
 
             // Notify the other character to enter combat
             combatant.ServerEnterCombat(this);
@@ -93,8 +94,8 @@ public class PlayerBehaviour : NetworkBehaviour, ICombatable, ICastable, IAbleTo
 
     public void ExitCombat(NetworkBehaviour target, Player player) {
         ICombatable combatant = target as ICombatable;
-        if (player.aggroList.Contains(combatant)) {
-            player.aggroList.Remove(combatant);
+        if (player.GetAggroList().Contains(combatant)) {
+            player.GetAggroList().Remove(combatant);
 
             // Notify the other character to exit combat
             combatant.ServerExitCombat(this);
@@ -110,19 +111,19 @@ public class PlayerBehaviour : NetworkBehaviour, ICombatable, ICastable, IAbleTo
     [ServerRpc]
     public void ExitAllCombat() {
         Player player = Database.instance.GetPlayer(GetKey());
-        var tempTargets = new List<ICombatable>(player.aggroList);
+        var tempTargets = new List<ICombatable>(player.GetAggroList());
         foreach (ICombatable target in tempTargets) {
             ExitCombat(target as NetworkBehaviour, player);
         }
     }
 
     public Key GetKey() {
-        return key.Value;
+        return player.Value.key;
     }
 
 
     public Character GetTarget() {
-        return Database.instance.GetPlayer(key.Value);
+        return player.Value;
     }
     public ITargetable GetTargetComponent() {
         return this;
@@ -133,7 +134,7 @@ public class PlayerBehaviour : NetworkBehaviour, ICombatable, ICastable, IAbleTo
     }
 
     public TargetStatus GetTargetStatus() {
-        return Database.instance.GetPlayer(key.Value).targetStatus;
+        return player.Value.GetTargetStatus();
     }
 
     public GameObject GetTargetObject() {

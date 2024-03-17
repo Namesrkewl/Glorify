@@ -7,14 +7,14 @@ public class Healthy : Spell {
 
     public override void Cast(ITargetable _caster, ITargetable _target) {
         base.Cast(_caster, _target);
-        int healthIncrease = (int)(target.maxHealth * healthIncreasePercentage);
-        target.maxHealth += healthIncrease;
-        target.currentHealth += healthIncrease;        
+        int healthIncrease = (int)(target.GetMaxHealth() * healthIncreasePercentage);
+        target.SetMaxHealth(target.GetMaxHealth() + healthIncrease);
+        target.SetCurrentHealth(target.GetCurrentHealth() + healthIncrease);        
     }
 
     public override void RemoveEffect(Character character) {
-        int healthDecrease = (int)(character.maxHealth / healthIncreasePercentage);
-        character.maxHealth -= healthDecrease;
-        character.currentHealth -= healthDecrease;
+        int healthDecrease = (int)(character.GetMaxHealth() / healthIncreasePercentage);
+        character.SetMaxHealth(character.GetMaxHealth() - healthDecrease);
+        character.SetCurrentHealth(character.GetCurrentHealth() - healthDecrease);
     }
 }
