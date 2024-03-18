@@ -6,7 +6,7 @@ public class HealingWord : Spell {
     public override void Cast(ITargetable _caster, ITargetable _target) {
         base.Cast(_caster, _target);
         CombatManager.instance.SendDamage(_target, damage);
-        caster.SetCurrentMana(caster.GetCurrentMana() - manaCost);
+        caster.currentMana -= manaCost;
     }
 
     public override void UpdateDescription() {

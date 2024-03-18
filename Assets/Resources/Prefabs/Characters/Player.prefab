@@ -203,7 +203,8 @@ MonoBehaviour:
   _componentIndexCache: 2
   _addedNetworkObject: {fileID: 66217266422708035}
   _networkObjectCache: {fileID: 66217266422708035}
-  currentTarget: {fileID: 0}
+  currentTarget:
+    _value: {fileID: 0}
   arrowPrefab: {fileID: 4033213462839429708, guid: 5fb0f4d12717fd34e9b5cf442b8a994e, type: 3}
   normalArrowMaterial: {fileID: 2100000, guid: 895439f95aac2e143ae136c4b204a913, type: 2}
   autoAttackArrowMaterial: {fileID: 2100000, guid: 412d8b84ba7553144abfd28349cada64, type: 2}
@@ -352,6 +353,7 @@ MonoBehaviour:
   _observerConditions:
   - {fileID: 11400000, guid: 2033f54fd2794464bae08fa5a55c8996, type: 2}
   - {fileID: 11400000, guid: 5f33eb0e5b83b5546822cfe42a305657, type: 2}
+  - {fileID: 11400000, guid: efcd7f0dfd341ed4e8671079e91e0544, type: 2}
 --- !u!114 &3153021733640087511
 MonoBehaviour:
   m_ObjectHideFlags: 0

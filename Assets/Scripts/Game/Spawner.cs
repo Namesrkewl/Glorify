@@ -14,9 +14,14 @@ public class Spawner : NetworkBehaviour {
     [ServerRpc(RequireOwnership = false)]
     public void SpawnPlayer(Key key, NetworkConnection sender = null) {
         Player player = Database.instance.GetPlayer(key);
-        GameObject playerObject = Instantiate(playerPrefab, player.GetLocation(), player.GetRotation());
-        playerObject.transform.localScale = player.GetScale();
-        Debug.Log($"Spawning {player.GetName()} with the ID {player.GetID()}!");
-        Spawn(playerObject, sender);
+        if (player.gameObject == null) {
+            GameObject playerObject = Instantiate(playerPrefab, new Vector3(2700, 12, 2200), Quaternion.identity);
+            player.gameObject = playerObject;
+        } else {
+            GameObject playerObject = Instantiate(player.gameObject, player.gameObject.transform.position, player.gameObject.transform.rotation);
+            player.gameObject = playerObject;
+        }
+        Debug.Log($"Spawning {player.name} with the ID {player.ID}!");
+        Spawn(player.gameObject, sender);
     }
 }

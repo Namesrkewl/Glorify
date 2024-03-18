@@ -33,6 +33,7 @@ public class SceneController : NetworkBehaviour {
         load = new SceneLoadData(scenes);
         load.ReplaceScenes = ReplaceOption.None;
         SceneManager.LoadGlobalScenes(load);
+        gameObject.GetComponent<NetworkObject>();
     }
 
     [Server(Logging = LoggingType.Off)]

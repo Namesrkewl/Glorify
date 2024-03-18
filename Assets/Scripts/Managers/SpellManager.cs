@@ -34,7 +34,7 @@ public class SpellManager : NetworkBehaviour
             if (currentTargetGameObject != null) {
                 targetBehavior = currentTargetGameObject.GetComponent<EntityBehaviour>();
             }
-            if (spell.targetType == Spell.TargetType.Enemy) {
+            if (spell.targetType == Spell.targetType.Enemy) {
                 NPCBehaviour targetBehaviorAsNPC = targetBehavior as NPCBehaviour;
                 if (targetBehaviorAsNPC != null) {
                     if ((targetBehaviorAsNPC.npcData.status == NPC.NPCStatus.Hostile || targetBehaviorAsNPC.npcData.status == NPC.NPCStatus.Neutral) && targetBehaviorAsNPC.state != State.Dead) {
@@ -45,7 +45,7 @@ public class SpellManager : NetworkBehaviour
                 } else {
                     Debug.Log("Invalid Target");
                 }
-            } else if (spell.targetType == Spell.TargetType.Ally) {
+            } else if (spell.targetType == Spell.targetType.Ally) {
                 NPCBehaviour targetBehaviorAsNPC = targetBehavior as NPCBehaviour;
                 if (targetBehaviorAsNPC != null) {
                     if (targetBehaviorAsNPC.npcData.status == NPC.NPCStatus.Friendly) {
@@ -56,15 +56,15 @@ public class SpellManager : NetworkBehaviour
                 } else {
                     PerformSpell(player, spell, this, false);
                 }
-            } else if (spell.targetType == Spell.TargetType.Aura || spell.targetType == Spell.TargetType.Self) {
+            } else if (spell.targetType == Spell.targetType.Aura || spell.targetType == Spell.targetType.Self) {
                 PerformSpell(player, spell, this, false);
-            } else if (spell.targetType == Spell.TargetType.Any) {
+            } else if (spell.targetType == Spell.targetType.Any) {
                 if (targetBehavior != null && targetBehavior.state != State.Dead) {
                     PerformSpell(player, spell, targetBehavior, false);
                 } else {
                     PerformSpell(player, spell, this, false);
                 }
-            } else if (spell.targetType == Spell.TargetType.Area) {
+            } else if (spell.targetType == Spell.targetType.Area) {
                 Debug.Log("Not Implemented Yet!");
             }
 

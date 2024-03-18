@@ -26,7 +26,6 @@ public class Client : MonoBehaviour {
             Debug.Log("Invalid Password!");
             return;
         } else {
-            Debug.Log(username.text);
             API.instance.Login(username.text, password.text);
         }
     }

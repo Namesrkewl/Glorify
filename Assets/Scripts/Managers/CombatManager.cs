@@ -4,6 +4,7 @@ using UnityEngine;
 using FishNet.Connection;
 using FishNet.Object;
 using static UnityEngine.GraphicsBuffer;
+using FishNet.Component.Observing;
 
 public class CombatManager : NetworkBehaviour {
 
@@ -27,12 +28,13 @@ public class CombatManager : NetworkBehaviour {
     public void SendDamage(ITargetable targetObject, int damage) {
         Character target = Database.instance.GetTarget(targetObject);
         EntityUI targetUI = floatingTextManager.GetEntityUI(targetObject);
-        target.SetCurrentHealth(target.GetCurrentHealth() - damage);
+        target.currentHealth -= damage;
         if (damage > 0) {
-            target.SetCurrentHealth(Mathf.Max(target.GetCurrentHealth(), 0));
+            target.currentHealth = Mathf.Max(target.currentHealth, 0);
         } else {
-            target.SetCurrentHealth(Mathf.Min(target.GetCurrentHealth(), target.GetMaxHealth()));
+            target.currentHealth = Mathf.Min(target.currentHealth, target.maxHealth);
         }
         floatingTextManager.CreateCombatText(targetUI, (damage * -1).ToString());
     }
+
 }

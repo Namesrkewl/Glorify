@@ -8,11 +8,12 @@ using Unity.VisualScripting;
 using static UnityEngine.GraphicsBuffer;
 using FishNet.Managing.Logging;
 using GameKit.Dependencies.Utilities;
+using FishNet.CodeGenerating;
 
 public class PlayerTargeting : NetworkBehaviour {
     private List<GameObject> validTargets = new List<GameObject>();
     private int targetIndex = -1;
-    public GameObject currentTarget;
+    [AllowMutableSyncType] public SyncVar<GameObject> currentTarget;
     private const float MAX_TARGET_RANGE = 50.0f;
     private GameObject lastClickedTarget;
     private CameraManager cameraManager;
@@ -64,20 +65,20 @@ public class PlayerTargeting : NetworkBehaviour {
             return;
 
         if (targetObject.GetComponent<ITargetable>() != null) {
-            if (currentTarget != targetObject) {
+            if (currentTarget.Value != targetObject) {
                 ClearTarget(reset);
-                currentTarget = targetObject;
+                currentTarget.Value = targetObject;
 
                 if (arrowPrefab != null) {
                     // Correctly create the rotation so the arrow faces the same y rotation as the target and points downwards (90 degrees on the x axis)
-                    Quaternion arrowRotation = Quaternion.Euler(90, currentTarget.transform.eulerAngles.y, 0);
+                    Quaternion arrowRotation = Quaternion.Euler(90, currentTarget.Value.transform.eulerAngles.y, 0);
                     // Instantiate the arrow with the correct rotation
-                    arrowInstance = Instantiate(arrowPrefab, Vector3.zero, arrowRotation, currentTarget.transform);
+                    arrowInstance = Instantiate(arrowPrefab, Vector3.zero, arrowRotation, currentTarget.Value.transform);
                     UpdateArrowMaterial(false); // Default to normal material when a new target is selected
                 }
 
                 if (isClick) {
-                    lastClickedTarget = currentTarget;
+                    lastClickedTarget = currentTarget.Value;
                 }
             }
 
@@ -91,17 +92,17 @@ public class PlayerTargeting : NetworkBehaviour {
     private void StartAutoAttack(GameObject targetObject, NetworkConnection sender = null) {
         ITargetable target = targetObject.GetComponent<ITargetable>();
         if (target.GetTargetStatus() == TargetStatus.Alive && (target.GetTargetType() == TargetType.Neutral || target.GetTargetType() == TargetType.Hostile)) {
-            Player player = GetComponent<PlayerBehaviour>().player.Value;
-            player.SetActionState(ActionState.AutoAttacking);
+            Player player = GetComponent<PlayerBehaviour>().player.Value as Player;
+            player.actionState = ActionState.AutoAttacking;
             UpdateArrowMaterial(sender, true); // Change to auto-attack material
         }
     }
 
     [ServerRpc]
     public void StopAttack(NetworkConnection sender = null) {
-        Player player = GetComponent<PlayerBehaviour>().player.Value;
-        if (player.GetActionState() == ActionState.AutoAttacking || player.GetActionState() == ActionState.Casting) {
-            player.SetActionState(ActionState.Idle);
+        Player player = GetComponent<PlayerBehaviour>().player.Value as Player;
+        if (player.actionState == ActionState.AutoAttacking || player.actionState == ActionState.Casting) {
+            player.actionState = ActionState.Idle;
             UpdateArrowMaterial(sender, false);
             // Possibly trigger some event or call in PlayerBehaviour
         }
@@ -132,7 +133,7 @@ public class PlayerTargeting : NetworkBehaviour {
             for (int i = 0; i < validTargets.Count; i++) {
                 targetIndex = (targetIndex + 1) % validTargets.Count;
                 GameObject newTarget = validTargets[targetIndex];
-                if (newTarget != currentTarget && CheckTargetLineOfSight(newTarget)) {
+                if (newTarget != currentTarget.Value && CheckTargetLineOfSight(newTarget)) {
                     StopAttack();
                     SelectTarget(newTarget, false, false, false);
                     break;
@@ -179,7 +180,7 @@ public class PlayerTargeting : NetworkBehaviour {
             Destroy(arrowInstance); // Destroy the arrow instance
             arrowInstance = null;
         }
-        currentTarget = null;
+        currentTarget.Value = null;
         if (reset) {
             targetIndex = -1; // Reset the target index
         }
@@ -262,8 +263,8 @@ public class PlayerTargeting : NetworkBehaviour {
     }
 
     public GameObject GetCurrentTarget() {
-        if (currentTarget != null && !currentTarget.IsDestroyed()) {
-            return currentTarget;
+        if (currentTarget.Value != null && !currentTarget.Value.IsDestroyed()) {
+            return currentTarget.Value;
         } else {
             //return playerBehaviour.playerData.Value;
             return null;
@@ -271,8 +272,8 @@ public class PlayerTargeting : NetworkBehaviour {
     }
 
     private void CheckTargetDistance() {
-        if (currentTarget != null) {
-            if (Vector3.Distance(transform.position, currentTarget.transform.position) > MAX_TARGET_RANGE) {
+        if (currentTarget.Value != null) {
+            if (Vector3.Distance(transform.position, currentTarget.Value.transform.position) > MAX_TARGET_RANGE) {
                 ClearTarget(true);
             }
         }

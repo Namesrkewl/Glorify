@@ -19,22 +19,22 @@ public class InformationText : FloatingText
         Identifiable entityData = Database.instance.GetTarget(entity);
         if (entityData as Player != null) {
             Player player = entityData as Player;
-            textMesh.text = player.GetName();
-            if (player.GetTargetStatus() == TargetStatus.Dead) {
+            textMesh.text = player.name;
+            if (player.targetStatus == TargetStatus.Dead) {
                 textMesh.color = deadColor;
-            } else if (player.GetTargetType() == TargetType.Player) {
+            } else if (player.targetType == TargetType.Player) {
                 textMesh.color = friendlyColor;
             }
         } else {
             NPC npc = entityData as NPC;
-            textMesh.text = npc.GetName();
-            if (npc.GetTargetStatus() == TargetStatus.Dead || npc.GetTargetStatus() == TargetStatus.Object) {
+            textMesh.text = npc.name;
+            if (npc.targetStatus == TargetStatus.Dead || npc.targetStatus == TargetStatus.Object) {
                 textMesh.color = deadColor;
-            } else if (npc.GetTargetType() == TargetType.Ally || npc.GetTargetType() == TargetType.Companion || npc.GetTargetType() == TargetType.Friendly) {
+            } else if (npc.targetType == TargetType.Ally || npc.targetType == TargetType.Companion || npc.targetType == TargetType.Friendly) {
                 textMesh.color = friendlyColor;
-            } else if (npc.GetTargetType() == TargetType.Neutral) {
+            } else if (npc.targetType == TargetType.Neutral) {
                 textMesh.color = neutralColor;
-            } else if (npc.GetTargetType() == TargetType.Hostile) {
+            } else if (npc.targetType == TargetType.Hostile) {
                 textMesh.color = hostileColor;
             }
         }

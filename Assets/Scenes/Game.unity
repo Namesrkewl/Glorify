@@ -4633,7 +4633,7 @@ Terrain:
   m_StaticShadowCaster: 0
   m_IgnoreQualitySettings: 0
   m_ReflectionProbeUsage: 1
-  m_MaterialTemplate: {fileID: 10652, guid: 0000000000000000f000000000000000, type: 0}
+  m_MaterialTemplate: {fileID: 2100000, guid: 594ea882c5a793440b60ff72d896021e, type: 2}
   m_BakeLightProbesForTrees: 1
   m_PreserveTreePrototypeLayers: 0
   m_DeringLightProbesForTrees: 1
@@ -7916,6 +7916,7 @@ GameObject:
   m_Component:
   - component: {fileID: 705507995}
   - component: {fileID: 705507994}
+  - component: {fileID: 705507996}
   m_Layer: 0
   m_Name: Directional Light
   m_TagString: Untagged
@@ -8000,6 +8001,29 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 50, y: -30, z: 0}
+--- !u!114 &705507996
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 705507993}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 474bcb49853aa07438625e644c072ee6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_Version: 3
+  m_UsePipelineSettings: 1
+  m_AdditionalLightsShadowResolutionTier: 2
+  m_LightLayerMask: 1
+  m_RenderingLayers: 1
+  m_CustomShadowLayers: 0
+  m_ShadowLayerMask: 1
+  m_ShadowRenderingLayers: 1
+  m_LightCookieSize: {x: 1, y: 1}
+  m_LightCookieOffset: {x: 0, y: 0}
+  m_SoftShadowQuality: 0
 --- !u!1 &748785896
 GameObject:
   m_ObjectHideFlags: 0
@@ -17164,7 +17188,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e8cac635f24954048aad3a6ff9110beb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _componentIndexCache: 3
+  _componentIndexCache: 4
   _addedNetworkObject: {fileID: 1261425136}
   _networkObjectCache: {fileID: 1261425136}
   IgnoredParameters: []
@@ -17737,35 +17761,40 @@ MonoBehaviour:
   _networkObjectCache: {fileID: 1168933683}
   combatManager: {fileID: 0}
   agent: {fileID: 0}
+  scriptableNPC: {fileID: 0}
   npc:
-    targetType: 5
-    characterRace: 0
-    targetStatus: 0
-    combatStatus: 0
-    actionState: 0
-    level: 1
-    maxHealth: 20
-    currentHealth: 20
-    maxMana: 20
-    currentMana: 20
-    armor: 1
-    speed: 7.1
-    minAutoAttackDamage: 1
-    maxAutoAttackDamage: 10
-    autoAttackRange: 5
-    autoAttackCooldown: 3
-    autoAttackTimer: 0
-    location: {x: 2679.8, y: 5, z: 2098.8}
-    scale: {x: 1, y: 1, z: 1}
-    rotation: {x: 0, y: 0, z: 0, w: 0}
-    currentTarget: {fileID: 0}
-    maxAttackRange: 50
-    aggroRange: 10
-    lastAttackPosition: {x: 0, y: 0, z: 0}
-    rarity: 0
-    wealth: 10
-    experience: 0
-    dropTable: []
+    _value:
+      name: 
+      ID: 0
+      targetType: 0
+      characterRace: 0
+      targetStatus: 0
+      combatStatus: 0
+      actionState: 0
+      level: 0
+      maxHealth: 0
+      currentHealth: 0
+      maxMana: 0
+      currentMana: 0
+      armor: 0
+      minAutoAttackDamage: 0
+      maxAutoAttackDamage: 0
+      autoAttackRange: 0
+      speed: 0
+      autoAttackCooldown: 0
+      autoAttackTimer: 0
+      gameObject: {fileID: 0}
+      aggroList: []
+      maxAttackRange: 50
+      aggroRange: 10
+      lastAttackPosition: {x: 0, y: 0, z: 0}
+      rarity: 0
+      wealth: 0
+      experience: 0
+      dropTable: []
+  startingPosition: {x: 0, y: 0, z: 0}
+  startingRotation: {x: 0, y: 0, z: 0, w: 0}
+  startingScale: {x: 0, y: 0, z: 0}
 --- !u!136 &1168933685
 CapsuleCollider:
   m_ObjectHideFlags: 0
@@ -26734,35 +26763,40 @@ MonoBehaviour:
   _networkObjectCache: {fileID: 1261425136}
   combatManager: {fileID: 0}
   agent: {fileID: 0}
+  scriptableNPC: {fileID: 11400000, guid: c0d04b3adabec05469e0ed83428db2f9, type: 2}
   npc:
-    targetType: 5
-    characterRace: 0
-    targetStatus: 0
-    combatStatus: 0
-    actionState: 0
-    level: 1
-    maxHealth: 20
-    currentHealth: 20
-    maxMana: 20
-    currentMana: 20
-    armor: 1
-    speed: 7.1
-    minAutoAttackDamage: 1
-    maxAutoAttackDamage: 10
-    autoAttackRange: 5
-    autoAttackCooldown: 3
-    autoAttackTimer: 0
-    location: {x: 2679.8, y: 5, z: 2098.8}
-    scale: {x: 1, y: 1, z: 1}
-    rotation: {x: 0, y: 0, z: 0, w: 0}
-    currentTarget: {fileID: 0}
-    maxAttackRange: 50
-    aggroRange: 10
-    lastAttackPosition: {x: 0, y: 0, z: 0}
-    rarity: 0
-    wealth: 10
-    experience: 0
-    dropTable: []
+    _value:
+      name: 
+      ID: 0
+      targetType: 0
+      characterRace: 0
+      targetStatus: 0
+      combatStatus: 0
+      actionState: 0
+      level: 0
+      maxHealth: 0
+      currentHealth: 0
+      maxMana: 0
+      currentMana: 0
+      armor: 0
+      minAutoAttackDamage: 0
+      maxAutoAttackDamage: 0
+      autoAttackRange: 0
+      speed: 0
+      autoAttackCooldown: 0
+      autoAttackTimer: 0
+      gameObject: {fileID: 0}
+      aggroList: []
+      maxAttackRange: 50
+      aggroRange: 10
+      lastAttackPosition: {x: 0, y: 0, z: 0}
+      rarity: 0
+      wealth: 0
+      experience: 0
+      dropTable: []
+  startingPosition: {x: 0, y: 0, z: 0}
+  startingRotation: {x: 0, y: 0, z: 0, w: 0}
+  startingScale: {x: 0, y: 0, z: 0}
 --- !u!136 &1261425130
 CapsuleCollider:
   m_ObjectHideFlags: 0
@@ -26917,6 +26951,7 @@ MonoBehaviour:
   - {fileID: 1261425129}
   - {fileID: 1261425135}
   - {fileID: 1261425137}
+  - {fileID: 1261425139}
   - {fileID: 1048646551}
   <SerializedRootNetworkBehaviour>k__BackingField: {fileID: 78385336}
   <NestedRootNetworkBehaviours>k__BackingField: []
@@ -27002,9 +27037,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4bd42eaffecf6f640b9cab9dcbbe5028, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _componentIndexCache: 255
+  _componentIndexCache: 3
   _addedNetworkObject: {fileID: 1261425136}
-  _networkObjectCache: {fileID: 0}
+  _networkObjectCache: {fileID: 1261425136}
 --- !u!1 &1273462849
 GameObject:
   m_ObjectHideFlags: 0
@@ -28176,35 +28211,40 @@ MonoBehaviour:
   _networkObjectCache: {fileID: 1348858000}
   combatManager: {fileID: 0}
   agent: {fileID: 0}
+  scriptableNPC: {fileID: 11400000, guid: c0d04b3adabec05469e0ed83428db2f9, type: 2}
   npc:
-    targetType: 5
-    characterRace: 0
-    targetStatus: 0
-    combatStatus: 0
-    actionState: 0
-    level: 1
-    maxHealth: 20
-    currentHealth: 20
-    maxMana: 20
-    currentMana: 20
-    armor: 1
-    speed: 7.1
-    minAutoAttackDamage: 1
-    maxAutoAttackDamage: 10
-    autoAttackRange: 5
-    autoAttackCooldown: 3
-    autoAttackTimer: 0
-    location: {x: 2679.8, y: 5, z: 2098.8}
-    scale: {x: 1, y: 1, z: 1}
-    rotation: {x: 0, y: 0, z: 0, w: 0}
-    currentTarget: {fileID: 0}
-    maxAttackRange: 50
-    aggroRange: 10
-    lastAttackPosition: {x: 0, y: 0, z: 0}
-    rarity: 0
-    wealth: 10
-    experience: 0
-    dropTable: []
+    _value:
+      name: 
+      ID: 0
+      targetType: 0
+      characterRace: 0
+      targetStatus: 0
+      combatStatus: 0
+      actionState: 0
+      level: 0
+      maxHealth: 0
+      currentHealth: 0
+      maxMana: 0
+      currentMana: 0
+      armor: 0
+      minAutoAttackDamage: 0
+      maxAutoAttackDamage: 0
+      autoAttackRange: 0
+      speed: 0
+      autoAttackCooldown: 0
+      autoAttackTimer: 0
+      gameObject: {fileID: 0}
+      aggroList: []
+      maxAttackRange: 50
+      aggroRange: 10
+      lastAttackPosition: {x: 0, y: 0, z: 0}
+      rarity: 0
+      wealth: 0
+      experience: 0
+      dropTable: []
+  startingPosition: {x: 0, y: 0, z: 0}
+  startingRotation: {x: 0, y: 0, z: 0, w: 0}
+  startingScale: {x: 0, y: 0, z: 0}
 --- !u!136 &1348858002
 CapsuleCollider:
   m_ObjectHideFlags: 0
@@ -29594,35 +29634,40 @@ MonoBehaviour:
   _networkObjectCache: {fileID: 1544442267}
   combatManager: {fileID: 0}
   agent: {fileID: 0}
+  scriptableNPC: {fileID: 0}
   npc:
-    targetType: 5
-    characterRace: 0
-    targetStatus: 0
-    combatStatus: 0
-    actionState: 0
-    level: 1
-    maxHealth: 20
-    currentHealth: 20
-    maxMana: 20
-    currentMana: 20
-    armor: 1
-    speed: 7.1
-    minAutoAttackDamage: 1
-    maxAutoAttackDamage: 10
-    autoAttackRange: 5
-    autoAttackCooldown: 3
-    autoAttackTimer: 0
-    location: {x: 2679.8, y: 5, z: 2098.8}
-    scale: {x: 1, y: 1, z: 1}
-    rotation: {x: 0, y: 0, z: 0, w: 0}
-    currentTarget: {fileID: 0}
-    maxAttackRange: 50
-    aggroRange: 10
-    lastAttackPosition: {x: 0, y: 0, z: 0}
-    rarity: 0
-    wealth: 10
-    experience: 0
-    dropTable: []
+    _value:
+      name: 
+      ID: 0
+      targetType: 0
+      characterRace: 0
+      targetStatus: 0
+      combatStatus: 0
+      actionState: 0
+      level: 0
+      maxHealth: 0
+      currentHealth: 0
+      maxMana: 0
+      currentMana: 0
+      armor: 0
+      minAutoAttackDamage: 0
+      maxAutoAttackDamage: 0
+      autoAttackRange: 0
+      speed: 0
+      autoAttackCooldown: 0
+      autoAttackTimer: 0
+      gameObject: {fileID: 0}
+      aggroList: []
+      maxAttackRange: 50
+      aggroRange: 10
+      lastAttackPosition: {x: 0, y: 0, z: 0}
+      rarity: 0
+      wealth: 0
+      experience: 0
+      dropTable: []
+  startingPosition: {x: 0, y: 0, z: 0}
+  startingRotation: {x: 0, y: 0, z: 0, w: 0}
+  startingScale: {x: 0, y: 0, z: 0}
 --- !u!195 &1544442272
 NavMeshAgent:
   m_ObjectHideFlags: 0

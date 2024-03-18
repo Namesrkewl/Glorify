@@ -19,11 +19,4 @@ public class SpawnManager : NetworkBehaviour {
 
     public GameObject playerPrefab;
 
-    [Server(Logging = LoggingType.Off)]
-    public void SpawnPlayer(Player player, NetworkConnection sender) {
-        GameObject playerObject = Instantiate(playerPrefab, player.GetLocation(), player.GetRotation());
-        playerObject.transform.localScale = player.GetScale();
-        Debug.Log($"Spawning {player.GetName()}!");
-        base.Spawn(playerObject, sender);
-    }
 }

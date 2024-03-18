@@ -13,27 +13,31 @@ MonoBehaviour:
   m_Name: Bandit
   m_EditorClassIdentifier: 
   npc:
-    targetType: 0
+    name: Bandit
+    ID: 0
+    targetType: 5
     characterRace: 0
     targetStatus: 0
     combatStatus: 0
+    actionState: 0
     level: 1
     maxHealth: 20
     currentHealth: 20
     maxMana: 20
     currentMana: 20
     armor: 1
-    speed: 7.1
     minAutoAttackDamage: 1
     maxAutoAttackDamage: 10
     autoAttackRange: 5
+    speed: 7.1
     autoAttackCooldown: 3
-    location: {x: 2679.8, y: 5, z: 2098.8}
-    scale: {x: 1, y: 1, z: 1}
-    rotation: {x: 0, y: 0, z: 0, w: 0}
+    autoAttackTimer: 0
+    gameObject: {fileID: 0}
+    aggroList: []
+    maxAttackRange: 50
+    aggroRange: 10
+    lastAttackPosition: {x: 0, y: 0, z: 0}
     rarity: 0
     wealth: 10
     experience: 0
     dropTable: []
-  name: Bandit
-  ID: 0

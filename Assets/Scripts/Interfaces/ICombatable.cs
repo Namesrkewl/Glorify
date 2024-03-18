@@ -1,10 +1,11 @@
 
 using FishNet.Connection;
 using FishNet.Object;
+using UnityEngine;
 
 public interface ICombatable : ITargetable
 {
-    void ServerEnterCombat(NetworkBehaviour target);
-    void ServerExitCombat(NetworkBehaviour target);
+    void ServerEnterCombat(GameObject target);
+    void ServerExitCombat(GameObject target);
     void ExitAllCombat();
 }

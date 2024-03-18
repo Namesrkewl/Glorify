@@ -66,10 +66,6 @@ public class API : NetworkBehaviour {
     public void CompleteLogin(NetworkConnection conn, Key key) {
         Debug.Log("Login Successful!");
         clientKey = key;
-        if (Client.instance.mainMenu.activeSelf) {
-            Client.instance.mainMenu.SetActive(false);
-            Debug.Log("Disabled the main menu!");
-        }
         LoginPlayer();
     }
 
@@ -106,7 +102,7 @@ public class API : NetworkBehaviour {
                 }
             }
             Database.instance.AddClient(player, sender);
-            CompleteLogin(sender, player.key);
+            CompleteLogin(sender, player.GetKey());
         }
     }
 

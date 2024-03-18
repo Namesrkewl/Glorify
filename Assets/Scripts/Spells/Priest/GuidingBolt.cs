@@ -6,9 +6,9 @@ public class GuidingBolt : Spell {
 
     public override void Cast(ITargetable _caster, ITargetable _target) {
         base.Cast(_caster, _target);
-        if (target.GetCurrentHealth() > 0) {
+        if (target.currentHealth > 0) {
             CombatManager.instance.SendDamage(_target, damage);
-            caster.SetCurrentMana(caster.GetCurrentMana() - manaCost);
+            caster.currentMana -= manaCost;
         }
     }
 

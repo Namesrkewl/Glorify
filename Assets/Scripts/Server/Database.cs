@@ -11,7 +11,7 @@ using FishNet.CodeGenerating;
 using System;
 
 
-public class Database : NetworkBehaviour {
+public class Database : MonoBehaviour {
     public static Database instance;
     private void Awake() {
         if (instance != null) {
@@ -19,21 +19,20 @@ public class Database : NetworkBehaviour {
         } else {
             instance = this;
             UpdateDictionaries();
-            players.OnChange += players_OnChange;
         }
     }
 
     private void UpdateDictionaries() {
         playerSearch.Clear();
         foreach (Player player in players) {
-            playerSearch.Add(player.key, player);
+            playerSearch.Add(player.GetKey(), player);
         }
         clientSearch.Clear();
     }
 
     #region Players
     [AllowMutableSyncType]
-    private SyncList<Player> players = new SyncList<Player>();
+    private List<Player> players = new List<Player>();
     private readonly List<Credentials> credentials = new List<Credentials>();
     private readonly Dictionary<Key, Player> playerSearch = new Dictionary<Key, Player>();
     private readonly Dictionary<Player, NetworkConnection> clientSearch = new Dictionary<Player, NetworkConnection>();
@@ -60,25 +59,19 @@ public class Database : NetworkBehaviour {
     }
 
     public void AddPlayer(Player player, Credentials _credentials) {
-        Debug.Log(player.GetName());
-        Debug.Log(player.key.name);
+        Debug.Log(player.name);
+        Debug.Log(player.GetKey().name);
         players.Add(player);
-        playerSearch.Add(player.key, player);
+        playerSearch.Add(player.GetKey(), player);
         credentials.Add(_credentials);
         users.Add(_credentials, player);
-        playerSearch.TryGetValue(player.key, out Player _player);
-    }
-
-    public void UpdatePlayer(Player player) {
-        Debug.Log(players.Count);
-        players.Dirty(player);
     }
 
     public int GetPlayerCount() {
         return players.Count;
     }
 
-    public SyncList<Player> GetAllPlayers() {
+    public List<Player> GetAllPlayers() {
         return players;
     }
 
@@ -95,45 +88,6 @@ public class Database : NetworkBehaviour {
         clientSearch.Remove(player);
     }
 
-    private void players_OnChange(SyncListOperation op, int index, Player oldPlayer, Player newPlayer, bool asServer) {
-        switch (op) {
-            /* An object was added to the list. Index
-            * will be where it was added, which will be the end
-            * of the list, while newItem is the value added. */
-            case SyncListOperation.Add:
-                break;
-            /* An object was removed from the list. Index
-            * is from where the object was removed. oldItem
-            * will contain the removed item. */
-            case SyncListOperation.RemoveAt:
-                break;
-            /* An object was inserted into the list. Index
-            * is where the obejct was inserted. newItem
-            * contains the item inserted. */
-            case SyncListOperation.Insert:
-                break;
-            /* An object replaced another. Index
-            * is where the object was replaced. oldItem
-            * is the item that was replaced, while
-            * newItem is the item which now has it's place. */
-            case SyncListOperation.Set:
-                UIManager.instance.UpdatePlayerInformation(GetClient(newPlayer), newPlayer);
-                break;
-            /* All objects have been cleared. Index, oldValue,
-            * and newValue are default. */
-            case SyncListOperation.Clear:
-                break;
-            /* When complete calls all changes have been
-            * made to the collection. You may use this
-            * to refresh information in relation to
-            * the list changes, rather than doing so
-            * after every entry change. Like Clear
-            * Index, oldItem, and newItem are all default. */
-            case SyncListOperation.Complete:
-                break;
-        }
-    }
-
     #endregion
 
     public Character GetTarget(ITargetable target) {
@@ -141,11 +95,9 @@ public class Database : NetworkBehaviour {
             Key key = target.GetKey();
             return GetPlayer(key);
         } else if (target as NPCBehaviour) {
-            return (target as NPCBehaviour).npc;
+            return (target as NPCBehaviour).npc.Value;
         } else {
             return null;
         }
     }
-
-
 }

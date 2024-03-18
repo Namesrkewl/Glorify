@@ -77,9 +77,8 @@ public class UIManager : NetworkBehaviour {
         //UpdatePlayerInformation();
     }
 
-    [TargetRpc]
-    public void UpdatePlayerInformation(NetworkConnection receiver, Player player) {
-        characterNameText.text = player.GetName();
+    public void UpdatePlayerInformation(Player player) {
+        characterNameText.text = player.name;
         UpdateHealthBar(player);
         UpdateManaBar(player);
         UpdateStaminaBar(100);
@@ -91,17 +90,17 @@ public class UIManager : NetworkBehaviour {
     }
 
     private void UpdateHealthBar(Player player) {
-        float newHealthPercentage = player.GetCurrentHealth() / player.GetMaxHealth();
+        float newHealthPercentage = player.currentHealth / player.maxHealth;
         healthBar.value = newHealthPercentage;
         healthPercentageText.text = Mathf.RoundToInt(newHealthPercentage * 100) + "%";
-        healthNumericText.text = $"{(int)player.GetCurrentHealth()}/{(int)player.GetMaxHealth()}";
+        healthNumericText.text = $"{(int)player.currentHealth}/{(int)player.maxHealth}";
     }
 
     private void UpdateManaBar(Player player) {
-        float newManaPercentage = player.GetCurrentMana() / player.GetMaxMana();
+        float newManaPercentage = player.currentMana / player.maxMana;
         manaBar.value = newManaPercentage;
         manaPercentageText.text = Mathf.RoundToInt(newManaPercentage * 100) + "%";
-        manaNumericText.text = $"{(int)player.GetCurrentMana()}/{(int)player.GetMaxMana()}";
+        manaNumericText.text = $"{(int)player.currentMana}/{(int)player.maxMana}";
     }
 
     private void UpdateStaminaBar(float newStaminaPercentage) {
@@ -116,18 +115,18 @@ public class UIManager : NetworkBehaviour {
     }
 
     private void UpdateExperienceBar(Player player) {
-        float newExperiencePercentage = player.GetCurrentExperience() / player.GetMaxExperience();
+        float newExperiencePercentage = player.currentExperience / player.maxExperience;
         experienceBar.value = newExperiencePercentage;
         experiencePercentageText.text = Mathf.RoundToInt(newExperiencePercentage * 100) + "%";
-        experienceNumericText.text = $"{(int)player.GetCurrentExperience()}/{(int)player.GetMaxExperience()}";
+        experienceNumericText.text = $"{(int)player.currentExperience}/{(int)player.maxExperience}";
     }
 
     private void UpdateLevel(Player player) {
-        levelText.text = $"Level {player.GetLevel()}";
+        levelText.text = $"Level {player.level}";
     }
 
     private void UpdateClass(Player player) {
-        classText.text = $"{player.GetClassEnum()}";
+        classText.text = $"{player.classEnum}";
     }
 
     private void UpdateBuffsAndDebuffs(Player player) {
