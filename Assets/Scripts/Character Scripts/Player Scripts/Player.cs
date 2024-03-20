@@ -9,6 +9,7 @@ using UnityEngine.InputSystem;
 using UnityEngine.UI;
 using UnityEngine.UIElements;
 
+[Serializable]
 public class Player : Character {
     public PlayerClass playerClass;
     public Classes classEnum;
@@ -33,7 +34,8 @@ public class Player : Character {
     public List<Spell> spells;
     public List<Spell> passives;
 
-    public Player() {
+    [Server(Logging = LoggingType.Off)]
+    public void InitializePlayer() {
         aggroList = new List<GameObject>();
         level = 1;
         currentHealth = 100;
@@ -51,6 +53,7 @@ public class Player : Character {
         wisdom = 5;
     }
 
+    [Server(Logging = LoggingType.Off)]
     public override void Sync() {
         if (playerBehaviour != null) {
             playerBehaviour.player.Dirty();

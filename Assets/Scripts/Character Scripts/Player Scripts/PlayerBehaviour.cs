@@ -19,7 +19,7 @@ using UnityEngine.InputSystem;
 public class PlayerBehaviour : NetworkBehaviour, ICombatable, ICastable, IAbleToAttack, IAbleToCast {
     public PlayerTargeting playerTargeting;
     public PlayerMovement playerMovement;
-    [AllowMutableSyncType] public SyncVar<Player> player;
+    [AllowMutableSyncType] public SyncVar<Player> player = new SyncVar<Player>();
 
     private void Awake() {
         playerTargeting = GetComponent<PlayerTargeting>();
@@ -49,7 +49,10 @@ public class PlayerBehaviour : NetworkBehaviour, ICombatable, ICastable, IAbleTo
     private void SetPlayer(Key key, NetworkConnection sender = null) {
         player.Value = Database.instance.GetPlayer(key);
         player.Value.gameObject = gameObject;
+        player.Value.currentTarget = null;
         player.Value.playerBehaviour = this;
+        player.Value.aggroList.Clear();
+        player.Value.Sync();
     }
 
 
@@ -57,7 +60,7 @@ public class PlayerBehaviour : NetworkBehaviour, ICombatable, ICastable, IAbleTo
         if (player == null || player.Value == null || gameObject.IsDestroyed()) return;
 
         if (IsServerInitialized) {
-            UpdatePlayer(playerTargeting.currentTarget.Value);
+            UpdatePlayer(playerTargeting.currentTarget);
         }
 
         if (!IsOwner) return;

@@ -11,7 +11,6 @@ using UnityEngine.UI;
 public class Character : Identifiable {
     public string name;
     public int ID;
-    //public Image Image { get; set; }
     public TargetType targetType;
     public Races characterRace;
     public TargetStatus targetStatus;
@@ -30,6 +29,7 @@ public class Character : Identifiable {
     public float autoAttackCooldown;
     public float autoAttackTimer = 0f;
     public GameObject gameObject;
+    public GameObject currentTarget;
     public List<DamageTypes> weaknesses;
     public List<DamageTypes> resistances;
     public List<DamageTypes> immunities;
@@ -40,7 +40,8 @@ public class Character : Identifiable {
         return key;
     }
 
+    [Server(Logging = LoggingType.Off)]
     public virtual void Sync() {
-
+        
     }
 }

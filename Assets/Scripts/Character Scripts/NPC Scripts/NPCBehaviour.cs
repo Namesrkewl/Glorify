@@ -49,6 +49,15 @@ public class NPCBehaviour : NetworkBehaviour, ICombatable, ICastable, IAbleToAtt
 
     }
 
+    public override void OnStartClient() {
+        Sync();
+    }
+
+    [ServerRpc(RequireOwnership = false)]
+    private void Sync() {
+        npc.Value.Sync();
+    }
+
     [Server(Logging = LoggingType.Off)]
     private void Update() {
         if (!base.IsServerInitialized) return;
@@ -64,6 +73,7 @@ public class NPCBehaviour : NetworkBehaviour, ICombatable, ICastable, IAbleToAtt
     public void SetStartingValues() {
         npc.Value.SetNPC(scriptableNPC.npc);
         npc.Value.gameObject = gameObject;
+        npc.Value.currentTarget = null;
         npc.Value.npcBehaviour = this;
         startingPosition = gameObject.transform.position;
         startingRotation = gameObject.transform.rotation;

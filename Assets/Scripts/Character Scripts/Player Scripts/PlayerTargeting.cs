@@ -13,7 +13,7 @@ using FishNet.CodeGenerating;
 public class PlayerTargeting : NetworkBehaviour {
     private List<GameObject> validTargets = new List<GameObject>();
     private int targetIndex = -1;
-    [AllowMutableSyncType] public SyncVar<GameObject> currentTarget;
+    public GameObject currentTarget;
     private const float MAX_TARGET_RANGE = 50.0f;
     private GameObject lastClickedTarget;
     private CameraManager cameraManager;
@@ -41,6 +41,11 @@ public class PlayerTargeting : NetworkBehaviour {
         CheckTargetDistance();
     }
 
+    [ServerRpc(RequireOwnership = true)]
+    private void UpdateCurrentTarget(GameObject _currentTarget) {
+        GetComponent<PlayerBehaviour>().player.Value.currentTarget = _currentTarget;
+    }
+
     private void HandleMouseInput() {
         if (Input.GetMouseButtonDown(0)) { // Left click
             SelectWithMouse(false);
@@ -65,56 +70,45 @@ public class PlayerTargeting : NetworkBehaviour {
             return;
 
         if (targetObject.GetComponent<ITargetable>() != null) {
-            if (currentTarget.Value != targetObject) {
+            if (currentTarget != targetObject) {
                 ClearTarget(reset);
-                currentTarget.Value = targetObject;
+                currentTarget = targetObject;
+                UpdateCurrentTarget(currentTarget);
 
                 if (arrowPrefab != null) {
                     // Correctly create the rotation so the arrow faces the same y rotation as the target and points downwards (90 degrees on the x axis)
-                    Quaternion arrowRotation = Quaternion.Euler(90, currentTarget.Value.transform.eulerAngles.y, 0);
+                    Quaternion arrowRotation = Quaternion.Euler(90, currentTarget.transform.eulerAngles.y, 0);
                     // Instantiate the arrow with the correct rotation
-                    arrowInstance = Instantiate(arrowPrefab, Vector3.zero, arrowRotation, currentTarget.Value.transform);
+                    arrowInstance = Instantiate(arrowPrefab, Vector3.zero, arrowRotation, currentTarget.transform);
                     UpdateArrowMaterial(false); // Default to normal material when a new target is selected
                 }
 
                 if (isClick) {
-                    lastClickedTarget = currentTarget.Value;
+                    lastClickedTarget = currentTarget;
                 }
             }
 
             if (isRightClick) {
-                StartAutoAttack(targetObject);
+                ITargetable target = targetObject.GetComponent<ITargetable>();
+                if (target.GetTargetStatus() == TargetStatus.Alive && (target.GetTargetType() == TargetType.Neutral || target.GetTargetType() == TargetType.Hostile)) {
+                    UpdateArrowMaterial(true); // Change to auto-attack material
+                    StartAutoAttack(targetObject);
+                }
             }
         }
     }
 
     [ServerRpc]
     private void StartAutoAttack(GameObject targetObject, NetworkConnection sender = null) {
-        ITargetable target = targetObject.GetComponent<ITargetable>();
-        if (target.GetTargetStatus() == TargetStatus.Alive && (target.GetTargetType() == TargetType.Neutral || target.GetTargetType() == TargetType.Hostile)) {
-            Player player = GetComponent<PlayerBehaviour>().player.Value as Player;
-            player.actionState = ActionState.AutoAttacking;
-            UpdateArrowMaterial(sender, true); // Change to auto-attack material
-        }
+        Player player = GetComponent<PlayerBehaviour>().player.Value;
+        player.actionState = ActionState.AutoAttacking;
     }
 
-    [ServerRpc]
     public void StopAttack(NetworkConnection sender = null) {
-        Player player = GetComponent<PlayerBehaviour>().player.Value as Player;
+        Player player = GetComponent<PlayerBehaviour>().player.Value;
         if (player.actionState == ActionState.AutoAttacking || player.actionState == ActionState.Casting) {
             player.actionState = ActionState.Idle;
-            UpdateArrowMaterial(sender, false);
-            // Possibly trigger some event or call in PlayerBehaviour
-        }
-    }
-
-    [TargetRpc]
-    private void UpdateArrowMaterial(NetworkConnection receiver, bool isAttacking) {
-        if (arrowInstance != null) {
-            Renderer arrowRenderer = arrowInstance.GetComponent<Renderer>();
-            if (arrowRenderer != null) {
-                arrowRenderer.material = isAttacking ? autoAttackArrowMaterial : normalArrowMaterial;
-            }
+            UpdateArrowMaterial(false);
         }
     }
 
@@ -133,7 +127,7 @@ public class PlayerTargeting : NetworkBehaviour {
             for (int i = 0; i < validTargets.Count; i++) {
                 targetIndex = (targetIndex + 1) % validTargets.Count;
                 GameObject newTarget = validTargets[targetIndex];
-                if (newTarget != currentTarget.Value && CheckTargetLineOfSight(newTarget)) {
+                if (newTarget != currentTarget && CheckTargetLineOfSight(newTarget)) {
                     StopAttack();
                     SelectTarget(newTarget, false, false, false);
                     break;
@@ -143,12 +137,15 @@ public class PlayerTargeting : NetworkBehaviour {
     }
 
     private bool CheckTargetLineOfSight(GameObject target) {
+        if (Vector3.Distance(transform.position, target.transform.position) > MAX_TARGET_RANGE) {
+            return false; // Target is too far from the player
+        }
         GameObject targetObject = target;
         Vector3 directionToTarget = targetObject.transform.position - cameraManager.transform.position;
 
         // Raycast to check for obstacles.
         RaycastHit[] hits;
-        float rayDistance = MAX_TARGET_RANGE + Vector3.Distance(transform.position, cameraManager.transform.position);
+        float rayDistance = 200f;
         hits = Physics.RaycastAll(cameraManager.transform.position, directionToTarget.normalized, rayDistance);
 
         // Sort hits by distance to ensure closest hit is checked first.
@@ -157,8 +154,11 @@ public class PlayerTargeting : NetworkBehaviour {
         foreach (var hit in hits) {
             // Ignore the hit if it's this GameObject.
             if (hit.collider.gameObject == gameObject) continue;
+            // Ignore the hit if it's the current target.
+            if (hit.collider.gameObject == currentTarget) continue;
             // Check if the hit object is the target object.
-            if (hit.collider.gameObject == targetObject) {
+            if (hit.collider.gameObject == targetObject) {  
+                Debug.Log(hit.collider.name);
                 return true;
             } else {
                 return false;
@@ -180,7 +180,8 @@ public class PlayerTargeting : NetworkBehaviour {
             Destroy(arrowInstance); // Destroy the arrow instance
             arrowInstance = null;
         }
-        currentTarget.Value = null;
+        currentTarget = null;
+        UpdateCurrentTarget(currentTarget);
         if (reset) {
             targetIndex = -1; // Reset the target index
         }
@@ -218,26 +219,22 @@ public class PlayerTargeting : NetworkBehaviour {
         }
     }
 
-    [ServerRpc]
-    public void ConfirmValidTargets(List<GameObject> targetObjects, NetworkConnection sender = null) {
+    public void ConfirmValidTargets(List<GameObject> targetObjects) {
         List<GameObject> confirmedTargets = new List<GameObject>();
         foreach (GameObject targetObject in targetObjects) {
-            if (targetObject.IsDestroyed() || targetObject == null)
-                continue;
+            if (targetObject.IsDestroyed() || targetObject == null) continue;
             ITargetable target = targetObject.GetComponent<ITargetable>();
-            if (target as PlayerBehaviour != null && target.GetKey().name == null)
-                continue;
+            if (target.GetTarget() == null) continue;
             if (target.GetTargetStatus() == TargetStatus.Alive && (target.GetTargetType() == TargetType.Neutral || target.GetTargetType() == TargetType.Hostile)) {
                 confirmedTargets.Add(targetObject);
             }
         }
         if (confirmedTargets.Count > 0) {
-            AddValidTargets(sender, confirmedTargets);
+            AddValidTargets(confirmedTargets);
         }
     }
 
-    [TargetRpc]
-    private void AddValidTargets(NetworkConnection receiver, List<GameObject> targetObjects) {
+    private void AddValidTargets(List<GameObject> targetObjects) {
         List<GameObject> _validTargets = new List<GameObject>();
         foreach (GameObject targetObject in targetObjects) {
             if (targetObject.IsDestroyed())
@@ -263,8 +260,8 @@ public class PlayerTargeting : NetworkBehaviour {
     }
 
     public GameObject GetCurrentTarget() {
-        if (currentTarget.Value != null && !currentTarget.Value.IsDestroyed()) {
-            return currentTarget.Value;
+        if (currentTarget != null && !currentTarget.IsDestroyed()) {
+            return currentTarget;
         } else {
             //return playerBehaviour.playerData.Value;
             return null;
@@ -272,8 +269,8 @@ public class PlayerTargeting : NetworkBehaviour {
     }
 
     private void CheckTargetDistance() {
-        if (currentTarget.Value != null) {
-            if (Vector3.Distance(transform.position, currentTarget.Value.transform.position) > MAX_TARGET_RANGE) {
+        if (currentTarget != null) {
+            if (Vector3.Distance(transform.position, currentTarget.transform.position) > MAX_TARGET_RANGE) {
                 ClearTarget(true);
             }
         }

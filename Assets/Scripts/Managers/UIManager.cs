@@ -63,20 +63,6 @@ public class UIManager : NetworkBehaviour {
         base.OnStartClient();
     }
 
-    void Update() {
-        if (base.IsClientInitialized)
-            return;
-            //UpdateUI(); // Continuously update UI elements
-    }
-
-    private void UpdateUI() {
-        // characterNameText.text = playerData.name;
-        // Update character portrait if applicable  
-        // characterPortrait.sprite = ...;
-
-        //UpdatePlayerInformation();
-    }
-
     public void UpdatePlayerInformation(Player player) {
         characterNameText.text = player.name;
         UpdateHealthBar(player);
@@ -90,6 +76,9 @@ public class UIManager : NetworkBehaviour {
     }
 
     private void UpdateHealthBar(Player player) {
+        if (player.maxHealth == 0) {
+            return;
+        }
         float newHealthPercentage = player.currentHealth / player.maxHealth;
         healthBar.value = newHealthPercentage;
         healthPercentageText.text = Mathf.RoundToInt(newHealthPercentage * 100) + "%";
@@ -97,6 +86,9 @@ public class UIManager : NetworkBehaviour {
     }
 
     private void UpdateManaBar(Player player) {
+        if (player.maxMana == 0) {
+            return;
+        }
         float newManaPercentage = player.currentMana / player.maxMana;
         manaBar.value = newManaPercentage;
         manaPercentageText.text = Mathf.RoundToInt(newManaPercentage * 100) + "%";
@@ -115,6 +107,9 @@ public class UIManager : NetworkBehaviour {
     }
 
     private void UpdateExperienceBar(Player player) {
+        if (player.maxExperience == 0) {
+            return;
+        }
         float newExperiencePercentage = player.currentExperience / player.maxExperience;
         experienceBar.value = newExperiencePercentage;
         experiencePercentageText.text = Mathf.RoundToInt(newExperiencePercentage * 100) + "%";
