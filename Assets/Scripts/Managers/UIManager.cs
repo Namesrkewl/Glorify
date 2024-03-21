@@ -1,14 +1,9 @@
 using UnityEngine;
 using UnityEngine.UI;
 using TMPro; // Import TextMesh Pro namespace
-using System;
 using System.Collections;
 using UnityEngine.InputSystem;
 using FishNet.Object;
-using FishNet.Object.Synchronizing;
-using FishNet.Connection;
-using FishNet.Managing.Logging;
-using UnityEngine.Rendering.PostProcessing;
 
 public class UIManager : NetworkBehaviour {
 
@@ -35,18 +30,16 @@ public class UIManager : NetworkBehaviour {
     public TMP_Text spellNameText;
     public TMP_Text levelText;
     public TMP_Text classText;
+    public InputActionMap ui;
+    public PlayerControls playerControls;
 
 
     [Header("Combat Info")]
     public GameObject combatInfoPrefab; // Prefab for displaying combat information
-    public PlayerMovement playerMovement;
-    public PlayerTargeting playerTargeting;
-    public PlayerControls playerControls;
-    public InputActionMap ui;
 
     private void Awake() {
-        instance = this;
         playerControls = new PlayerControls();
+        instance = this;
         LeanTween.init(1000); // Initializing LeanTween with a larger amount of tweening spaces
     }
 
@@ -102,7 +95,7 @@ public class UIManager : NetworkBehaviour {
             staminaBar.gameObject.SetActive(true);
             staminaBar.value = newStaminaPercentage;
             staminaPercentageText.text = Mathf.RoundToInt(newStaminaPercentage * 100) + "%";
-            staminaNumericText.text = $"{(int)playerMovement.currentStamina}/{(int)playerMovement.maxStamina}";
+            staminaNumericText.text = $"{(int)PlayerMovement.instance.currentStamina}/{(int)PlayerMovement.instance.maxStamina}";
         }
     }
 

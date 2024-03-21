@@ -1,6 +1,5 @@
 using UnityEngine;
 using FishNet.Object;
-using FishNet.Connection;
 using FishNet.Component.Animating;
 using FishNet.Managing.Logging;
 
@@ -22,11 +21,8 @@ public class NPCAnimation : NetworkBehaviour {
 
     [Server(Logging = LoggingType.Off)]
     void Update() {
-        if (!base.IsServerInitialized)
+        if (!base.IsServerInitialized || !npcBehaviour.isReady.Value || npcBehaviour.npc.Value.targetStatus == TargetStatus.Dead)
             return;
-
-        // Update animation parameters
-        //Debug.Log(playerMovement.horizontal);
 
         SetMovementAnimation();
     }

@@ -1,6 +1,5 @@
 using System;
 using UnityEngine;
-using UnityEngine.InputSystem;
 
 [CreateAssetMenu(fileName = "New Item", menuName = "Inventory/Item"), Serializable]
 public class Item : ScriptableObject, Identifiable {

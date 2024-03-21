@@ -1,13 +1,8 @@
-using FishNet.Demo.AdditiveScenes;
 using FishNet.Managing.Logging;
 using FishNet.Object;
 using System;
 using System.Collections.Generic;
-using Unity.Android.Gradle;
 using UnityEngine;
-using UnityEngine.InputSystem;
-using UnityEngine.UI;
-using UnityEngine.UIElements;
 
 [Serializable]
 public class Player : Character {

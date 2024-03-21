@@ -1,7 +1,5 @@
 using UnityEngine;
 using TMPro;
-using FishNet.Object;
-using FishNet.Connection;
 
 public class FloatingText : MonoBehaviour {
     protected TextMeshProUGUI textMesh;

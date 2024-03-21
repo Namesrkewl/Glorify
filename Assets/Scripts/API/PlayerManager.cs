@@ -5,15 +5,9 @@ using FishNet.Object;
 using FishNet.Managing.Logging;
 using System.Linq;
 using UnityEditor;
-using FishNet.Object.Synchronizing;
-using UnityEngine.InputSystem;
-using GameKit.Dependencies.Utilities;
-using FishNet.Demo.AdditiveScenes;
-
 public class PlayerManager : NetworkBehaviour {
 
     public static PlayerManager instance;
-    private PlayerBehaviour playerBehaviour;
 
     private void Awake() {
         if (instance != null) {

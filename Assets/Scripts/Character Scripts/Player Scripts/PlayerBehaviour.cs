@@ -1,29 +1,41 @@
-using FishNet;
 using FishNet.CodeGenerating;
-using FishNet.Component.Observing;
 using FishNet.Connection;
-using FishNet.Demo.AdditiveScenes;
 using FishNet.Managing.Logging;
 using FishNet.Object;
 using FishNet.Object.Synchronizing;
 using GameKit.Dependencies.Utilities;
-using System;
 using System.Collections.Generic;
-using System.Linq;
 using UnityEngine;
-using UnityEngine.InputSystem;
 
 [RequireComponent(typeof(PlayerMovement))]
 [RequireComponent(typeof(PlayerTargeting))]
 [RequireComponent(typeof(MeshShatter))]
 public class PlayerBehaviour : NetworkBehaviour, ICombatable, ICastable, IAbleToAttack, IAbleToCast {
-    public PlayerTargeting playerTargeting;
-    public PlayerMovement playerMovement;
+    public static PlayerBehaviour instance = null;
+    public MeshShatter meshShatter;
     [AllowMutableSyncType] public SyncVar<Player> player = new SyncVar<Player>();
+    public readonly SyncVar<bool> isReady = new SyncVar<bool>(false);
 
     private void Awake() {
-        playerTargeting = GetComponent<PlayerTargeting>();
-        playerMovement = GetComponent<PlayerMovement>();
+        meshShatter = GetComponent<MeshShatter>();
+        player.OnChange += player_OnChange;
+    }
+
+    private void player_OnChange(Player oldPlayer, Player newPlayer, bool asServer) {
+        if (asServer) {
+            if (!isReady.Value) {
+                isReady.Value = true;
+            }
+        } else {
+            SetReady();
+        }
+    }
+
+    [ServerRpc]
+    private void SetReady() {
+        if (!isReady.Value) {
+            isReady.Value = true;
+        }
     }
 
     public override void OnStartServer() {
@@ -31,18 +43,23 @@ public class PlayerBehaviour : NetworkBehaviour, ICombatable, ICastable, IAbleTo
     }
 
     public override void OnStartClient() {
-        if (!IsOwner)
+        base.OnStartClient();
+        if (!IsOwner) {
+            Sync();
             return;
+        }
+        instance = this;
         if (Client.instance.mainMenu.activeSelf) {
             Client.instance.mainMenu.SetActive(false);
             Debug.Log("Disabled the main menu!");
         }
-        base.OnStartClient();
         SetPlayer(API.instance.clientKey);
         ChatManager.instance.container.SetActive(true);
-        ChatManager.instance.playerControls = playerMovement.playerControls;
-        UIManager.instance.playerMovement = playerMovement;
-        UIManager.instance.playerTargeting = playerTargeting;
+    }
+
+    [ServerRpc(RequireOwnership = false)]
+    private void Sync() {
+        player.Value.Sync();
     }
 
     [ServerRpc]
@@ -57,13 +74,15 @@ public class PlayerBehaviour : NetworkBehaviour, ICombatable, ICastable, IAbleTo
 
 
     private void Update() {
-        if (player == null || player.Value == null || gameObject.IsDestroyed()) return;
+        if (player == null || player.Value == null || gameObject.IsDestroyed() || !isReady.Value) return;
 
         if (IsServerInitialized) {
-            UpdatePlayer(playerTargeting.currentTarget);
+            UpdatePlayer();
         }
 
         if (!IsOwner) return;
+
+        HandleAutoAttack(PlayerTargeting.instance.currentTarget);
 
         UIManager.instance.UpdatePlayerInformation(player.Value);
 
@@ -135,7 +154,7 @@ public class PlayerBehaviour : NetworkBehaviour, ICombatable, ICastable, IAbleTo
 
 
     public Character GetTarget() {
-        return player.Value as Character;
+        return player.Value;
     }
     public ITargetable GetTargetComponent() {
         return this;
@@ -157,11 +176,17 @@ public class PlayerBehaviour : NetworkBehaviour, ICombatable, ICastable, IAbleTo
     #region Server Side
 
     [Server(Logging = LoggingType.Off)]
-    public void UpdatePlayer(GameObject currentTarget) {
+    public void UpdatePlayer() {
+        if (player.Value.targetStatus == TargetStatus.Dead) {
+            return;
+        }
+        if (player.Value.currentHealth <= 0) {
+            Death();
+            return;
+        }
         UpdateCombatState();
         HandleRegeneration();
         LevelUp();
-        HandleAutoAttack(currentTarget);
 
         /*
         if (player.Value.aggroList.Count > 0) {
@@ -340,9 +365,9 @@ public class PlayerBehaviour : NetworkBehaviour, ICombatable, ICastable, IAbleTo
 
     #region Auto Attack Logic
 
-    [Server(Logging = LoggingType.Off)]
+    [ServerRpc]
     private void HandleAutoAttack(GameObject currentTarget) {
-        if (player.Value.actionState == ActionState.AutoAttacking && IsTargetInRangeAndVisible(currentTarget) && player.Value.autoAttackTimer <= 0f) {
+        if (currentTarget != null && player.Value.actionState == ActionState.AutoAttacking && IsTargetInRangeAndVisible(currentTarget) && player.Value.autoAttackTimer <= 0f) {
             PerformAutoAttack(currentTarget);
             player.Value.autoAttackTimer = CalculateAutoAttackCooldown();
             player.Value.Sync();
@@ -414,18 +439,14 @@ public class PlayerBehaviour : NetworkBehaviour, ICombatable, ICastable, IAbleTo
     #region Death Logic
 
     [Server(Logging = LoggingType.Off)]
-    private void Death(Key key) {
+    private void Death() {
         player.Value.targetStatus = TargetStatus.Dead;
-        // Create a temporary list to store characters to exit combat with
-        var tempCharacters = new List<GameObject>(player.Value.aggroList);
-
         ExitAllCombat();
 
-        /*
-        if (player.Value.deathShatter) {
-            player.Value.deathShatter.ShatterCharacter();
+        if (meshShatter) {
+            meshShatter.ShatterCharacter();
         }
-        */
+        Sync();
     }
     #endregion
 

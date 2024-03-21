@@ -1,8 +1,3 @@
-using FishNet;
-using System.Collections;
-using UnityEngine;
-
-
 public class Spell : PlayerAction, Identifiable {
     public SpellType type;
     public enum SpellType {

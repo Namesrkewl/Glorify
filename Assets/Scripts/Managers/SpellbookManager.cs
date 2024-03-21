@@ -1,7 +1,5 @@
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.EventSystems; // For handling UI input events
-using UnityEngine.InputSystem;
 
 public class SpellbookManager : ActionManager {
     public static SpellbookManager instance;

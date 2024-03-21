@@ -4,8 +4,6 @@ using FishNet;
 using FishNet.Broadcast;
 using FishNet.Connection;
 using FishNet.Transporting;
-using Unity.VisualScripting;
-using UnityEngine.InputSystem;
 using UnityEngine.EventSystems;
 
 public class ChatManager: MonoBehaviour {
@@ -15,6 +13,8 @@ public class ChatManager: MonoBehaviour {
     public GameObject container;
     public TMP_InputField playerMessage;
     public PlayerControls playerControls;
+    public delegate void MessageAddedDelegate();
+    public event MessageAddedDelegate onMessageAdded;
     private bool tryingToFocus = false; // New flag to track focus intent
 
     private void Awake() {
@@ -77,6 +77,7 @@ public class ChatManager: MonoBehaviour {
     }
 
     private void OnMessageRecieved(Message msg, Channel channel) {
+        onMessageAdded?.Invoke();
         GameObject finalMessage = Instantiate(msgElement, chatHolder);
         finalMessage.GetComponent<TextMeshProUGUI>().text = msg.username + ":  " + msg.message;
     }

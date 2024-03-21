@@ -1,6 +1,5 @@
 using UnityEngine;
 using UnityEngine.UI;
-using TMPro;
 
 [RequireComponent(typeof(ContentSizeFitter))]
 public class InformationUI : UIElement {

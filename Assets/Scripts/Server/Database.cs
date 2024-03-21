@@ -1,14 +1,8 @@
-using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using FishNet.Object;
 using FishNet.Connection;
-using FishNet.Object.Synchronizing;
-using System.ComponentModel;
 using System.Linq;
-using FishNet.Demo.AdditiveScenes;
 using FishNet.CodeGenerating;
-using System;
 
 
 public class Database : MonoBehaviour {

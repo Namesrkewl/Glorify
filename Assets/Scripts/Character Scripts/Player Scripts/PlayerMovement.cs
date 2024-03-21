@@ -1,12 +1,11 @@
-﻿using System.Collections;
-using UnityEngine;
+﻿using UnityEngine;
 using UnityEngine.InputSystem;
-using FishNet.Connection;
 using FishNet.Object;
 
 [RequireComponent(typeof(NetworkObject))]
 public class PlayerMovement : NetworkBehaviour {
     #region Variables
+    public static PlayerMovement instance = null;
     public float baseMoveSpeed = 7f, sprintModifier = 1.5f, moveSpeed;
     public float turnSpeed = 150f;
     public float jumpForce = 0.5f;
@@ -43,6 +42,7 @@ public class PlayerMovement : NetworkBehaviour {
     public override void OnStartClient() {
         base.OnStartClient();
         if (base.IsOwner) {
+            instance = this;
             controller = GetComponent<CharacterController>();
             playerCamera = GetComponentInChildren<Camera>(true);
             groundLayer = 1;
@@ -74,7 +74,7 @@ public class PlayerMovement : NetworkBehaviour {
     }
 
     void Update() {
-        if (!base.IsClientInitialized)
+        if (!base.IsClientInitialized || !PlayerBehaviour.instance.isReady.Value || PlayerBehaviour.instance.player.Value.targetStatus == TargetStatus.Dead)
             return;
 
         if (ChatManager.instance.playerMessage.isFocused) {

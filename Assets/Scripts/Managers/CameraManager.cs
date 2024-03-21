@@ -4,7 +4,7 @@ using FishNet.Connection;
 using FishNet.Object;
 
 public class CameraManager : NetworkBehaviour {
-
+	public static CameraManager instance = null;
 	public Camera thisCamera;
 	public Transform target;
 	private PlayerMovement playerMovement;
@@ -44,6 +44,7 @@ public class CameraManager : NetworkBehaviour {
     public override void OnStartClient() {
 		base.OnStartClient();
 		if (base.IsOwner) {
+			instance = this;
 			gameObject.SetActive(true);
 			yDeg = 27f;
 			xDeg = 0f;

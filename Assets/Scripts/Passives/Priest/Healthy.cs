@@ -1,4 +1,3 @@
-using System.Collections;
 using UnityEngine;
 
 [CreateAssetMenu(fileName = "Healthy", menuName = "Passive/Priest/Healthy")]

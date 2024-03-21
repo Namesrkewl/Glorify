@@ -1,12 +1,7 @@
-using FishNet.Demo.AdditiveScenes;
 using FishNet.Managing.Logging;
 using FishNet.Object;
-using FishNet.Object.Synchronizing;
-using System;
 using System.Collections.Generic;
-using Unity.Android.Gradle;
 using UnityEngine;
-using UnityEngine.UI;
 
 public class Character : Identifiable {
     public string name;

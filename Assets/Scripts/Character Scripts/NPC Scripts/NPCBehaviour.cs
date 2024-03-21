@@ -1,21 +1,16 @@
 using UnityEngine;
 using UnityEngine.AI;
-using FishNet.Connection;
 using FishNet.Object;
-using System.Linq;
 using System.Collections;
 using System.Collections.Generic;
-using FishNet.Demo.AdditiveScenes;
 using FishNet.Managing.Logging;
-using static UnityEngine.GraphicsBuffer;
-using UnityEngine.TextCore.Text;
 using Unity.VisualScripting;
 using FishNet.Object.Synchronizing;
 using FishNet.CodeGenerating;
-using FishNet;
+using FishNet.Demo.AdditiveScenes;
 
 
-//[RequireComponent(typeof(NavMeshAgent))]
+[RequireComponent(typeof(NavMeshAgent))]
 [RequireComponent(typeof(MeshShatter))]
 public class NPCBehaviour : NetworkBehaviour, ICombatable, ICastable, IAbleToAttack, IAbleToCast {
     #region Variables
@@ -24,10 +19,32 @@ public class NPCBehaviour : NetworkBehaviour, ICombatable, ICastable, IAbleToAtt
     public NavMeshAgent agent;
     public ScriptableNPC scriptableNPC;
     [AllowMutableSyncType] public SyncVar<NPC> npc = new SyncVar<NPC>();
+    public readonly SyncVar<bool> isReady = new SyncVar<bool>(false);
     public Vector3 startingPosition;
     public Quaternion startingRotation;
     public Vector3 startingScale;
     #endregion
+
+    private void Awake() {
+        npc.OnChange += npc_OnChange;
+    }
+
+    private void npc_OnChange(NPC oldPlayer, NPC newPlayer, bool asServer) {
+        if (asServer) {
+            if (!isReady.Value) {
+                isReady.Value = true;
+            }
+        } else {
+            SetReady();
+        }
+    }
+
+    [ServerRpc(RequireOwnership = false)]
+    private void SetReady() {
+        if (!isReady.Value) {
+            isReady.Value = true;
+        }
+    }
 
     public override void OnStartServer() {
         base.OnStartServer();
@@ -60,7 +77,7 @@ public class NPCBehaviour : NetworkBehaviour, ICombatable, ICastable, IAbleToAtt
 
     [Server(Logging = LoggingType.Off)]
     private void Update() {
-        if (!base.IsServerInitialized) return;
+        if (!base.IsServerInitialized || !isReady.Value) return;
 
         if (npc.Value.currentHealth <= 0 && npc.Value.targetStatus != TargetStatus.Dead) {
             Death();
@@ -367,17 +384,7 @@ public class NPCBehaviour : NetworkBehaviour, ICombatable, ICastable, IAbleToAtt
     private void Death() {
         npc.Value.targetStatus = TargetStatus.Dead;
         // Create a temporary list to store characters to exit combat with
-        var tempTargets = new List<GameObject>(npc.Value.aggroList);
-        //PlayerBehaviour tempPlayer = null;
-
-        foreach (var target in tempTargets) {
-            Character character = target.GetComponent<ICombatable>().GetTarget();
-            if (character as Player != null) {
-                Player player = character as Player;
-                player.currentExperience += npc.Value.experience;
-            }
-            ExitCombat(target);
-        }
+        ExitAllCombat();
         // Stop all coroutines to cease current behaviour
         StopAllCoroutines();
 

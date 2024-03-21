@@ -3,14 +3,11 @@ using System.Linq;
 using UnityEngine;
 using FishNet.Connection;
 using FishNet.Object;
-using FishNet.Object.Synchronizing;
 using Unity.VisualScripting;
-using static UnityEngine.GraphicsBuffer;
-using FishNet.Managing.Logging;
 using GameKit.Dependencies.Utilities;
-using FishNet.CodeGenerating;
 
 public class PlayerTargeting : NetworkBehaviour {
+    public static PlayerTargeting instance = null;
     private List<GameObject> validTargets = new List<GameObject>();
     private int targetIndex = -1;
     public GameObject currentTarget;
@@ -18,13 +15,15 @@ public class PlayerTargeting : NetworkBehaviour {
     private GameObject lastClickedTarget;
     private CameraManager cameraManager;
     public GameObject arrowPrefab; // Reference to the arrow prefab
-    private GameObject arrowInstance; // Instance of the arrow object
+    private static GameObject arrowInstance; // Instance of the arrow object
     public Material normalArrowMaterial;
     public Material autoAttackArrowMaterial;
 
     public override void OnStartClient() {
         base.OnStartClient();
         if (base.IsOwner) {
+            instance = this;
+            ClearTarget(true);
             cameraManager = GetComponentInChildren<CameraManager>(true);
         } else {
             GetComponent<PlayerTargeting>().enabled = false;
@@ -32,7 +31,7 @@ public class PlayerTargeting : NetworkBehaviour {
     }
 
     void Update() {
-        if (!base.IsClientInitialized)
+        if (!base.IsClientInitialized || !PlayerBehaviour.instance.isReady.Value)
             return;
         UpdateValidTargets();
         HandleMouseInput();
@@ -57,7 +56,10 @@ public class PlayerTargeting : NetworkBehaviour {
     private void SelectWithMouse(bool isRightClick) {
         Ray ray = cameraManager.thisCamera.ScreenPointToRay(Input.mousePosition);
         RaycastHit hit;
-        if (Physics.Raycast(ray, out hit, MAX_TARGET_RANGE + Vector3.Distance(transform.position, cameraManager.transform.position))) {
+        if (Physics.Raycast(ray, out hit, 200f)) {
+            if (Vector3.Distance(transform.position, hit.transform.position) > MAX_TARGET_RANGE) {
+                return; // Target is too far from the player
+            }
             GameObject hitObject = hit.collider.gameObject;
             if (hitObject != null) {
                 SelectTarget(hitObject, true, isRightClick, true);
@@ -175,7 +177,7 @@ public class PlayerTargeting : NetworkBehaviour {
     }
 
     // Modifications in ClearTarget to remove the arrow
-    private void ClearTarget(bool reset) {
+    public void ClearTarget(bool reset) {
         if (arrowInstance != null) {
             Destroy(arrowInstance); // Destroy the arrow instance
             arrowInstance = null;

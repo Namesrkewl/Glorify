@@ -2,9 +2,7 @@ using FishNet.Managing.Logging;
 using FishNet.Object;
 using System;
 using System.Collections.Generic;
-using Unity.Android.Gradle;
 using UnityEngine;
-using UnityEngine.UI;
 
 public enum Rarity {
     Normal,
