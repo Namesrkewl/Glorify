@@ -13,14 +13,14 @@ public class Spawner : NetworkBehaviour {
     [ServerRpc(RequireOwnership = false)]
     public void SpawnPlayer(Key key, NetworkConnection sender = null) {
         Player player = Database.instance.GetPlayer(key);
-        if (player.gameObject == null) {
-            GameObject playerObject = Instantiate(playerPrefab, new Vector3(2700, 12, 2200), Quaternion.identity);
-            player.gameObject = playerObject;
+        if (player.networkObject == null) {
+            NetworkObject playerObject = Instantiate(playerPrefab, new Vector3(2700, 12, 2200), Quaternion.identity).GetComponent<NetworkObject>();
+            player.networkObject = playerObject;
         } else {
-            GameObject playerObject = Instantiate(player.gameObject, player.gameObject.transform.position, player.gameObject.transform.rotation);
-            player.gameObject = playerObject;
+            NetworkObject playerObject = Instantiate(player.networkObject, player.networkObject.transform.position, player.networkObject.transform.rotation);
+            player.networkObject = playerObject;
         }
         Debug.Log($"Spawning {player.name} with the ID {player.ID}!");
-        Spawn(player.gameObject, sender);
+        Spawn(player.networkObject, sender);
     }
 }

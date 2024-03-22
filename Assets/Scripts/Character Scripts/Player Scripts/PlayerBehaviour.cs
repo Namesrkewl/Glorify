@@ -13,8 +13,10 @@ using UnityEngine;
 public class PlayerBehaviour : NetworkBehaviour, ICombatable, ICastable, IAbleToAttack, IAbleToCast {
     public static PlayerBehaviour instance = null;
     public MeshShatter meshShatter;
-    [AllowMutableSyncType] public SyncVar<Player> player = new SyncVar<Player>();
+    [AllowMutableSyncType] public SyncVar<Player> player;
     public readonly SyncVar<bool> isReady = new SyncVar<bool>(false);
+    public InformationText informationText;
+    public GameObject nameplate;
 
     private void Awake() {
         meshShatter = GetComponent<MeshShatter>();
@@ -22,6 +24,9 @@ public class PlayerBehaviour : NetworkBehaviour, ICombatable, ICastable, IAbleTo
     }
 
     private void player_OnChange(Player oldPlayer, Player newPlayer, bool asServer) {
+        if (!IsOwner) {
+            return;
+        }
         if (asServer) {
             if (!isReady.Value) {
                 isReady.Value = true;
@@ -65,7 +70,7 @@ public class PlayerBehaviour : NetworkBehaviour, ICombatable, ICastable, IAbleTo
     [ServerRpc]
     private void SetPlayer(Key key, NetworkConnection sender = null) {
         player.Value = Database.instance.GetPlayer(key);
-        player.Value.gameObject = gameObject;
+        player.Value.networkObject = NetworkObject;
         player.Value.currentTarget = null;
         player.Value.playerBehaviour = this;
         player.Value.aggroList.Clear();
@@ -78,6 +83,12 @@ public class PlayerBehaviour : NetworkBehaviour, ICombatable, ICastable, IAbleTo
 
         if (IsServerInitialized) {
             UpdatePlayer();
+        }
+
+        if (IsClientInitialized) {
+            if (informationText == null && player.Value.networkObject != null) {
+                InformationText.CreateInformationText(player.Value);
+            }
         }
 
         if (!IsOwner) return;
@@ -100,6 +111,7 @@ public class PlayerBehaviour : NetworkBehaviour, ICombatable, ICastable, IAbleTo
     [ServerRpc]
     private void LoseHealth(NetworkConnection sender = null) {
         player.Value.currentHealth -= 10;
+        CombatManager.instance.SendDamage(Owner, player.Value, -10);
         player.Value.Sync();
     }
     [ServerRpc]

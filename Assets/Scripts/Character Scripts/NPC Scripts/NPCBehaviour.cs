@@ -18,11 +18,13 @@ public class NPCBehaviour : NetworkBehaviour, ICombatable, ICastable, IAbleToAtt
     public CombatManager combatManager;
     public NavMeshAgent agent;
     public ScriptableNPC scriptableNPC;
-    [AllowMutableSyncType] public SyncVar<NPC> npc = new SyncVar<NPC>();
+    [AllowMutableSyncType] public SyncVar<NPC> npc;
     public readonly SyncVar<bool> isReady = new SyncVar<bool>(false);
     public Vector3 startingPosition;
     public Quaternion startingRotation;
     public Vector3 startingScale;
+    public InformationText informationText;
+    public GameObject nameplate;
     #endregion
 
     private void Awake() {
@@ -75,9 +77,18 @@ public class NPCBehaviour : NetworkBehaviour, ICombatable, ICastable, IAbleToAtt
         npc.Value.Sync();
     }
 
-    [Server(Logging = LoggingType.Off)]
     private void Update() {
-        if (!base.IsServerInitialized || !isReady.Value) return;
+        if (npc == null || npc.Value == null || gameObject.IsDestroyed() || !isReady.Value) return;
+
+        if (IsClientInitialized) {
+            if (informationText == null && npc.Value.networkObject != null) {
+                Debug.Log(npc.Value.networkObject);
+                Debug.Log(isReady);
+                InformationText.CreateInformationText(npc.Value);
+            }
+        }
+
+        if (!IsServerInitialized) return;
 
         if (npc.Value.currentHealth <= 0 && npc.Value.targetStatus != TargetStatus.Dead) {
             Death();
@@ -89,7 +100,7 @@ public class NPCBehaviour : NetworkBehaviour, ICombatable, ICastable, IAbleToAtt
     [Server(Logging = LoggingType.Off)]
     public void SetStartingValues() {
         npc.Value.SetNPC(scriptableNPC.npc);
-        npc.Value.gameObject = gameObject;
+        npc.Value.networkObject = NetworkObject;
         npc.Value.currentTarget = null;
         npc.Value.npcBehaviour = this;
         startingPosition = gameObject.transform.position;

@@ -23,20 +23,29 @@ public class Character : Identifiable {
     public float speed;
     public float autoAttackCooldown;
     public float autoAttackTimer = 0f;
-    public GameObject gameObject;
+    public NetworkObject networkObject;
     public GameObject currentTarget;
     public List<DamageTypes> weaknesses;
     public List<DamageTypes> resistances;
     public List<DamageTypes> immunities;
-    public List<GameObject> aggroList = new List<GameObject >();
+    public List<GameObject> aggroList = new List<GameObject>();
 
     public Key GetKey() {
         Key key = new Key { ID = ID, name = name };
         return key;
     }
 
+    public virtual ITargetable GetBehaviour() {
+        return null;
+    }
+
     [Server(Logging = LoggingType.Off)]
     public virtual void Sync() {
         
+    }
+
+    [Client(Logging = LoggingType.Off)]
+    public virtual void SetInformationText(InformationText info) {
+
     }
 }

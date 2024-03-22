@@ -8,14 +8,9 @@ public class FloatingText : MonoBehaviour {
     protected virtual void Awake() {
         textMesh = GetComponent<TextMeshProUGUI>();
     }
-
+    
     public virtual void Initialize(string text) {
-        Debug.Log(textMesh);
         textMesh.text = text;
-    }
-
-    public virtual void Initialize(ITargetable entity) {
-
     }
 
     protected virtual void Update() {

@@ -48,10 +48,19 @@ public class Player : Character {
         wisdom = 5;
     }
 
+    public override ITargetable GetBehaviour() {
+        return playerBehaviour;
+    }
+
     [Server(Logging = LoggingType.Off)]
     public override void Sync() {
         if (playerBehaviour != null) {
             playerBehaviour.player.Dirty();
         }
+    }
+
+    [Client(Logging = LoggingType.Off)]
+    public override void SetInformationText(InformationText info) {
+        playerBehaviour.informationText = info;
     }
 }

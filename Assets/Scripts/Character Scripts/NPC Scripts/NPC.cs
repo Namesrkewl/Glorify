@@ -22,10 +22,19 @@ public class NPC : Character {
     public float experience;
     public List<Item> dropTable;
 
+    public override ITargetable GetBehaviour() {
+        return npcBehaviour;
+    }
+
     public override void Sync() {
         if (npcBehaviour != null) {
             npcBehaviour.npc.Dirty();
         }
+    }
+
+    [Client(Logging = LoggingType.Off)]
+    public override void SetInformationText(InformationText info) {
+        npcBehaviour.informationText = info;
     }
 
     [Server(Logging = LoggingType.Off)]
@@ -67,7 +76,7 @@ public class NPC : Character {
         speed = scriptableNPC.speed;
         autoAttackCooldown = scriptableNPC.autoAttackCooldown;
         autoAttackTimer = scriptableNPC.autoAttackTimer;
-        gameObject = scriptableNPC.gameObject; // Be careful with GameObjects; you usually don't want to copy these directly
+        networkObject = scriptableNPC.networkObject; // Be careful with GameObjects; you usually don't want to copy these directly
 
         // Deep copying lists, ensuring a new list is created and filled with copies of the original items
         if (scriptableNPC.weaknesses != null) {
