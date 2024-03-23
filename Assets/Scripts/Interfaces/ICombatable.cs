@@ -2,7 +2,7 @@ using UnityEngine;
 
 public interface ICombatable : ITargetable
 {
-    void ServerEnterCombat(GameObject target);
-    void ServerExitCombat(GameObject target);
+    void EnterCombat(GameObject target);
+    void ExitCombat(GameObject target);
     void ExitAllCombat();
 }

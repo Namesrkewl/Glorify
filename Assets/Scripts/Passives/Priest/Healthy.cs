@@ -4,8 +4,7 @@ using UnityEngine;
 public class Healthy : Spell {
     public float healthIncreasePercentage = 0.1f; // 10% increase
 
-    public override void Cast(ITargetable _caster, ITargetable _target) {
-        base.Cast(_caster, _target);
+    public override void Cast(Character caster, Character target) {
         int healthIncrease = (int)(target.maxHealth * healthIncreasePercentage);
         target.maxHealth += healthIncrease;
         target.currentHealth += healthIncrease;        

@@ -3,6 +3,7 @@ using FishNet.Example.ColliderRollbacks;
 using FishNet.Managing.Logging;
 using FishNet.Object;
 using System.Collections;
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.Animations;
 
@@ -16,7 +17,7 @@ public class CombatText : FloatingText {
     }
 
     protected override void Update() {
-        if (targetTransform != null || targetTransform.gameObject.activeSelf != false) {
+        if (targetTransform != null && !targetTransform.gameObject.IsDestroyed() && targetTransform.gameObject.activeSelf != false) {
             Vector3 screenPosition = CameraManager.instance.thisCamera.WorldToScreenPoint(targetTransform.position);
             if (screenPosition.z < 0 ) {
                 textMesh.name = null;
@@ -37,6 +38,19 @@ public class CombatText : FloatingText {
             GameObject newCombatTextObj = Instantiate(Resources.Load<GameObject>("Prefabs/Floating Text/Text/CombatText"), FloatingTextManager.instance.CombatTextContainer.transform);
             CombatText newCombatText = newCombatTextObj.GetComponent<CombatText>();
             newCombatText.targetTransform = receiver.networkObject.transform;
+
+            if (newCombatText.targetTransform != null && !newCombatText.targetTransform.gameObject.IsDestroyed() && newCombatText.targetTransform.gameObject.activeSelf != false) {
+                Vector3 screenPosition = CameraManager.instance.thisCamera.WorldToScreenPoint(newCombatText.targetTransform.position);
+                if (screenPosition.z < 0) {
+                    newCombatText.textMesh.name = null;
+                    return;
+                }
+                newCombatText.transform.position = screenPosition + newCombatText.upwardOffset;
+            } else {
+                Destroy(newCombatText.gameObject);
+                return;
+            }
+
 
             // Set the text and initial position
             newCombatText.Initialize(message);

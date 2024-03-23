@@ -98,10 +98,8 @@ public class PlayerBehaviour : NetworkBehaviour, ICombatable, ICastable, IAbleTo
         UIManager.instance.UpdatePlayerInformation(player.Value);
 
         if (Input.GetKeyDown(KeyCode.Backspace)) {
-            Debug.Log("Lost 10 HP!");
             LoseHealth();
         } else if (Input.GetKeyDown(KeyCode.Equals)) {
-            Debug.Log("Lost 10 Mana!");
             LoseMana();
         }
     }
@@ -110,8 +108,7 @@ public class PlayerBehaviour : NetworkBehaviour, ICombatable, ICastable, IAbleTo
 
     [ServerRpc]
     private void LoseHealth(NetworkConnection sender = null) {
-        player.Value.currentHealth -= 10;
-        CombatManager.instance.SendDamage(Owner, player.Value, -10);
+        CombatManager.instance.Damage(player.Value, 10);
         player.Value.Sync();
     }
     [ServerRpc]
@@ -120,6 +117,7 @@ public class PlayerBehaviour : NetworkBehaviour, ICombatable, ICastable, IAbleTo
         player.Value.Sync();
     }
 
+    [Server(Logging = LoggingType.Off)]
     public void EnterCombat(GameObject target) {
         if (!player.Value.aggroList.Contains(target)) {
             player.Value.aggroList.Add(target);
@@ -128,31 +126,22 @@ public class PlayerBehaviour : NetworkBehaviour, ICombatable, ICastable, IAbleTo
             Debug.Log("Player Entering Combat");
 
             // Notify the other character to enter combat
-            if (!target.IsDestroyed()) target.GetComponent<ICombatable>().ServerEnterCombat(gameObject);
+            if (!target.IsDestroyed()) target.GetComponent<ICombatable>().EnterCombat(gameObject);
         }
     }
 
     [Server(Logging = LoggingType.Off)]
-    public void ServerEnterCombat(GameObject target) {
-        EnterCombat(target);
-    }
-
     public void ExitCombat(GameObject target) {
         if (player.Value.aggroList.Contains(target)) {
             player.Value.aggroList.Remove(target);
             player.Value.Sync();
             Debug.Log("Player Exiting Combat");
             // Notify the other character to exit combat
-            if (!target.IsDestroyed()) target.GetComponent<ICombatable>().ServerExitCombat(gameObject);
+            if (!target.IsDestroyed()) target.GetComponent<ICombatable>().ExitCombat(gameObject);
         }
     }
 
     [Server(Logging = LoggingType.Off)]
-    public void ServerExitCombat(GameObject target) {
-        ExitCombat(target);
-    }
-
-    [ServerRpc]
     public void ExitAllCombat() {
         var tempTargets = new List<GameObject>(player.Value.aggroList);
         foreach (GameObject target in tempTargets) {
@@ -390,11 +379,6 @@ public class PlayerBehaviour : NetworkBehaviour, ICombatable, ICastable, IAbleTo
     }
 
     [Server(Logging = LoggingType.Off)]
-    private void PerformAutoAttack(GameObject currentTarget) {
-        ServerPerformAutoAttack(currentTarget);
-    }
-
-    [Server(Logging = LoggingType.Off)]
     private bool IsTargetInRangeAndVisible(GameObject currentTarget) {
         if (currentTarget == null) return false;
 
@@ -423,28 +407,19 @@ public class PlayerBehaviour : NetworkBehaviour, ICombatable, ICastable, IAbleTo
         return Mathf.Max(player.Value.autoAttackCooldown / hasteEffect, 0.5f);
     }
 
-    #region Server RPCs
 
-    [ServerRpc(RequireOwnership = true)]
-    private void ServerPerformAutoAttack(GameObject target, NetworkConnection sender = null) {
-        if (target != null && !target.IsDestroyed()) {
-            if (target.GetComponent<ICombatable>() != null && target.GetComponent<ICombatable>().GetTarget().currentHealth > 0) {
-                EnterCombat(target); // Enter combat with the target
+    [Server(Logging = LoggingType.Off)]
+    private void PerformAutoAttack(GameObject _target, NetworkConnection sender = null) {
+        Character target = _target.GetComponent<ICombatable>().GetTarget();
+        if (_target != null && !_target.IsDestroyed() && target != null && target.currentHealth > 0) {
+            EnterCombat(_target); // Enter combat with the target
 
-                // Auto-attack logic here...
-                int damage = UnityEngine.Random.Range(player.Value.minAutoAttackDamage, player.Value.maxAutoAttackDamage);
-                CombatManager.instance.SendDamage(target.GetComponent<ICombatable>(), damage);
-                ConfirmAutoAttack();
-            }
+            // Auto-attack logic here...
+            int damage = Random.Range(player.Value.minAutoAttackDamage, player.Value.maxAutoAttackDamage);
+            CombatManager.instance.Damage(target, damage, player.Value);
         }
     }
 
-    #endregion
-
-    [ObserversRpc]
-    private void ConfirmAutoAttack() {
-        Debug.Log($"{name} Auto Attacked!");
-    }
 
     #endregion
 
@@ -462,13 +437,6 @@ public class PlayerBehaviour : NetworkBehaviour, ICombatable, ICastable, IAbleTo
     }
     #endregion
 
-    
-
-    #region Rpcs
-
-
-
-    #endregion
 
     #endregion
 }

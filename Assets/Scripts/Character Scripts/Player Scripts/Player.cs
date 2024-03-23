@@ -28,6 +28,10 @@ public class Player : Character {
     public float regenerationCooldownTimer = 0f; // Timer for delaying regeneration
     public List<Spell> spells;
     public List<Spell> passives;
+    /*
+    public List<EventFlag> eventFlags;
+    public List<Quest> quests;
+    */
 
     [Server(Logging = LoggingType.Off)]
     public void InitializePlayer() {
@@ -39,6 +43,10 @@ public class Player : Character {
         maxMana = 100;
         currentExperience = 0;
         maxExperience = 100;
+        minAutoAttackDamage = 1;
+        maxAutoAttackDamage = 10;
+        autoAttackRange = 5f;
+        autoAttackCooldown = 3f;
         classEnum = Classes.Priest;
         playerClass = Resources.Load<PlayerClass>($"Player Classes/{classEnum}");
         targetStatus = TargetStatus.Alive;

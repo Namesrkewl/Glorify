@@ -31,8 +31,8 @@ public class Spell : PlayerAction, Identifiable {
     public int range;
     public bool needsLineOfSight;
     public bool isGlobalCooldown;
-    public Character caster, target;
-    public DamageTypes damageType;
+    public DamageType damageType;
+    public DamageSchool damageSchool;
     public Key key;
     // Other spell properties like damage, duration, etc., can be added here.
 
@@ -40,9 +40,8 @@ public class Spell : PlayerAction, Identifiable {
         //playerBehaviour.HandleSpell(this);
     }
 
-    public virtual void Cast(ITargetable _caster, ITargetable _target) {
-        caster = Database.instance.GetTarget(_caster);
-        target = Database.instance.GetTarget(_target);
+    public virtual void Cast(Character caster, Character target) {
+        
     }
 
     public virtual void RemoveEffect(Character character) {

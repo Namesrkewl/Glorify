@@ -21,21 +21,28 @@ public class CombatManager : NetworkBehaviour {
         }
     }
 
-    public void SendDamage(ITargetable targetObject, int damage) {
-        Character target = Database.instance.GetTarget(targetObject);
-        //EntityUI targetUI = floatingTextManager.GetEntityUI(targetObject);
-        target.currentHealth -= damage;
+    public void Damage(Character receiver, int damage, Character sender = null) {
+        receiver.currentHealth -= damage;
         if (damage > 0) {
-            target.currentHealth = Mathf.Max(target.currentHealth, 0);
+            receiver.currentHealth = Mathf.Max(receiver.currentHealth, 0);
         } else {
-            target.currentHealth = Mathf.Min(target.currentHealth, target.maxHealth);
+            receiver.currentHealth = Mathf.Min(receiver.currentHealth, receiver.maxHealth);
         }
-        //floatingTextManager.CreateCombatText(targetUI, (damage * -1).ToString());
+        receiver.Sync();
+
+        if (receiver as Player != null) {
+            SendDamage(receiver.networkObject.Owner, receiver, damage);
+        }
+        
+        if (sender as Player != null) {
+            SendDamage(sender.networkObject.Owner, receiver, damage);
+        }
     }
 
     [TargetRpc]
-    public void SendDamage(NetworkConnection receiver, Character character, int damage) {
-        CombatText.CreateDamageText(character, damage.ToString());
+    private void SendDamage(NetworkConnection receiver, Character character, int damage) {
+        string _damage = (damage * -1).ToString();
+        CombatText.CreateDamageText(character, _damage);
     }
 
 }

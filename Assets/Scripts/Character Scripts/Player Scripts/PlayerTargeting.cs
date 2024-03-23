@@ -104,12 +104,14 @@ public class PlayerTargeting : NetworkBehaviour {
     private void StartAutoAttack(GameObject targetObject, NetworkConnection sender = null) {
         Player player = GetComponent<PlayerBehaviour>().player.Value;
         player.actionState = ActionState.AutoAttacking;
+        player.Sync();
     }
 
     public void StopAttack(NetworkConnection sender = null) {
         Player player = GetComponent<PlayerBehaviour>().player.Value;
         if (player.actionState == ActionState.AutoAttacking || player.actionState == ActionState.Casting) {
             player.actionState = ActionState.Idle;
+            player.Sync();
             UpdateArrowMaterial(false);
         }
     }

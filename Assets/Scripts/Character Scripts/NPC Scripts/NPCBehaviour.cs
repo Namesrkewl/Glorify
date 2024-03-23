@@ -300,8 +300,7 @@ public class NPCBehaviour : NetworkBehaviour, ICombatable, ICastable, IAbleToAtt
         if (target != null && target.currentHealth > 0) {
             // Auto-attack logic here...
             int damage = Random.Range(npc.Value.minAutoAttackDamage, npc.Value.maxAutoAttackDamage);
-            CombatText.CreateDamageText(target, "-" + damage.ToString());
-            combatManager.SendDamage(_target.GetComponent<ICombatable>(), damage);
+            combatManager.Damage(target, damage);
         }
     }
 
@@ -346,19 +345,14 @@ public class NPCBehaviour : NetworkBehaviour, ICombatable, ICastable, IAbleToAtt
     // Overriding methods...
 
     [Server(Logging = LoggingType.Off)]
-    private void EnterCombat(GameObject target) {
+    public void EnterCombat(GameObject target) {
         if (!npc.Value.aggroList.Contains(target)) {
             npc.Value.aggroList.Add(target);
             npc.Value.combatStatus = CombatStatus.InCombat;
 
             // Notify the other character to enter combat
-            if (!target.IsDestroyed()) target.GetComponent<ICombatable>().ServerEnterCombat(gameObject);
+            if (!target.IsDestroyed()) target.GetComponent<ICombatable>().EnterCombat(gameObject);
         }
-    }
-
-    [Server(Logging = LoggingType.Off)]
-    public void ServerEnterCombat(GameObject target) {
-        EnterCombat(target);
     }
 
     [Server(Logging = LoggingType.Off)]
@@ -366,13 +360,8 @@ public class NPCBehaviour : NetworkBehaviour, ICombatable, ICastable, IAbleToAtt
         if (npc.Value.aggroList.Contains(target)) {
             npc.Value.aggroList.Remove(target);
             // Notify the other character to exit combat
-            if (!target.IsDestroyed()) target.GetComponent<ICombatable>().ServerExitCombat(gameObject);
+            if (!target.IsDestroyed()) target.GetComponent<ICombatable>().ExitCombat(gameObject);
         }
-    }
-
-    [Server(Logging = LoggingType.Off)]
-    public void ServerExitCombat(GameObject target) {
-        ExitCombat(target);
     }
 
     [Server(Logging = LoggingType.Off)]

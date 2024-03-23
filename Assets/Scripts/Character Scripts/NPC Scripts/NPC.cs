@@ -80,21 +80,21 @@ public class NPC : Character {
 
         // Deep copying lists, ensuring a new list is created and filled with copies of the original items
         if (scriptableNPC.weaknesses != null) {
-            weaknesses = new List<DamageTypes>(scriptableNPC.weaknesses);
+            weaknesses = new List<DamageSchool>(scriptableNPC.weaknesses);
         } else {
-            weaknesses = new List<DamageTypes>();
+            weaknesses = new List<DamageSchool>();
         }
 
         if (scriptableNPC.resistances != null) {
-            resistances = new List<DamageTypes>(scriptableNPC.resistances);
+            resistances = new List<DamageSchool>(scriptableNPC.resistances);
         } else {
-            resistances = new List<DamageTypes>();
+            resistances = new List<DamageSchool>();
         }
 
         if (scriptableNPC.immunities != null) {
-            immunities = new List<DamageTypes>(scriptableNPC.immunities);
+            immunities = new List<DamageSchool>(scriptableNPC.immunities);
         } else {
-            immunities = new List<DamageTypes>();
+            immunities = new List<DamageSchool>();
         }
 
         if (scriptableNPC.aggroList != null) {

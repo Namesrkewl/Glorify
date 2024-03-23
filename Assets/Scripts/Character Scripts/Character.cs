@@ -25,10 +25,10 @@ public class Character : Identifiable {
     public float autoAttackTimer = 0f;
     public NetworkObject networkObject;
     public GameObject currentTarget;
-    public List<DamageTypes> weaknesses;
-    public List<DamageTypes> resistances;
-    public List<DamageTypes> immunities;
     public List<GameObject> aggroList = new List<GameObject>();
+    public List<DamageSchool> weaknesses;
+    public List<DamageSchool> resistances;
+    public List<DamageSchool> immunities;
 
     public Key GetKey() {
         Key key = new Key { ID = ID, name = name };
