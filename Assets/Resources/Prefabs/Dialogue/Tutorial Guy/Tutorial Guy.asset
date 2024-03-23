@@ -1,0 +1,32 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 897b8bb0c7ddd2a4da5863903fe03a14, type: 3}
+  m_Name: Tutorial Guy
+  m_EditorClassIdentifier: 
+  dialogue:
+  - branches: 01000000
+    title: Start
+    content: Hey, welcome to Glorify!
+  - branches: 02000000
+    title: Many Things
+    content: This is a demonstration of the dialogue system.
+  - branches: 0300000004000000
+    title: Start
+    content: Have you played an MMORPG before?
+  - branches: 
+    title: Yes, I have!
+    content: That's great! Enjoy your time in Glorify!
+  - branches: 
+    title: No, I have not.
+    content: 'That''s alright! The basic controls are: WASDQE movement, Mouse buttons
+      for camera control, tab to cycle targets, and 1-10 to cast spells. Have fun! '
+  name: Tutorial Guy

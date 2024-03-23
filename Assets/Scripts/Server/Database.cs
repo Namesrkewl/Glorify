@@ -26,11 +26,11 @@ public class Database : MonoBehaviour {
 
     #region Players
     [AllowMutableSyncType]
-    private List<Player> players = new List<Player>();
-    private readonly List<Credentials> credentials = new List<Credentials>();
+    private List<Player> players = new List<Player>(); // This is staying
+    private readonly List<Credentials> credentials = new List<Credentials>(); // This is staying
     private readonly Dictionary<Key, Player> playerSearch = new Dictionary<Key, Player>();
     private readonly Dictionary<Player, NetworkConnection> clientSearch = new Dictionary<Player, NetworkConnection>();
-    private readonly Dictionary<Credentials, Player> users = new Dictionary<Credentials, Player>();
+    private readonly Dictionary<Credentials, Player> users = new Dictionary<Credentials, Player>(); // This is staying
 
     public Player GetPlayer(Key key) {
         playerSearch.TryGetValue(key, out Player player);

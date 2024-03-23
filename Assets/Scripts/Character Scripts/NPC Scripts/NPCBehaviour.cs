@@ -300,6 +300,7 @@ public class NPCBehaviour : NetworkBehaviour, ICombatable, ICastable, IAbleToAtt
         if (target != null && target.currentHealth > 0) {
             // Auto-attack logic here...
             int damage = Random.Range(npc.Value.minAutoAttackDamage, npc.Value.maxAutoAttackDamage);
+            CombatText.CreateDamageText(target, "-" + damage.ToString());
             combatManager.SendDamage(_target.GetComponent<ICombatable>(), damage);
         }
     }

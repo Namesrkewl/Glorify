@@ -53,6 +53,7 @@ public class API : NetworkBehaviour {
         audioSource.Stop();
     }
 
+    [Client(RequireOwnership = false)]
     public void Login(string name, string pass) {
         Debug.Log($"Processing Login...");
         ProcessLogin(name, pass);
