@@ -19,8 +19,10 @@ public enum Classes {
 
 public class PlayerClass : ScriptableObject {
 
+    /*
     public List<Spell> Passives;
     public List<Spell> Spells;
+    */
 
     public void UpdateClass() {
         SetSpells();

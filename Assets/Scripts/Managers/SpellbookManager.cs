@@ -14,10 +14,6 @@ public class SpellbookManager : ActionManager {
         }
     }
 
-    public override void OnStartClient() {
-        base.OnStartClient();
-    }
-
     protected override void HandleSwap(ActionButton secondButton) {
         if (firstButtonSelectedForSwap == null || secondButton == null) return;
         if (!(firstButtonSelectedForSwap as SpellbookButton) || !(secondButton as ActionBarButton)) {

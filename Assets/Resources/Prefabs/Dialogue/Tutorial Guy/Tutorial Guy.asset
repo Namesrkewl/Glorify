@@ -12,6 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 897b8bb0c7ddd2a4da5863903fe03a14, type: 3}
   m_Name: Tutorial Guy
   m_EditorClassIdentifier: 
+  name: Tutorial Guy
   dialogue:
   - branches: 01000000
     title: Start
@@ -28,5 +29,4 @@ MonoBehaviour:
   - branches: 
     title: No, I have not.
     content: 'That''s alright! The basic controls are: WASDQE movement, Mouse buttons
-      for camera control, tab to cycle targets, and 1-10 to cast spells. Have fun! '
-  name: Tutorial Guy
+      for camera control, tab to cycle targets, and 1-0 to cast spells. Have fun! '

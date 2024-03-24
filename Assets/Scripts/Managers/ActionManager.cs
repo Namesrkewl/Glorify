@@ -5,7 +5,7 @@ using UnityEngine.InputSystem;
 using FishNet.Connection;
 using FishNet.Object;
 
-public class ActionManager : NetworkBehaviour
+public class ActionManager : MonoBehaviour
 {
     //private bool isSwapping = false;
     protected ActionButton firstButtonSelectedForSwap;
@@ -16,9 +16,7 @@ public class ActionManager : NetworkBehaviour
         uiManager = FindObjectOfType<UIManager>();
     }
 
-    protected virtual void Update()
-    {
-        if (base.IsClientInitialized)
+    protected virtual void Update() {
             HandleInput();
     }
 

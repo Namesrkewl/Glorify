@@ -1,3 +1,7 @@
+using UnityEngine;
+using MoonSharp.Interpreter;
+using FishNet.Object;
+
 public class Spell : PlayerAction, Identifiable {
     public SpellType type;
     public enum SpellType {
@@ -33,7 +37,7 @@ public class Spell : PlayerAction, Identifiable {
     public bool isGlobalCooldown;
     public DamageType damageType;
     public DamageSchool damageSchool;
-    public Key key;
+    public TextAsset luaSpellScript;
     // Other spell properties like damage, duration, etc., can be added here.
 
     public override void ExecuteAction(PlayerBehaviour playerBehaviour) {
@@ -41,7 +45,16 @@ public class Spell : PlayerAction, Identifiable {
     }
 
     public virtual void Cast(Character caster, Character target) {
-        
+        if (luaSpellScript != null) {
+            Script script = new Script();
+            // Expose C# objects to Lua
+            script.Globals["caster"] = caster;
+            script.Globals["target"] = target;
+            script.Globals["combatManager"] = CombatManager.instance;
+
+            // Execute the Lua script.
+            script.DoString(luaSpellScript.text);
+        }
     }
 
     public virtual void RemoveEffect(Character character) {
@@ -50,17 +63,5 @@ public class Spell : PlayerAction, Identifiable {
 
     public virtual void UpdateDescription() {
 
-    }
-
-    public Spell() {
-        key = new Key();
-    }
-
-    public Key GetKey() {
-        return key;
-    }
-
-    public void SetKey(Key _key) {
-        key = _key;
     }
 }

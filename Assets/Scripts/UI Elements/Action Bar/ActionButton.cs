@@ -4,8 +4,7 @@ using TMPro;
 using FishNet.Object;
 using FishNet.Connection;
 
-public class ActionButton : NetworkBehaviour
-{
+public class ActionButton : MonoBehaviour {
     public PlayerAction assignedAction;
     public Image image;
     protected virtual void Awake() {

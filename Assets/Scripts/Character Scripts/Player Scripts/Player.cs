@@ -6,7 +6,7 @@ using UnityEngine;
 
 [Serializable]
 public class Player : Character {
-    public PlayerClass playerClass;
+    //public PlayerClass playerClass;
     public Classes classEnum;
     public PlayerBehaviour playerBehaviour;
     public int strength;
@@ -26,8 +26,8 @@ public class Player : Character {
     public float currentExperience;
     public bool isSafe;
     public float regenerationCooldownTimer = 0f; // Timer for delaying regeneration
-    public List<Spell> spells;
-    public List<Spell> passives;
+    //public List<Spell> spells;
+    //public List<Spell> passives;
     /*
     public List<EventFlag> eventFlags;
     public List<Quest> quests;
@@ -48,7 +48,6 @@ public class Player : Character {
         autoAttackRange = 5f;
         autoAttackCooldown = 3f;
         classEnum = Classes.Priest;
-        playerClass = Resources.Load<PlayerClass>($"Player Classes/{classEnum}");
         targetStatus = TargetStatus.Alive;
         combatStatus = CombatStatus.OutOfCombat;
         actionState = ActionState.Idle;

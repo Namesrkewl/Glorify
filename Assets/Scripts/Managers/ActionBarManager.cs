@@ -6,23 +6,17 @@ public class ActionBarManager : ActionManager {
     public List<ActionBarButton> actionBarButtons; // Assign in the Inspector
     public PlayerControls playerControls;
 
-    public override void OnStartClient() {
-        base.OnStartClient();
+    private void OnEnable() {
         playerControls = new PlayerControls();
         actionBar = playerControls.ActionBar;
         actionBar.Enable();
     }
-
-    public override void OnStopClient() {
-        base.OnStopClient();
+    private void OnDisable() {
         actionBar.Disable();
     }
 
     protected override void Update() {
-        if (base.IsClientInitialized) {
-            base.Update();
-            UpdateActionBarKeycodes();
-        }
+        UpdateActionBarKeycodes();
     }
 
     protected override void HandleInput() {
