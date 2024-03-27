@@ -74,3 +74,4 @@ crashlytics-build.properties
 # Media assets (vide, images, music, cubemaps) are too large for Git. 
 # These will be uploaded on a cloud (Google Drive) and download with an installer
 /[Aa]ssets/Resources/Media/
+/[Aa]ssets/Resources/Media.zip
