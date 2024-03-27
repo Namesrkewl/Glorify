@@ -1,8 +1,10 @@
 using FishNet.Managing.Logging;
 using FishNet.Object;
+using MoonSharp.Interpreter;
 using System.Collections.Generic;
 using UnityEngine;
 
+[MoonSharpUserData]
 public class Character : Identifiable {
     public string name;
     public int ID;

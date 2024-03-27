@@ -1,6 +1,5 @@
 using UnityEngine;
 
-[CreateAssetMenu(fileName = "Healing Word", menuName = "Spell/Priest/Healing Word")]
 public class HealingWord : Spell {
     public override void Cast(Character caster, Character target) {
         CombatManager.instance.Damage(target, damage);

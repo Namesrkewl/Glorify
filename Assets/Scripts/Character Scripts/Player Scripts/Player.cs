@@ -1,10 +1,11 @@
 using FishNet.Managing.Logging;
 using FishNet.Object;
+using MoonSharp.Interpreter;
 using System;
 using System.Collections.Generic;
 using UnityEngine;
 
-[Serializable]
+[Serializable, MoonSharpUserData]
 public class Player : Character {
     //public PlayerClass playerClass;
     public Classes classEnum;
@@ -26,8 +27,8 @@ public class Player : Character {
     public float currentExperience;
     public bool isSafe;
     public float regenerationCooldownTimer = 0f; // Timer for delaying regeneration
-    //public List<Spell> spells;
-    //public List<Spell> passives;
+    public List<Spell> spells;
+    public List<Spell> passives;
     /*
     public List<EventFlag> eventFlags;
     public List<Quest> quests;
@@ -53,6 +54,7 @@ public class Player : Character {
         actionState = ActionState.Idle;
         vitality = 5;
         wisdom = 5;
+        intelligence = 5;
     }
 
     public override ITargetable GetBehaviour() {

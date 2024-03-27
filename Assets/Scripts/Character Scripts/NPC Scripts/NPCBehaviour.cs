@@ -217,6 +217,7 @@ public class NPCBehaviour : NetworkBehaviour, ICombatable, ICastable, IAbleToAtt
         if (npc.Value.aggroList.Count == 0) {
             StartCoroutine(ResetPosition());
         } else {
+            npc.Value.currentTarget = npc.Value.aggroList[0];
             var target = npc.Value.aggroList[0];
             if (npc.Value.actionState == ActionState.Idle) {
                 npc.Value.actionState = ActionState.AutoAttacking;

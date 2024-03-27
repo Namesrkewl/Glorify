@@ -1,6 +1,5 @@
 using UnityEngine;
 
-[CreateAssetMenu(fileName = "Guiding Bolt", menuName = "Spell/Priest/Guiding Bolt")]
 public class GuidingBolt : Spell {
 
     public override void Cast(Character caster, Character target) {

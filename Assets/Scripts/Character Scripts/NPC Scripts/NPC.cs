@@ -1,5 +1,6 @@
 using FishNet.Managing.Logging;
 using FishNet.Object;
+using MoonSharp.Interpreter;
 using System;
 using System.Collections.Generic;
 using UnityEngine;
@@ -11,7 +12,7 @@ public enum Rarity {
     Boss
 }
 
-[Serializable]
+[Serializable, MoonSharpUserData]
 public class NPC : Character {
     public NPCBehaviour npcBehaviour;
     public float maxAttackRange = 50f;

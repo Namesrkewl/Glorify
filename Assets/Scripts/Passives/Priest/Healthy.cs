@@ -1,6 +1,5 @@
 using UnityEngine;
 
-[CreateAssetMenu(fileName = "Healthy", menuName = "Passive/Priest/Healthy")]
 public class Healthy : Spell {
     public float healthIncreasePercentage = 0.1f; // 10% increase
 
