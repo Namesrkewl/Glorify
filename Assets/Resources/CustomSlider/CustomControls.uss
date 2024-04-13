@@ -2,62 +2,122 @@
     display: none;
     -unity-background-image-tint-color: rgb(112, 109, 102);
     width: 100%;
-    height: 80px;
+    height: 20%;
     background-color: rgb(0, 0, 0);
     background-image: none;
     top: 0;
     position: relative;
-}
-
-#MySlider #unity-drag-container {
-    top: 0;
-    margin-top: 25px;
-    margin-right: 40px;
-    margin-bottom: 25px;
-    margin-left: 40px;
-    background-color: rgb(0, 0, 0);
-    background-image: none;
-    -unity-background-image-tint-color: rgb(196, 196, 196);
-    overflow: hidden;
-    display: flex;
-}
-
-#MySlider #unity-tracker {
-    -unity-background-image-tint-color: rgb(255, 255, 255);
     flex-grow: 1;
-    top: 0;
-    background-color: rgb(0, 0, 0);
-    -unity-background-scale-mode: stretch-to-fill;
-    flex-shrink: 1;
-    width: 100%;
-    height: 100%;
-    margin-top: 0;
-    margin-right: 0;
-    margin-bottom: 0;
     margin-left: 0;
-}
-
-#MySlider #unity-dragger {
-    width: 20px;
-    height: 100%;
-    top: 0;
-    background-color: rgb(255, 197, 0);
-    margin-top: 0;
     margin-right: 0;
+    margin-top: 0;
     margin-bottom: 0;
-    margin-left: 0;
+    padding-left: 0;
+    padding-right: 0;
+    padding-top: 0;
+    padding-bottom: 0;
+    flex-direction: row;
 }
 
 .bar {
-    width: 2000px;
+    width: 100%;
     height: 100%;
-    background-color: rgba(247, 54, 0, 0);
+    -unity-background-image-tint-color: rgb(255, 9, 0);
     align-self: flex-end;
+    display: none;
 }
 
 .newdragger {
     position: absolute;
     width: 80px;
     height: 80px;
-    background-color: rgb(0, 255, 143);
+    background-color: rgba(0, 23, 255, 0);
+    background-image: url("project://database/Assets/Packages/FishNet/Demos/ColliderRollback/Textures/Crosshair.png?fileID=2800000&guid=dd2a76027478bf540b7194d78248edf8&type=3#Crosshair");
+}
+
+#MySlider #unity-drag-container {
+    background-color: rgba(255, 0, 0, 0);
+    position: relative;
+    flex-grow: 1;
+    top: auto;
+    border-left-width: 0;
+    border-right-width: 0;
+    border-top-width: 0;
+    border-bottom-width: 0;
+    padding-left: 0;
+    padding-right: 0;
+    padding-top: 0;
+    padding-bottom: 0;
+    margin-top: 0;
+    margin-bottom: 0;
+    margin-right: 0;
+    margin-left: 0;
+    border-top-left-radius: 15px;
+    border-top-right-radius: 15px;
+    border-bottom-right-radius: 15px;
+    border-bottom-left-radius: 15px;
+    flex-direction: row;
+    width: 100%;
+    height: 100%;
+}
+
+#MySlider #unity-tracker {
+    background-color: rgb(0, 20, 255);
+    top: var(--0px);
+    flex-grow: 0;
+    position: relative;
+    border-left-width: 0;
+    border-right-width: 0;
+    border-top-width: 0;
+    border-bottom-width: 0;
+    margin-left: 0;
+    margin-right: 0;
+    margin-top: 0;
+    margin-bottom: 0;
+    flex-direction: row;
+    width: 100%;
+    height: 100%;
+}
+
+#MySlider #unity-dragger {
+    width: 5%;
+    height: 100%;
+    top: auto;
+    margin-left: 0;
+    margin-right: 0;
+    margin-top: 0;
+    margin-bottom: 0;
+    background-color: rgb(255, 0, 243);
+    padding-top: 0;
+    padding-bottom: 0;
+    flex-direction: column;
+}
+
+.left {
+    width: 33.33333%;
+    height: 100%;
+    -unity-background-image-tint-color: rgb(255, 0, 0);
+    background-color: rgb(255, 0, 0);
+    flex-grow: 1;
+}
+
+.middle {
+    background-color: rgb(255, 244, 0);
+    -unity-background-image-tint-color: rgb(255, 243, 0);
+    width: 33.33333%;
+    height: 100%;
+    flex-grow: 1;
+}
+
+.right {
+    width: 33.33333%;
+    background-color: rgb(0, 255, 0);
+    height: 100%;
+    flex-grow: 1;
+}
+
+#MySlider #VisualElement {
+    flex-grow: 0;
+    flex-direction: row;
+    height: 100%;
 }
