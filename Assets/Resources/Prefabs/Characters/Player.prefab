@@ -108,8 +108,57 @@ MonoBehaviour:
   _componentIndexCache: 0
   _addedNetworkObject: {fileID: 66217266422708035}
   _networkObjectCache: {fileID: 66217266422708035}
-  playerTargeting: {fileID: 0}
-  playerMovement: {fileID: 0}
+  meshShatter: {fileID: 0}
+  player:
+    _value:
+      name: 
+      ID: 0
+      targetType: 0
+      characterRace: 0
+      targetStatus: 0
+      combatStatus: 0
+      actionState: 0
+      level: 0
+      maxHealth: 0
+      currentHealth: 0
+      maxMana: 0
+      currentMana: 0
+      armor: 0
+      minAutoAttackDamage: 0
+      maxAutoAttackDamage: 0
+      autoAttackRange: 0
+      speed: 0
+      autoAttackCooldown: 0
+      autoAttackTimer: 0
+      networkObject: {fileID: 0}
+      currentTarget: {fileID: 0}
+      aggroList: []
+      weaknesses: 
+      resistances: 
+      immunities: 
+      classEnum: 0
+      playerBehaviour: {fileID: 0}
+      strength: 0
+      dexterity: 0
+      intelligence: 0
+      criticalStrike: 0
+      haste: 0
+      wisdom: 0
+      vitality: 0
+      leech: 0
+      avoidance: 0
+      constitution: 0
+      dodge: 0
+      block: 0
+      parry: 0
+      maxExperience: 0
+      currentExperience: 0
+      isSafe: 0
+      regenerationCooldownTimer: 0
+      spells: []
+      passives: []
+  informationText: {fileID: 0}
+  nameplate: {fileID: 0}
 --- !u!114 &66217266422708039
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -203,8 +252,7 @@ MonoBehaviour:
   _componentIndexCache: 2
   _addedNetworkObject: {fileID: 66217266422708035}
   _networkObjectCache: {fileID: 66217266422708035}
-  currentTarget:
-    _value: {fileID: 0}
+  currentTarget: {fileID: 0}
   arrowPrefab: {fileID: 4033213462839429708, guid: 5fb0f4d12717fd34e9b5cf442b8a994e, type: 3}
   normalArrowMaterial: {fileID: 2100000, guid: 895439f95aac2e143ae136c4b204a913, type: 2}
   autoAttackArrowMaterial: {fileID: 2100000, guid: 412d8b84ba7553144abfd28349cada64, type: 2}
@@ -273,6 +321,7 @@ MonoBehaviour:
   - {fileID: 3153021733640087511}
   - {fileID: 112930543655376551}
   - {fileID: 3649542575295749448}
+  - {fileID: 7695065616657874987}
   - {fileID: 66217267334442835}
   <SerializedRootNetworkBehaviour>k__BackingField: {fileID: 0}
   <NestedRootNetworkBehaviours>k__BackingField: []
@@ -408,7 +457,6 @@ MonoBehaviour:
   _componentIndexCache: 5
   _addedNetworkObject: {fileID: 66217266422708035}
   _networkObjectCache: {fileID: 66217266422708035}
-  playerMovement: {fileID: 66217266422708039}
 --- !u!1 &66217267334442839
 GameObject:
   m_ObjectHideFlags: 0
@@ -421,6 +469,7 @@ GameObject:
   - component: {fileID: 66217267334442837}
   - component: {fileID: 66217267334442836}
   - component: {fileID: 66217267334442835}
+  - component: {fileID: 5577524641105121082}
   m_Layer: 0
   m_Name: Player Camera
   m_TagString: MainCamera
@@ -514,7 +563,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 376d7706786a86b48a99a6010b5255f7, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _componentIndexCache: 7
+  _componentIndexCache: 8
   _addedNetworkObject: {fileID: 66217266422708035}
   _networkObjectCache: {fileID: 66217266422708035}
   thisCamera: {fileID: 66217267334442837}
@@ -536,6 +585,50 @@ MonoBehaviour:
   collisionLayers:
     serializedVersion: 2
     m_Bits: 4294967295
+--- !u!114 &5577524641105121082
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 66217267334442839}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a79441f348de89743a2939f4d699eac1, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_RenderShadows: 1
+  m_RequiresDepthTextureOption: 2
+  m_RequiresOpaqueTextureOption: 2
+  m_CameraType: 0
+  m_Cameras: []
+  m_RendererIndex: -1
+  m_VolumeLayerMask:
+    serializedVersion: 2
+    m_Bits: 1
+  m_VolumeTrigger: {fileID: 0}
+  m_VolumeFrameworkUpdateModeOption: 2
+  m_RenderPostProcessing: 0
+  m_Antialiasing: 0
+  m_AntialiasingQuality: 2
+  m_StopNaN: 0
+  m_Dithering: 0
+  m_ClearDepth: 1
+  m_AllowXRRendering: 1
+  m_AllowHDROutput: 1
+  m_UseScreenCoordOverride: 0
+  m_ScreenSizeOverride: {x: 0, y: 0, z: 0, w: 0}
+  m_ScreenCoordScaleBias: {x: 0, y: 0, z: 0, w: 0}
+  m_RequiresDepthTexture: 0
+  m_RequiresColorTexture: 0
+  m_Version: 2
+  m_TaaSettings:
+    m_Quality: 3
+    m_FrameInfluence: 0.1
+    m_JitterScale: 1
+    m_MipBias: 0
+    m_VarianceClampScale: 0.9
+    m_ContrastAdaptiveSharpening: 0
 --- !u!1001 &66217266544444469
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -659,6 +752,9 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 1782702501690864755, guid: 60770bdb4dc667c45bea53db0339dc05, type: 3}
       insertIndex: -1
       addedObject: {fileID: 3649542575295749448}
+    - targetCorrespondingSourceObject: {fileID: 1782702501690864755, guid: 60770bdb4dc667c45bea53db0339dc05, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 7695065616657874987}
   m_SourcePrefab: {fileID: 100100000, guid: 60770bdb4dc667c45bea53db0339dc05, type: 3}
 --- !u!137 &570208842181567079 stripped
 SkinnedMeshRenderer:
@@ -711,6 +807,32 @@ MonoBehaviour:
   _interpolation: 2
   _clientAuthoritative: 1
   _sendToOwner: 0
+--- !u!114 &7695065616657874987
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1753639932139335750}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 74fcb1b826d5e4e468f021d661154680, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _componentIndexCache: 7
+  _addedNetworkObject: {fileID: 66217266422708035}
+  _networkObjectCache: {fileID: 66217266422708035}
+  PlayerCamera: {fileID: 66217267334442837}
+  actionRange: 200
+  actionMask:
+    serializedVersion: 2
+    m_Bits: 8
+  fxTreeHit: {fileID: 0}
+  fxTreeHitBlocks: {fileID: 0}
+  tempTreeMaxDamage: 30
+  tempTreeMinDamage: 10
+  criticalHitChance: 30
+  criticalHitMultiplier: 1.2
 --- !u!137 &2008662535309358004 stripped
 SkinnedMeshRenderer:
   m_CorrespondingSourceObject: {fileID: 1948778455749293953, guid: 60770bdb4dc667c45bea53db0339dc05, type: 3}

@@ -40,13 +40,6 @@ public class CustomSlider : MonoBehaviour
     {
         // Get references to necessary visual elements
         m_Root = GetComponent<UIDocument>().rootVisualElement;
-        /*
-        m_Red = m_Root.Q<VisualElement>("Red");
-        m_Green = m_Root.Q<VisualElement>("Green");
-        m_Blue = m_Root.Q<VisualElement>("Blue");
-        m_Black = m_Root.Q<VisualElement>("Black");
-        m_Yellow = m_Root.Q<VisualElement>("Yellow");
-        */
         m_Slider = m_Root.Q<Slider>("MySlider");
         m_Dragger = m_Slider.Q<VisualElement>("unity-dragger");
         m_Tracker = m_Slider.Q<VisualElement>("unity-tracker");
@@ -63,17 +56,7 @@ public class CustomSlider : MonoBehaviour
 
     void AddElements()
     {
-        //m_Bar = new VisualElement();
-        //m_Dragger.Add(m_Bar);
         m_Dragger.pickingMode = PickingMode.Ignore;
-        //m_Bar.name = "Bar";
-        //m_Bar.AddToClassList("bar");
-
-        m_NewDragger = new VisualElement();
-        m_Slider.Add(m_NewDragger);
-        m_NewDragger.name = "NewDragger";
-        m_NewDragger.AddToClassList("newdragger");
-        m_NewDragger.pickingMode = PickingMode.Ignore;
 
         m_Left = new VisualElement();
         m_Right = new VisualElement();
@@ -98,20 +81,10 @@ public class CustomSlider : MonoBehaviour
 
     void SliderValueChanged(ChangeEvent<float> evt)
     {
-        //m_Bar.style.width = m_Slider.value * m_Slider.contentRect.width;
-        //m_NewDragger.style.left = m_Slider.value * m_Slider.contentRect.width;
-
-        Vector2 dist = new Vector2((m_NewDragger.layout.width - m_Dragger.layout.width) / 2 - 5f, (m_NewDragger.layout.height - m_Dragger.layout.height) / 2 - 5f);
-        Vector2 pos = m_Dragger.parent.LocalToWorld(m_Dragger.transform.position);
-        m_NewDragger.transform.position = m_NewDragger.parent.WorldToLocal(pos - dist);
     }
 
     void SliderInit(GeometryChangedEvent evt)
     {
-        Vector2 dist = new Vector2((m_NewDragger.layout.width - m_Dragger.layout.width) / 2, (m_NewDragger.layout.height - m_Dragger.layout.height) / 2);
-        Vector2 pos = m_Dragger.parent.LocalToWorld(m_Dragger.transform.position);
-        m_NewDragger.transform.position = m_NewDragger.parent.WorldToLocal(pos - dist);
-
         m_Dragger_Size = m_Dragger.layout.width;
 
         // Dragger size relative to the max value of the slider. This is to include the offset of the dragger size in case it overlaps the threshold lines.
@@ -171,9 +144,7 @@ public class CustomSlider : MonoBehaviour
 
         if (Input.GetKeyDown("space"))
         {
-            Debug.Log(m_Slider.value);
             float m_Dragger_Size_Relative_Half = m_Dragger_Size_Relative / 2;
-            Debug.Log(m_Dragger_Size_Relative_Half);
             if (m_Slider.value + m_Dragger_Size_Relative_Half >= 33.3333333333f && m_Slider.value - m_Dragger_Size_Relative_Half <= 66.6666666666f)
             {
                 Debug.Log("space key was pressed in middle");
