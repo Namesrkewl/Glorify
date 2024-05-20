@@ -200,7 +200,7 @@ public class MeshShatter : NetworkBehaviour {
 
             // Assign the cube to the ShatterCubes layer
             cube.layer = LayerMask.NameToLayer("ShatterCubes");
-            rb.GetComponent<Collider>().material = Resources.Load<PhysicMaterial>("Materials/Rigid_Material");
+            rb.GetComponent<Collider>().material = Resources.Load<PhysicsMaterial>("Materials/Rigid_Material");
 
             shatteredCubes.Add(cube);
 
