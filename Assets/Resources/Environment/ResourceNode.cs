@@ -91,7 +91,7 @@ public class ResourceNode : NetworkBehaviour
 
     //public void Harvest(NetworkConnection conn, Inventory playerInventory, bool fullyHarvest = false)
     [ServerRpc(RequireOwnership = false)]
-    public void Harvest(NetworkConnection conn, bool fullyHarvest = false)
+    public void Harvest(NetworkConnection conn, bool fullyHarvest = true)
     {
         Debug.Log("Harvesting");
         HarvestClient(conn);

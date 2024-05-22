@@ -138,9 +138,12 @@ public class TreeHealth : NetworkBehaviour, ITreeDamageable
         //resourceNode.Harvest(localConnection, playerInventory, fullyHarvest);
 
 
-
+        Debug.Log("Tree damage: " + damage);
         Damage(damage);
-        resourceNode.Harvest(localConnection);
+        if (resourceNode.health.Value <= 0)
+        {
+            resourceNode.Harvest(localConnection);
+        }
     }
 
     /*
