@@ -765,6 +765,9 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 1782702501690864755, guid: 60770bdb4dc667c45bea53db0339dc05, type: 3}
       insertIndex: -1
       addedObject: {fileID: 7695065616657874987}
+    - targetCorrespondingSourceObject: {fileID: 1782702501690864755, guid: 60770bdb4dc667c45bea53db0339dc05, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 7810011195234826528}
   m_SourcePrefab: {fileID: 100100000, guid: 60770bdb4dc667c45bea53db0339dc05, type: 3}
 --- !u!137 &570208842181567079 stripped
 SkinnedMeshRenderer:
@@ -841,6 +844,32 @@ MonoBehaviour:
   fxTreeHitBlocks: {fileID: 0}
   tempTreeMaxDamage: 30
   tempTreeMinDamage: 10
+  criticalHitChance: 30
+  criticalHitMultiplier: 1.2
+--- !u!114 &7810011195234826528
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1753639932139335750}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 129900639f8c2d94c94b28e5be311e7a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _componentIndexCache: 255
+  _addedNetworkObject: {fileID: 66217266422708035}
+  _networkObjectCache: {fileID: 0}
+  PlayerCamera: {fileID: 66217267334442837}
+  actionRange: 200
+  actionMask:
+    serializedVersion: 2
+    m_Bits: 1024
+  fxOreHit: {fileID: 0}
+  fxOreHitBlocks: {fileID: 0}
+  tempOreMaxDamage: 30
+  tempOreMinDamage: 10
   criticalHitChance: 30
   criticalHitMultiplier: 1.2
 --- !u!137 &2008662535309358004 stripped
