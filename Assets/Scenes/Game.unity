@@ -2759,7 +2759,7 @@ MonoBehaviour:
   m_PanelSettings: {fileID: 11400000, guid: 5d648095474667743b26001c1359e620, type: 2}
   m_ParentUI: {fileID: 0}
   sourceAsset: {fileID: 9197481963319205126, guid: efa0bbc9af51dab4ba884038e2143cda, type: 3}
-  m_SortingOrder: 0
+  m_SortingOrder: 99999
   m_WorldSpaceSizeMode: 1
   m_WorldSpaceWidth: 1920
   m_WorldSpaceHeight: 1080
@@ -2952,7 +2952,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!114 &312867515
 MonoBehaviour:
   m_ObjectHideFlags: 0
