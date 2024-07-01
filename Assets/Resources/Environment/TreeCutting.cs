@@ -100,6 +100,9 @@ public class TreeCutting : NetworkBehaviour, ITreeDamageable
                 Debug.Log("HitInfo.collider.gameObject: " + HitInfo.collider.gameObject);
                 if (HitInfo.collider.gameObject.GetComponent<TreeHealth>())
                 {
+
+
+
                     Debug.Log("Peach");
                     GameObject localPlayer = PlayerBehaviour.instance.gameObject;
 

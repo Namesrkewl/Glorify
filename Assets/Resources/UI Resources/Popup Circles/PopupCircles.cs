@@ -54,21 +54,21 @@ public class PopupCircles : MonoBehaviour
         // Check if m_ShrinkGrowCircle.style.width is greater than or equal to m_ShrinkGrowCircle.style.maxWidth. If it is, change GrowBoolean to false and call ShrinkGrowCircle
         if (m_ShrinkGrowCircle.resolvedStyle.width >= m_ShrinkGrowCircle.resolvedStyle.maxWidth.value)
         {
-            Debug.Log("Max Width Reached");
+            //Debug.Log("Max Width Reached");
             GrowBoolean = false;
             ShrinkGrowCircle(m_ShrinkGrowCircle, GrowBoolean);
         }
         // Check if m_ShrinkGrowCircle.style.width is less than or equal to m_ShrinkGrowCircle.style.minWidth. If it is, change GrowBoolean to true and call ShrinkGrowCircle
         else if (m_ShrinkGrowCircle.resolvedStyle.width <= m_ShrinkGrowCircle.resolvedStyle.minWidth.value)
         {
-            Debug.Log("Min Width Reached");
+            //Debug.Log("Min Width Reached");
             GrowBoolean = true;
             ShrinkGrowCircle(m_ShrinkGrowCircle, GrowBoolean);
         }
         // If neither of the above conditions are met, call ShrinkGrowCircle
         else
         {
-            Debug.Log("Neither Max or Min Width Reached");
+            //Debug.Log("Neither Max or Min Width Reached");
             ShrinkGrowCircle(m_ShrinkGrowCircle, GrowBoolean);
         }
     }
@@ -152,11 +152,13 @@ public class PopupCircles : MonoBehaviour
             return;
         }
 
-        Debug.Log("Base Circle Clicked");
         if (m_ShrinkGrowCircle.resolvedStyle.width <= m_ShrinkGrowCircle.resolvedStyle.minWidth.value + 50f)
         {
             Debug.Log("Good timing");
+            MiningEvent.instance.currentScore += 2;
         }
+
+        // +1 for good timing
     }
 
 }
