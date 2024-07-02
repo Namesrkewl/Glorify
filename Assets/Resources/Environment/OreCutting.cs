@@ -4,6 +4,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Globalization;
 using Unity.VisualScripting;
+using UnityEditor.PackageManager;
 using UnityEngine;
 using static UnityEngine.GraphicsBuffer;
 
@@ -89,7 +90,7 @@ public class OreCutting : NetworkBehaviour, IOreDamageable
             //Ray CameraRay = PlayerCamera.ViewportPointToRay(new Vector3(0.5f, 0.5f, 0f));
 
             Ray ray = PlayerCamera.ScreenPointToRay(Input.mousePosition);
-            RaycastHit hit;
+            //RaycastHit hit;
             Debug.Log("apple");
             Debug.DrawRay(PlayerCamera.transform.position, PlayerCamera.ScreenToWorldPoint(Input.mousePosition), Color.green);
             Debug.Log("banana");
@@ -106,14 +107,16 @@ public class OreCutting : NetworkBehaviour, IOreDamageable
                     Vector3 directionToTarget = localPlayer.transform.position - HitInfo.transform.position;
                     float angle = Vector3.Angle(localPlayer.transform.forward, directionToTarget);
 
-                    // Print angle
-                    Debug.Log("angle: " + angle);
 
+                    // Print angle -- I forget what I was going to use this for. Maybe for the damage popup?
+                    //Debug.Log("angle: " + angle);
+                    /*
                     if (angle > 90)
                     {
                         Debug.Log("angle is greater than 90");
                         // Cut the Ore here
                     }
+                    */
 
 
                     Debug.Log("Orange");
@@ -124,40 +127,52 @@ public class OreCutting : NetworkBehaviour, IOreDamageable
                     {
                         if (objectToAction.TryGetComponent(out OreHealth oreHealth))
                         {
-                            bool isCriticalHit = Random.Range(0, 100) < criticalHitChance;
-
-                            int damage;
-                            if (isCriticalHit == true)
-                            {
-                                damage = Random.Range(tempOreMaxDamage + 1, Mathf.RoundToInt((float)(tempOreMaxDamage * criticalHitMultiplier)));
-                            }
-                            else
-                            {
-                                damage = Random.Range(tempOreMinDamage, tempOreMaxDamage);
-                            }
-                            //oreHealth.AffectOre(resourceNode, objectToAction, this.LocalConnection, playerInventory, damage, isCriticalHit, HitInfo.point);
-                            oreHealth.AffectOre(resourceNode, objectToAction, this.LocalConnection, damage, isCriticalHit, HitInfo.point);
-
-                            // Check if the variables in the previous line are initialized
-
+                            //DamageOre(oreHealth, resourceNode, objectToAction, HitInfo);
+                            StartMiningEvent(oreHealth, resourceNode, objectToAction, HitInfo);
                         }
                     }
-
-
-                    /* Delete me?
-                    else if (objectToAction.transform.parent.TryGetComponent(out ResourceNode resourceNodeParent))
-                    {
-                        AffectOre(resourceNodeParent, objectToAction.transform.parent.gameObject);
-                        Debug.Log("Apple 2");
-                    }
-                    else if (objectToAction.transform.parent.parent.TryGetComponent(out ResourceNode resourceNodeParentParent))
-                    {
-                        AffectOre(resourceNodeParentParent, objectToAction.transform.parent.parent.gameObject);
-                        Debug.Log("Apple 3");
-                    }
-                    */
                 }
             }
+        }
+    }
+
+    public void StartMiningEvent(OreHealth oreHealth, ResourceNode resourceNode, GameObject objectToAction, RaycastHit HitInfo)
+    {
+        GameObject miningEvent = GameObject.Find("MiningEvent");
+        miningEvent.GetComponent<MiningEvent>().enabled = true;
+        //miningEvent.GetComponent<MiningEvent>().circles = 1;
+
+        // Return CompleteMining() value of MiningEvent
+        miningEvent.GetComponent<MiningEvent>().StartMiningEvent(oreHealth, resourceNode, objectToAction, HitInfo, this.LocalConnection);
+    }
+
+    public static void DamageOre(OreHealth oreHealth, ResourceNode resourceNode, GameObject objectToAction, RaycastHit HitInfo, MiningEvent.MiningScore miningScore, FishNet.Connection.NetworkConnection localConnection)
+    {
+        if (miningScore == MiningEvent.MiningScore.Good || miningScore == MiningEvent.MiningScore.Excellent)
+        {
+            bool isCriticalHit = false;
+
+            int damage = 100;
+
+            /*** FOR ASSIGNING CRITICAL HIT - WORKS BUT REMOVED
+            if (isCriticalHit == true)
+            {
+                damage = Random.Range(tempOreMaxDamage + 1, Mathf.RoundToInt((float)(tempOreMaxDamage * criticalHitMultiplier)));
+            }
+            else
+            {
+                damage = Random.Range(tempOreMinDamage, tempOreMaxDamage);
+            }
+            */
+
+            Debug.Log("Hit was good, doing damage of " + damage + " and critical bool = " + isCriticalHit);
+            //oreHealth.AffectOre(resourceNode, objectToAction, this.LocalConnection, playerInventory, damage, isCriticalHit, HitInfo.point);
+            oreHealth.AffectOre(resourceNode, objectToAction, localConnection, damage, isCriticalHit, HitInfo.point);
+        }
+        else
+        {
+            int damage = 0;
+            oreHealth.AffectOre(resourceNode, objectToAction, localConnection, damage, false, HitInfo.point);
         }
     }
 

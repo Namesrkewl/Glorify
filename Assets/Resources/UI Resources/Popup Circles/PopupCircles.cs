@@ -7,6 +7,11 @@ using System.Collections;
 
 public class PopupCircles : MonoBehaviour
 {
+    /*
+    public static PopupCircles instance;
+    private int circles = 1;
+    */
+
     //Root Visual Element
     private VisualElement m_Root;
 
@@ -16,9 +21,26 @@ public class PopupCircles : MonoBehaviour
     // Circle that shrinks or grows
     private VisualElement m_ShrinkGrowCircle;
 
+    bool isCircles = false;
+
     bool GrowBoolean = false;
 
     private bool canUpdate = false;
+
+    /*
+    private void Awake()
+    {
+        if (instance != null)
+        {
+            Destroy(gameObject);
+        }
+        else
+        {
+            DontDestroyOnLoad(gameObject);
+            instance = this;
+        }
+    }
+    */
 
     IEnumerator EnableUpdateAfterDelay(float delay)
     {
@@ -38,9 +60,7 @@ public class PopupCircles : MonoBehaviour
         m_Root.pickingMode = PickingMode.Ignore;
 
         m_Root.style.flexWrap = Wrap.NoWrap;
-        /* Removed from Slider
-        m_Root = GetComponent<UIDocument>().rootVisualElement;
-        */
+
         Debug.Log("Start Popup Circles");
         Debug.Log(m_Root);
         AddElements();
@@ -75,11 +95,6 @@ public class PopupCircles : MonoBehaviour
 
     void AddElements()
     {
-        /* Removed from Slider
-        m_Dragger.pickingMode = PickingMode.Ignore;
-        */
-
-
         m_BaseCircle = new VisualElement();
         m_ShrinkGrowCircle = new VisualElement();
 
@@ -88,12 +103,6 @@ public class PopupCircles : MonoBehaviour
 
         m_BaseCircle.pickingMode = PickingMode.Position;
         m_ShrinkGrowCircle.pickingMode = PickingMode.Ignore;
-
-        /* Removed from Slider
-        m_Tracker.Add(m_Left);
-        m_Tracker.Add(m_Right);
-        m_Tracker.Add(m_Middle);
-        */
 
         m_BaseCircle.name = "Base Circle 1";
         m_ShrinkGrowCircle.name = "Shrink Grow Circle 1";
@@ -157,6 +166,9 @@ public class PopupCircles : MonoBehaviour
             Debug.Log("Good timing");
             MiningEvent.instance.currentScore += 2;
         }
+
+        MiningEvent.instance.circles -= 1;
+        this.gameObject.SetActive(false);
 
         // +1 for good timing
     }
