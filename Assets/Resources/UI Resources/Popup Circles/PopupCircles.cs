@@ -52,7 +52,7 @@ public class PopupCircles : MonoBehaviour
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
-        StartCoroutine(EnableUpdateAfterDelay(2f));
+        StartCoroutine(EnableUpdateAfterDelay(1f));
 
         m_Root = GetComponent<UIDocument>().rootVisualElement;
         m_Root.style.flexGrow = 0f;

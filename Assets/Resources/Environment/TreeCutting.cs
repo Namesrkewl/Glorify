@@ -4,6 +4,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Globalization;
 using Unity.VisualScripting;
+using UnityEditor.PackageManager;
 using UnityEngine;
 using static UnityEngine.GraphicsBuffer;
 
@@ -38,6 +39,7 @@ public class TreeCutting : NetworkBehaviour, ITreeDamageable
     }
 
     //https://www.youtube.com/watch?v=ql4prUAasEg&t=516s
+    /*
     private void AnimationEvent_OnHit()
     {
         Vector3 colliderSize = Vector3.one * .3f;
@@ -47,11 +49,12 @@ public class TreeCutting : NetworkBehaviour, ITreeDamageable
             if (collider.TryGetComponent<ITreeDamageable>(out ITreeDamageable treeDamageable))
             {
                 // Make damageAmount equal to the damage of the axe
-                int damageAmount = UnityEngine.Random.Range(10, 30);
+                //int damageAmount = UnityEngine.Random.Range(10, 30);
                 //DamagePopup.Create(hitArea.transform.position, damageAmount, damageAmount > 14);
 
                 // Damage Tree
-                treeDamageable.Damage(damageAmount);
+                //treeDamageable.Damage(damageAmount);
+                StartCuttingEvent(treeHealth, resourceNode, objectToAction, HitInfo);
 
                 // Shake Camera
                 //treeShake.GenerateImpulse();
@@ -60,6 +63,51 @@ public class TreeCutting : NetworkBehaviour, ITreeDamageable
                 //Instantiate(fxTreeHit, hitArea.transform.position, Quaternion.identity);
                 //Instantiate(fxTreeHitBlocks, hitArea.transform.position, Quaternion.identity);
             }
+        }
+    }
+    */
+
+    public void StartCuttingEvent(TreeHealth treeHealth, ResourceNode resourceNode, GameObject objectToAction, RaycastHit HitInfo)
+    {
+        //int damageAmount = 100;
+
+        GameObject cuttingEvent = GameObject.Find("CuttingEvent");
+        cuttingEvent.GetComponent<TreeCuttingEvent>().enabled = true;
+        //miningEvent.GetComponent<MiningEvent>().circles = 1;
+
+        // Return CompleteMining() value of MiningEvent
+        cuttingEvent.GetComponent<TreeCuttingEvent>().StartCuttingEvent(treeHealth, resourceNode, objectToAction, HitInfo, this.LocalConnection);
+
+        // Start cutting tree
+    }
+
+    public static void DamageTree(TreeHealth treeHealth, ResourceNode resourceNode, GameObject objectToAction, RaycastHit HitInfo, TreeCuttingEvent.TreeCuttingScore treeCuttingScore, FishNet.Connection.NetworkConnection localConnection)
+    {
+        if (treeCuttingScore == TreeCuttingEvent.TreeCuttingScore.Good || treeCuttingScore == TreeCuttingEvent.TreeCuttingScore.Excellent)
+        {
+            bool isCriticalHit = false;
+
+            int damage = 100;
+
+            /*** FOR ASSIGNING CRITICAL HIT - WORKS BUT REMOVED
+            if (isCriticalHit == true)
+            {
+                damage = Random.Range(tempOreMaxDamage + 1, Mathf.RoundToInt((float)(tempOreMaxDamage * criticalHitMultiplier)));
+            }
+            else
+            {
+                damage = Random.Range(tempOreMinDamage, tempOreMaxDamage);
+            }
+            */
+
+            //Debug.Log("Hit was good, doing damage of " + damage + " and critical bool = " + isCriticalHit);
+            //oreHealth.AffectOre(resourceNode, objectToAction, this.LocalConnection, playerInventory, damage, isCriticalHit, HitInfo.point);
+            treeHealth.AffectTree(resourceNode, objectToAction, localConnection, damage, isCriticalHit, HitInfo.point);
+        }
+        else
+        {
+            int damage = 0;
+            treeHealth.AffectTree(resourceNode, objectToAction, localConnection, damage, false, HitInfo.point);
         }
     }
 
@@ -127,6 +175,7 @@ public class TreeCutting : NetworkBehaviour, ITreeDamageable
                     {
                         if (objectToAction.TryGetComponent(out TreeHealth treeHealth))
                         {
+                            /*
                             bool isCriticalHit = Random.Range(0, 100) < criticalHitChance;
 
                             int damage;
@@ -138,8 +187,36 @@ public class TreeCutting : NetworkBehaviour, ITreeDamageable
                             {
                                 damage = Random.Range(tempTreeMinDamage, tempTreeMaxDamage);
                             }
+                            */
                             //treeHealth.AffectTree(resourceNode, objectToAction, this.LocalConnection, playerInventory, damage, isCriticalHit, HitInfo.point);
-                            treeHealth.AffectTree(resourceNode, objectToAction, this.LocalConnection, damage, isCriticalHit, HitInfo.point);
+                            //treeHealth.AffectTree(resourceNode, objectToAction, this.LocalConnection, damage, isCriticalHit, HitInfo.point);
+
+                            // How can I ensure treeHealth, resourceNode, objectToAction, and HitInfo objects are null before using it in StartCuttingEvent?
+
+                            if (treeHealth == null)
+                            {
+                                Debug.LogError("treeHealth is null");
+                            }
+                            if (resourceNode == null)
+                            {
+                                Debug.LogError("resourceNode is null");
+                            }
+                            if (objectToAction == null)
+                            {
+                                Debug.LogError("objectToAction is null");
+                            }
+                            // 
+                            if (HitInfo.collider == null)
+                            {
+                                Debug.LogError("HitInfo is null");
+                            }
+
+
+
+
+
+
+                            StartCuttingEvent(treeHealth, resourceNode, objectToAction, HitInfo);
 
                             // Check if the variables in the previous line are initialized
 
