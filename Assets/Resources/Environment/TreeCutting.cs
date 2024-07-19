@@ -71,7 +71,7 @@ public class TreeCutting : NetworkBehaviour, ITreeDamageable
     {
         //int damageAmount = 100;
 
-        GameObject cuttingEvent = GameObject.Find("CuttingEvent");
+        GameObject cuttingEvent = GameObject.Find("TreeCuttingEvent");
         cuttingEvent.GetComponent<TreeCuttingEvent>().enabled = true;
         //miningEvent.GetComponent<MiningEvent>().circles = 1;
 
