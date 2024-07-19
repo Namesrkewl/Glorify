@@ -11,7 +11,7 @@ public class TreeCuttingEvent : MonoBehaviour
     public int passingScore;
     public int currentScore;
 
-    [SerializeField] private GameObject actionCirclesPrefab;
+    [SerializeField] private GameObject actionSliderPrefab;
     public enum TreeCuttingScore
     {
         Perfect,
@@ -31,8 +31,8 @@ public class TreeCuttingEvent : MonoBehaviour
     {
         Debug.Log("In StartCuttingEvent");
         // Instantiate actionCirclesPrefab GameObject
-        GameObject actionCircles = Instantiate(actionCirclesPrefab);
-        actionCircles.GetComponent<PopupCircles>().enabled = true;
+        GameObject actionSlider = Instantiate(actionSliderPrefab);
+        //actionSlider.GetComponent<CustomSlider>().enabled = true;
 
         isCutting = true;
         StartCoroutine(Cutting(treeHealth, resourceNode, objectToAction, HitInfo, localConnection));
@@ -57,7 +57,7 @@ public class TreeCuttingEvent : MonoBehaviour
     {
         while (isCutting)
         {
-            Debug.Log("Inside Mining() function. Circles count = " + circles);
+            //Debug.Log("Inside Cutting() function. Circles count = " + circles);
             if (circles <= 0)
             {
                 Debug.Log("Circles is less than or equal to 0.");
@@ -67,7 +67,7 @@ public class TreeCuttingEvent : MonoBehaviour
             }
             yield return null;
         }
-        Debug.Log("Mining Coroutine ending.");
+        Debug.Log("Cutting Coroutine ending.");
         this.gameObject.SetActive(false);
         CompleteCutting(treeHealth, resourceNode, objectToAction, HitInfo, localConnection);
         yield return null;
@@ -77,18 +77,19 @@ public class TreeCuttingEvent : MonoBehaviour
     {
         if (currentScore >= passingScore)
         {
-            Debug.Log("Mining complete. Score of Excellent=1.");
+            Debug.Log("Cutting complete. Score of Excellent=1.");
             cuttingScore = TreeCuttingScore.Excellent;
             TreeCutting.DamageTree(treeHealth, resourceNode, objectToAction, HitInfo, cuttingScore, localConnection);
             return;
         }
 
-        Debug.Log("Mining failed.");
+        Debug.Log("Cutting failed.");
         cuttingScore = TreeCuttingScore.Failed;
+        TreeCutting.DamageTree(treeHealth, resourceNode, objectToAction, HitInfo, cuttingScore, localConnection);
     }
 
     void Start()
     {
-        //StartCoroutine(Mining());
+        //StartCoroutine(Cutting());
     }
 }

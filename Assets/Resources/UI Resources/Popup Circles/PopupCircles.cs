@@ -161,14 +161,26 @@ public class PopupCircles : MonoBehaviour
             return;
         }
 
-        if (m_ShrinkGrowCircle.resolvedStyle.width <= m_ShrinkGrowCircle.resolvedStyle.minWidth.value + 50f)
+        if (m_ShrinkGrowCircle.resolvedStyle.width <= m_ShrinkGrowCircle.resolvedStyle.minWidth.value + 25f)
+        {
+            Debug.Log("Excellent timing");
+            MiningEvent.instance.currentScore += 3;
+        }
+        else if (m_ShrinkGrowCircle.resolvedStyle.width <= m_ShrinkGrowCircle.resolvedStyle.minWidth.value + 50f)
         {
             Debug.Log("Good timing");
             MiningEvent.instance.currentScore += 2;
         }
+        else
+        {
+            Debug.Log("Bad timing");
+            MiningEvent.instance.currentScore += 1;
+        }
 
         MiningEvent.instance.circles -= 1;
-        this.gameObject.SetActive(false);
+        // Disable MiningEvent script on this.gameObject
+        Destroy(this.gameObject);
+        //this.gameObject.SetActive(false);
 
         // +1 for good timing
     }

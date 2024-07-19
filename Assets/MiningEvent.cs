@@ -57,18 +57,18 @@ public class MiningEvent : MonoBehaviour
     {
         while (isMining)
         {
-            Debug.Log("Inside Mining() function. Circles count = " + circles);
+            //Debug.Log("Inside Mining() function. Circles count = " + circles);
             if (circles <= 0)
             {
-                Debug.Log("Circles is less than or equal to 0.");
+                //Debug.Log("Circles is less than or equal to 0.");
                 isMining = false;
                 CompleteMining(oreHealth, resourceNode, objectToAction, HitInfo, localConnection);
                 //yield return null;
             }
             yield return null;
         }
-        Debug.Log("Mining Coroutine ending.");
-        this.gameObject.SetActive(false);
+        //Debug.Log("Mining Coroutine ending.");
+        //this.gameObject.SetActive(false);
         CompleteMining(oreHealth, resourceNode, objectToAction, HitInfo, localConnection);
         yield return null;
     }
@@ -85,6 +85,7 @@ public class MiningEvent : MonoBehaviour
 
         Debug.Log("Mining failed.");
         miningScore = MiningScore.Failed;
+        OreCutting.DamageOre(oreHealth, resourceNode, objectToAction, HitInfo, miningScore, localConnection);
     }
 
     void Start()

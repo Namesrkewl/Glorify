@@ -44,6 +44,16 @@ public class CustomSlider : MonoBehaviour
         m_Dragger = m_Slider.Q<VisualElement>("unity-dragger");
         m_Tracker = m_Slider.Q<VisualElement>("unity-tracker");
 
+        //Make all VisualElements PickingMode.Ignore so mouse clicks don't move slider
+        m_Root.pickingMode = PickingMode.Ignore;
+        m_Slider.pickingMode = PickingMode.Ignore;
+        m_Tracker.pickingMode = PickingMode.Ignore;
+        m_Dragger.pickingMode = PickingMode.Ignore;
+        m_Slider.Q<Label>("").pickingMode = PickingMode.Ignore;
+        m_Slider.Q<VisualElement>("unity-drag-container").pickingMode = PickingMode.Ignore;
+        m_Slider.Q<VisualElement>("unity-dragger-border").pickingMode = PickingMode.Ignore;
+
+
         AddElements();
 
         m_Slider.RegisterCallback<ChangeEvent<float>>(SliderValueChanged);
@@ -56,11 +66,15 @@ public class CustomSlider : MonoBehaviour
 
     void AddElements()
     {
-        m_Dragger.pickingMode = PickingMode.Ignore;
-
         m_Left = new VisualElement();
         m_Right = new VisualElement();
         m_Middle = new VisualElement();
+
+        //Make all VisualElement PickingMode.Ignore so mouse clicks don't move slider
+        m_Left.pickingMode = PickingMode.Ignore;
+        m_Right.pickingMode = PickingMode.Ignore;
+        m_Middle.pickingMode = PickingMode.Ignore;
+
 
         m_Tracker.Add(m_Left);
         m_Tracker.Add(m_Right);
@@ -73,10 +87,6 @@ public class CustomSlider : MonoBehaviour
         m_Left.AddToClassList("left");
         m_Right.AddToClassList("right");
         m_Middle.AddToClassList("middle");
-
-
-
-
     }
 
     void SliderValueChanged(ChangeEvent<float> evt)
@@ -148,14 +158,17 @@ public class CustomSlider : MonoBehaviour
             if (m_Slider.value + m_Dragger_Size_Relative_Half >= 33.3333333333f && m_Slider.value - m_Dragger_Size_Relative_Half <= 66.6666666666f)
             {
                 Debug.Log("space key was pressed in middle");
+                this.gameObject.GetComponent<TreeCuttingEvent>().enabled = false;
             }
             else if (m_Slider.value - m_Dragger_Size_Relative_Half < 33.3333333333f)
             {
                 Debug.Log("space key was pressed on left side");
+                this.gameObject.GetComponent<TreeCuttingEvent>().enabled = false;
             }
             else if (m_Slider.value + m_Dragger_Size_Relative_Half > 66.6666666666f)
             {
                 Debug.Log("space key was pressed on right side");
+                this.gameObject.GetComponent<TreeCuttingEvent>().enabled = false;
             }
         }
     }
