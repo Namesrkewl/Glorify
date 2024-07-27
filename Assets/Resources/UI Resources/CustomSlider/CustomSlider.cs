@@ -158,18 +158,22 @@ public class CustomSlider : MonoBehaviour
             if (m_Slider.value + m_Dragger_Size_Relative_Half >= 33.3333333333f && m_Slider.value - m_Dragger_Size_Relative_Half <= 66.6666666666f)
             {
                 Debug.Log("space key was pressed in middle");
-                this.gameObject.GetComponent<TreeCuttingEvent>().enabled = false;
+                TreeCuttingEvent.instance.currentScore = 3;
             }
             else if (m_Slider.value - m_Dragger_Size_Relative_Half < 33.3333333333f)
             {
                 Debug.Log("space key was pressed on left side");
-                this.gameObject.GetComponent<TreeCuttingEvent>().enabled = false;
+                TreeCuttingEvent.instance.currentScore = 0;
             }
             else if (m_Slider.value + m_Dragger_Size_Relative_Half > 66.6666666666f)
             {
                 Debug.Log("space key was pressed on right side");
-                this.gameObject.GetComponent<TreeCuttingEvent>().enabled = false;
+                TreeCuttingEvent.instance.currentScore = 0;
             }
+
+            TreeCuttingEvent.instance.cuttingCounter -= 1;
+            //this.gameObject.GetComponent<TreeCuttingEvent>().enabled = false;
+            Destroy(this.gameObject);
         }
     }
 }

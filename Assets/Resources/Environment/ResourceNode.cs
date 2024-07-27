@@ -89,16 +89,29 @@ public class ResourceNode : NetworkBehaviour
         }
     }
 
+    public bool IsFullyHarvested()
+    {
+        if (this.health.Value <= 0)
+        {
+            return true;
+        }
+        return false;
+    }
+
     //public void Harvest(NetworkConnection conn, Inventory playerInventory, bool fullyHarvest = false)
     [ServerRpc(RequireOwnership = false)]
     public void Harvest(NetworkConnection conn, bool fullyHarvest = true)
     {
         Debug.Log("Harvesting");
-        HarvestClient(conn);
         //HarvestClient(conn, playerInventory);
-        if (fullyHarvest == true)
+        if (IsFullyHarvested())
         {
+            HarvestClient(conn);
             base.Despawn(DespawnType.Pool);
+        }
+        else
+        {
+            Debug.Log("Failed to harvest. Health = " + health.Value);
         }
         //Debug.Log("Destroyed");
     }

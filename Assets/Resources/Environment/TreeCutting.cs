@@ -24,6 +24,7 @@ public class TreeCutting : NetworkBehaviour, ITreeDamageable
 
     public float criticalHitChance = 30;
     public float criticalHitMultiplier = 1.20f;
+    /*
     public enum TreeStatus
     {
         WholeTree,
@@ -32,6 +33,7 @@ public class TreeCutting : NetworkBehaviour, ITreeDamageable
         TopAndBottomTree,
         Stump
     }
+    */
 
     // Start is called before the first frame update
     void Start()
@@ -76,6 +78,7 @@ public class TreeCutting : NetworkBehaviour, ITreeDamageable
         //miningEvent.GetComponent<MiningEvent>().circles = 1;
 
         // Return CompleteMining() value of MiningEvent
+        Debug.Log("Start Event Tree Cutting");
         cuttingEvent.GetComponent<TreeCuttingEvent>().StartCuttingEvent(treeHealth, resourceNode, objectToAction, HitInfo, this.LocalConnection);
 
         // Start cutting tree
@@ -85,6 +88,7 @@ public class TreeCutting : NetworkBehaviour, ITreeDamageable
     {
         if (treeCuttingScore == TreeCuttingEvent.TreeCuttingScore.Good || treeCuttingScore == TreeCuttingEvent.TreeCuttingScore.Excellent)
         {
+            Debug.LogError("TreeCuttingScore is Good or Excellent");
             bool isCriticalHit = false;
 
             int damage = 100;
@@ -127,119 +131,124 @@ public class TreeCutting : NetworkBehaviour, ITreeDamageable
         }
     }
 
-    private void Update()
-    {
-        if (Input.GetMouseButtonDown(0))
-        {
-            //if (Animator != null) Animator.SetTrigger("Attack");
-            //FunctionTimer.Create(AnimationEvent_OnHit, 0.5f);
+    /*
+       private void Update()
+       {
+           if (Input.GetMouseButtonDown(0))
+           {
+               //if (Animator != null) Animator.SetTrigger("Attack");
+               //FunctionTimer.Create(AnimationEvent_OnHit, 0.5f);
 
-            //Ray CameraRay = PlayerCamera.ViewportPointToRay(new Vector3(0.5f, 0.5f, 0f));
+               //Ray CameraRay = PlayerCamera.ViewportPointToRay(new Vector3(0.5f, 0.5f, 0f));
 
-            Ray ray = PlayerCamera.ScreenPointToRay(Input.mousePosition);
-            RaycastHit hit;
-            Debug.Log("apple");
-            Debug.DrawRay(PlayerCamera.transform.position, PlayerCamera.ScreenToWorldPoint(Input.mousePosition), Color.green);
-            Debug.Log("banana");
+               Ray ray = PlayerCamera.ScreenPointToRay(Input.mousePosition);
+               RaycastHit hit;
+               Debug.Log("apple");
+               Debug.DrawRay(PlayerCamera.transform.position, PlayerCamera.ScreenToWorldPoint(Input.mousePosition), Color.green);
+               Debug.Log("banana");
 
-            if (Physics.Raycast(ray, out RaycastHit HitInfo, 200f))
-            {
-                Debug.Log("Kiwi");
-                Debug.Log("HitInfo.collider.gameObject: " + HitInfo.collider.gameObject);
-                if (HitInfo.collider.gameObject.GetComponent<TreeHealth>())
-                {
-
-
-
-                    Debug.Log("Peach");
-                    GameObject localPlayer = PlayerBehaviour.instance.gameObject;
-
-                    Vector3 directionToTarget = localPlayer.transform.position - HitInfo.transform.position;
-                    float angle = Vector3.Angle(localPlayer.transform.forward, directionToTarget);
-
-                    // Print angle
-                    Debug.Log("angle: " + angle);
-
-                    if (angle > 90)
-                    {
-                        Debug.Log("angle is greater than 90");
-                        // Cut the tree here
-                    }
+               if (Physics.Raycast(ray, out RaycastHit HitInfo, 200f))
+               {
+                   Debug.Log("Kiwi");
+                   Debug.Log("HitInfo.collider.gameObject: " + HitInfo.collider.gameObject);
+                   if (HitInfo.collider.gameObject.GetComponent<TreeHealth>())
+                   {
 
 
-                    Debug.Log("Orange");
-                    Debug.Log("HitInfo.transform.gameObject: " + HitInfo.transform.gameObject);
-                    GameObject objectToAction = HitInfo.transform.gameObject;
 
-                    if (objectToAction.TryGetComponent(out ResourceNode resourceNode))
-                    {
-                        if (objectToAction.TryGetComponent(out TreeHealth treeHealth))
-                        {
-                            /*
-                            bool isCriticalHit = Random.Range(0, 100) < criticalHitChance;
+                       Debug.Log("Peach");
+                       GameObject localPlayer = PlayerBehaviour.instance.gameObject;
 
-                            int damage;
-                            if (isCriticalHit == true)
-                            {
-                                damage = Random.Range(tempTreeMaxDamage + 1, Mathf.RoundToInt((float)(tempTreeMaxDamage * criticalHitMultiplier)));
+                       Vector3 directionToTarget = localPlayer.transform.position - HitInfo.transform.position;
+                       float angle = Vector3.Angle(localPlayer.transform.forward, directionToTarget);
+
+                       // Print angle
+                       Debug.Log("angle: " + angle);
+
+                       if (angle > 90)
+                       {
+                           Debug.Log("angle is greater than 90");
+                           // Cut the tree here
+                       }
+
+
+                       Debug.Log("Orange");
+                       Debug.Log("HitInfo.transform.gameObject: " + HitInfo.transform.gameObject);
+                       GameObject objectToAction = HitInfo.transform.gameObject;
+
+                       if (objectToAction.TryGetComponent(out ResourceNode resourceNode))
+                       {
+                           if (objectToAction.TryGetComponent(out TreeHealth treeHealth))
+                           {
+                               /***
+                               bool isCriticalHit = Random.Range(0, 100) < criticalHitChance;
+
+                               int damage;
+                               if (isCriticalHit == true)
+                               {
+                                   damage = Random.Range(tempTreeMaxDamage + 1, Mathf.RoundToInt((float)(tempTreeMaxDamage * criticalHitMultiplier)));
+                               }
+                               else
+                               {
+                                   damage = Random.Range(tempTreeMinDamage, tempTreeMaxDamage);
+                               }
+                               */
+    //treeHealth.AffectTree(resourceNode, objectToAction, this.LocalConnection, playerInventory, damage, isCriticalHit, HitInfo.point);
+    //treeHealth.AffectTree(resourceNode, objectToAction, this.LocalConnection, damage, isCriticalHit, HitInfo.point);
+
+    // How can I ensure treeHealth, resourceNode, objectToAction, and HitInfo objects are null before using it in StartCuttingEvent?
+    /*
+
+                                if (treeHealth == null)
+                                {
+                                    Debug.LogError("treeHealth is null");
+                                }
+                                if (resourceNode == null)
+                                {
+                                    Debug.LogError("resourceNode is null");
+                                }
+                                if (objectToAction == null)
+                                {
+                                    Debug.LogError("objectToAction is null");
+                                }
+                                // 
+                                if (HitInfo.collider == null)
+                                {
+                                    Debug.LogError("HitInfo is null");
+                                }
+
+
+
+
+
+
+                                StartCuttingEvent(treeHealth, resourceNode, objectToAction, HitInfo);
+
+                                // Check if the variables in the previous line are initialized
+
                             }
-                            else
-                            {
-                                damage = Random.Range(tempTreeMinDamage, tempTreeMaxDamage);
-                            }
-                            */
-                            //treeHealth.AffectTree(resourceNode, objectToAction, this.LocalConnection, playerInventory, damage, isCriticalHit, HitInfo.point);
-                            //treeHealth.AffectTree(resourceNode, objectToAction, this.LocalConnection, damage, isCriticalHit, HitInfo.point);
-
-                            // How can I ensure treeHealth, resourceNode, objectToAction, and HitInfo objects are null before using it in StartCuttingEvent?
-
-                            if (treeHealth == null)
-                            {
-                                Debug.LogError("treeHealth is null");
-                            }
-                            if (resourceNode == null)
-                            {
-                                Debug.LogError("resourceNode is null");
-                            }
-                            if (objectToAction == null)
-                            {
-                                Debug.LogError("objectToAction is null");
-                            }
-                            // 
-                            if (HitInfo.collider == null)
-                            {
-                                Debug.LogError("HitInfo is null");
-                            }
-
-
-
-
-
-
-                            StartCuttingEvent(treeHealth, resourceNode, objectToAction, HitInfo);
-
-                            // Check if the variables in the previous line are initialized
-
                         }
-                    }
 
 
-                    /* Delete me?
-                    else if (objectToAction.transform.parent.TryGetComponent(out ResourceNode resourceNodeParent))
-                    {
-                        AffectTree(resourceNodeParent, objectToAction.transform.parent.gameObject);
-                        Debug.Log("Apple 2");
+                        /* Delete me?
+                        else if (objectToAction.transform.parent.TryGetComponent(out ResourceNode resourceNodeParent))
+                        {
+                            AffectTree(resourceNodeParent, objectToAction.transform.parent.gameObject);
+                            Debug.Log("Apple 2");
+                        }
+                        else if (objectToAction.transform.parent.parent.TryGetComponent(out ResourceNode resourceNodeParentParent))
+                        {
+                            AffectTree(resourceNodeParentParent, objectToAction.transform.parent.parent.gameObject);
+                            Debug.Log("Apple 3");
+                        }
+                        */
+    /*
                     }
-                    else if (objectToAction.transform.parent.parent.TryGetComponent(out ResourceNode resourceNodeParentParent))
-                    {
-                        AffectTree(resourceNodeParentParent, objectToAction.transform.parent.parent.gameObject);
-                        Debug.Log("Apple 3");
-                    }
-                    */
                 }
             }
         }
-    }
+    */
+
 
     public void Damage(int amount)
     {

@@ -9369,9 +9369,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2459a736dc23d2c4fb1a3587754a5e1b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  circles: 1
-  maxScore: 2
-  passingScore: 1
+  cuttingCounter: 1
+  maxScore: 10
+  passingScore: 3
   currentScore: 1
   actionSliderPrefab: {fileID: 2041216804697686561, guid: f3c0dcfb6b9e3604384d366625517cdf, type: 3}
   cuttingScore: 0
@@ -17275,7 +17275,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   circles: 1
   maxScore: 2
-  passingScore: 1
+  passingScore: 3
   currentScore: 1
   actionCirclesPrefab: {fileID: 2353526803929756044, guid: 94ab3eef2b8bbc14c87ed8070eaddce1, type: 3}
   miningScore: 0

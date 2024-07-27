@@ -15,6 +15,7 @@ public class TreeHealth : NetworkBehaviour, ITreeDamageable
 
     public ResourceNode resourceNode;
 
+    /*
     private void OnCollisionEnter(Collision collision)
     {
         if (collision.gameObject.TryGetComponent<ITreeDamageable>(out ITreeDamageable treeDamageable))
@@ -33,6 +34,7 @@ public class TreeHealth : NetworkBehaviour, ITreeDamageable
             }
         }
     }
+    */
 
     public void SplitTree(ResourceNode resourceNode, GameObject treeObject)
     {
@@ -138,10 +140,12 @@ public class TreeHealth : NetworkBehaviour, ITreeDamageable
         //resourceNode.Harvest(localConnection, playerInventory, fullyHarvest);
 
 
-        Debug.Log("Tree damage: " + damage);
+        Debug.Log("Affect tree damage: " + damage);
         Damage(damage);
+        Debug.Log("Tree resource node health: " + resourceNode.health.Value);
         if (resourceNode.health.Value <= 0)
         {
+            Debug.Log("Harvest resource");
             resourceNode.Harvest(localConnection);
         }
     }

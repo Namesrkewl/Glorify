@@ -6,7 +6,7 @@ public class TreeCuttingEvent : MonoBehaviour
 {
     public static TreeCuttingEvent instance;
     private bool isCutting = false;
-    public int circles = 1;
+    public int cuttingCounter = 1;
     public int maxScore;
     public int passingScore;
     public int currentScore;
@@ -58,27 +58,34 @@ public class TreeCuttingEvent : MonoBehaviour
         while (isCutting)
         {
             //Debug.Log("Inside Cutting() function. Circles count = " + circles);
-            if (circles <= 0)
+            if (cuttingCounter <= 0)
             {
-                Debug.Log("Circles is less than or equal to 0.");
+                Debug.Log("Cutting counter is less than or equal to 0.");
                 isCutting = false;
                 CompleteCutting(treeHealth, resourceNode, objectToAction, HitInfo, localConnection);
                 //yield return null;
             }
             yield return null;
         }
-        Debug.Log("Cutting Coroutine ending.");
-        this.gameObject.SetActive(false);
+        //Debug.Log("Cutting Coroutine ending.");
+        //this.gameObject.SetActive(false);
         CompleteCutting(treeHealth, resourceNode, objectToAction, HitInfo, localConnection);
         yield return null;
     }
 
     private void CompleteCutting(TreeHealth treeHealth, ResourceNode resourceNode, GameObject objectToAction, RaycastHit HitInfo, FishNet.Connection.NetworkConnection localConnection)
     {
+        if (currentScore >= passingScore + 2)
+        {
+            Debug.Log("Cutting complete. Score of Excellent.");
+            cuttingScore = TreeCuttingScore.Excellent;
+            TreeCutting.DamageTree(treeHealth, resourceNode, objectToAction, HitInfo, cuttingScore, localConnection);
+            return;
+        }
         if (currentScore >= passingScore)
         {
-            Debug.Log("Cutting complete. Score of Excellent=1.");
-            cuttingScore = TreeCuttingScore.Excellent;
+            Debug.Log("Cutting complete. Score of good.");
+            cuttingScore = TreeCuttingScore.Good;
             TreeCutting.DamageTree(treeHealth, resourceNode, objectToAction, HitInfo, cuttingScore, localConnection);
             return;
         }
