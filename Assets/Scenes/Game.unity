@@ -9372,7 +9372,7 @@ MonoBehaviour:
   cuttingCounter: 1
   maxScore: 10
   passingScore: 3
-  currentScore: 1
+  currentScore: 0
   actionSliderPrefab: {fileID: 2041216804697686561, guid: f3c0dcfb6b9e3604384d366625517cdf, type: 3}
   cuttingScore: 0
 --- !u!4 &1065699032

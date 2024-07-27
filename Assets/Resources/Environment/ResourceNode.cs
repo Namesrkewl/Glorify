@@ -102,12 +102,13 @@ public class ResourceNode : NetworkBehaviour
     [ServerRpc(RequireOwnership = false)]
     public void Harvest(NetworkConnection conn, bool fullyHarvest = true)
     {
-        Debug.Log("Harvesting");
+        Debug.Log("Trying to Harvest.");
         //HarvestClient(conn, playerInventory);
         if (IsFullyHarvested())
         {
             HarvestClient(conn);
             base.Despawn(DespawnType.Pool);
+            Debug.Log("Resource harvested.");
         }
         else
         {

@@ -9,7 +9,7 @@ public class TreeCuttingEvent : MonoBehaviour
     public int cuttingCounter = 1;
     public int maxScore;
     public int passingScore;
-    public int currentScore;
+    public int currentScore = 0;
 
     [SerializeField] private GameObject actionSliderPrefab;
     public enum TreeCuttingScore
@@ -30,6 +30,7 @@ public class TreeCuttingEvent : MonoBehaviour
     public void StartCuttingEvent(TreeHealth treeHealth, ResourceNode resourceNode, GameObject objectToAction, RaycastHit HitInfo, FishNet.Connection.NetworkConnection localConnection)
     {
         Debug.Log("In StartCuttingEvent");
+        cuttingCounter = 1;
         // Instantiate actionCirclesPrefab GameObject
         GameObject actionSlider = Instantiate(actionSliderPrefab);
         //actionSlider.GetComponent<CustomSlider>().enabled = true;
@@ -82,17 +83,20 @@ public class TreeCuttingEvent : MonoBehaviour
             TreeCutting.DamageTree(treeHealth, resourceNode, objectToAction, HitInfo, cuttingScore, localConnection);
             return;
         }
-        if (currentScore >= passingScore)
+        else if (currentScore >= passingScore)
         {
             Debug.Log("Cutting complete. Score of good.");
             cuttingScore = TreeCuttingScore.Good;
             TreeCutting.DamageTree(treeHealth, resourceNode, objectToAction, HitInfo, cuttingScore, localConnection);
             return;
         }
-
-        Debug.Log("Cutting failed.");
-        cuttingScore = TreeCuttingScore.Failed;
-        TreeCutting.DamageTree(treeHealth, resourceNode, objectToAction, HitInfo, cuttingScore, localConnection);
+        else
+        {
+            Debug.Log("Cutting failed.");
+            currentScore = 0;
+            cuttingScore = TreeCuttingScore.Failed;
+            TreeCutting.DamageTree(treeHealth, resourceNode, objectToAction, HitInfo, cuttingScore, localConnection);
+        }
     }
 
     void Start()
