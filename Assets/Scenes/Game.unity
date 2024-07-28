@@ -17274,9 +17274,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   circles: 1
-  maxScore: 2
+  maxScore: 10
   passingScore: 3
-  currentScore: 1
+  currentScore: 0
   actionCirclesPrefab: {fileID: 2353526803929756044, guid: 94ab3eef2b8bbc14c87ed8070eaddce1, type: 3}
   miningScore: 0
 --- !u!4 &2102608509
@@ -17287,8 +17287,8 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2102608507}
   serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 2681.5037, y: 14.47382, z: 2241.258}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 2681.5037, y: 14.473877, z: 2241.258}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -17713,5 +17713,5 @@ SceneRoots:
   - {fileID: 843989402}
   - {fileID: 866427043561673234}
   - {fileID: 291879957}
-  - {fileID: 2102608509}
   - {fileID: 1065699032}
+  - {fileID: 2102608509}

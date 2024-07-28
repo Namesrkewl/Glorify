@@ -139,7 +139,11 @@ public class OreHealth : NetworkBehaviour, IOreDamageable
 
 
         Debug.Log("Ore damage: " + damage);
+        //debug resourceNode.health.Value
+        Debug.Log("Ore resource node health: " + resourceNode.health.Value);
+
         Damage(damage);
+        Debug.Log("Ore resource node health after damage: " + resourceNode.health.Value);
         if (resourceNode.health.Value <= 0)
         {
             resourceNode.Harvest(localConnection);

@@ -80,6 +80,7 @@ public class TreeCuttingEvent : MonoBehaviour
         {
             Debug.Log("Cutting complete. Score of Excellent.");
             cuttingScore = TreeCuttingScore.Excellent;
+            currentScore = 0;
             TreeCutting.DamageTree(treeHealth, resourceNode, objectToAction, HitInfo, cuttingScore, localConnection);
             return;
         }
@@ -87,6 +88,7 @@ public class TreeCuttingEvent : MonoBehaviour
         {
             Debug.Log("Cutting complete. Score of good.");
             cuttingScore = TreeCuttingScore.Good;
+            currentScore = 0;
             TreeCutting.DamageTree(treeHealth, resourceNode, objectToAction, HitInfo, cuttingScore, localConnection);
             return;
         }
