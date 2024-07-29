@@ -70,7 +70,7 @@ public class TreeCuttingEvent : MonoBehaviour
         }
         //Debug.Log("Cutting Coroutine ending.");
         //this.gameObject.SetActive(false);
-        CompleteCutting(treeHealth, resourceNode, objectToAction, HitInfo, localConnection);
+        //CompleteCutting(treeHealth, resourceNode, objectToAction, HitInfo, localConnection);
         yield return null;
     }
 

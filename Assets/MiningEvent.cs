@@ -59,7 +59,7 @@ public class MiningEvent : MonoBehaviour
     {
         while (isMining)
         {
-            //Debug.Log("Inside Mining() function. Circles count = " + circles);
+            Debug.Log("Inside Mining() function. Circles count = " + circles);
             if (circles <= 0)
             {
                 Debug.LogError("Circles is less than or equal to 0.");
@@ -69,9 +69,10 @@ public class MiningEvent : MonoBehaviour
             }
             yield return null;
         }
+        Debug.Log("Inside Mining() AFTERRRRRRRRRRRRRR function. Circles count = " + circles);
         //Debug.Log("Mining Coroutine ending.");
         //this.gameObject.SetActive(false);
-        CompleteMining(oreHealth, resourceNode, objectToAction, HitInfo, localConnection);
+        //CompleteMining(oreHealth, resourceNode, objectToAction, HitInfo, localConnection);
         yield return null;
     }
 
