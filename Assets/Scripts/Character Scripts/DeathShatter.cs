@@ -5,7 +5,8 @@ using System.Collections.Generic;
 using UnityEditor;
 #endif
 
-public class DeathShatter : MonoBehaviour {
+public class DeathShatter : MonoBehaviour
+{
     public List<SkinnedMeshRenderer> skinnedMeshRenderers; // Assign Skinned Mesh Renderers in the Inspector
     public GameObject originalCharacterSkin;
     private GameObject shatteredCharacterObject;
@@ -13,11 +14,13 @@ public class DeathShatter : MonoBehaviour {
     private List<Material> materials = new List<Material>();
     private List<GameObject> objectsToShatter = new List<GameObject>();
 
-    public void CreateStaticMesh() {
-        
+    public void CreateStaticMesh()
+    {
+
         characterMeshes.Clear();
 
-        foreach (var skinnedMeshRenderer in skinnedMeshRenderers) {
+        foreach (var skinnedMeshRenderer in skinnedMeshRenderers)
+        {
             Mesh bakedMesh = new Mesh();
             skinnedMeshRenderer.BakeMesh(bakedMesh);
             bakedMesh.name = skinnedMeshRenderer.sharedMesh.name;
@@ -25,15 +28,20 @@ public class DeathShatter : MonoBehaviour {
         }
     }
 
-    public void ShatterCharacter() {
-        if (!originalCharacterSkin || skinnedMeshRenderers.Count < 1) {
+    public void ShatterCharacter()
+    {
+        if (!originalCharacterSkin || skinnedMeshRenderers.Count < 1)
+        {
             ShatterUnskinned();
-        } else {
+        }
+        else
+        {
             ShatterSkinned();
         }
     }
 
-    private void ShatterSkinned() {
+    private void ShatterSkinned()
+    {
         // Check if a shattered version already exists
         if (shatteredCharacterObject != null) return;
         shatteredCharacterObject = new GameObject($"Shattered Remains of {transform.name}");
@@ -42,7 +50,8 @@ public class DeathShatter : MonoBehaviour {
         objectsToShatter.Clear();
         materials.Clear();
 
-        for (int i = 0; i < characterMeshes.Count; i++) {
+        for (int i = 0; i < characterMeshes.Count; i++)
+        {
             // Create a new child GameObject for each mesh
             GameObject child = new GameObject(skinnedMeshRenderers[i].name);
             child.transform.SetParent(shatteredCharacterObject.transform);
@@ -63,16 +72,19 @@ public class DeathShatter : MonoBehaviour {
         shatteredCharacterObject.SetActive(false);
     }
 
-    private void ShatterUnskinned() {
+    private void ShatterUnskinned()
+    {
         //MeshShatter.instance.ShatterMesh(gameObject, GetComponent<MeshRenderer>().material);
         GetComponent<MeshRenderer>().enabled = false;
     }
 
-    void SpawnCharacter() {
+    void SpawnCharacter()
+    {
         CreateStaticMesh();
         GameObject statue = new GameObject($"Statue of {transform.name}");
         statue.transform.position = transform.position + originalCharacterSkin.transform.localPosition;
-        for (int i = 0; i < characterMeshes.Count; i++) {
+        for (int i = 0; i < characterMeshes.Count; i++)
+        {
             // Create a new child GameObject for each mesh
             GameObject child = new GameObject(skinnedMeshRenderers[i].name);
             child.transform.SetParent(statue.transform);
@@ -88,35 +100,44 @@ public class DeathShatter : MonoBehaviour {
         }
     }
 
-    public void ResetCharacter() {
+    public void ResetCharacter()
+    {
         // Destroy the shattered character object
         if (shatteredCharacterObject != null)
             DestroyImmediate(shatteredCharacterObject);
 
         // Re-enable the skinned mesh
-        if (originalCharacterSkin) {
+        if (originalCharacterSkin)
+        {
             originalCharacterSkin.SetActive(true);
-        } else {
+        }
+        else
+        {
             GetComponent<MeshRenderer>().enabled = true;
         }
     }
 
 #if UNITY_EDITOR
     [CustomEditor(typeof(DeathShatter))]
-    public class DeathShatterEditor : Editor {
-        public override void OnInspectorGUI() {
+    public class DeathShatterEditor : UnityEditor.Editor
+    {
+        public override void OnInspectorGUI()
+        {
             DrawDefaultInspector();
 
             DeathShatter script = (DeathShatter)target;
-            if (GUILayout.Button("Shatter Character")) {
+            if (GUILayout.Button("Shatter Character"))
+            {
                 script.ShatterCharacter();
             }
 
-            if (GUILayout.Button("Reset Character")) {
+            if (GUILayout.Button("Reset Character"))
+            {
                 script.ResetCharacter();
             }
 
-            if (GUILayout.Button("Spawn Character")) {
+            if (GUILayout.Button("Spawn Character"))
+            {
                 script.SpawnCharacter();
             }
         }
