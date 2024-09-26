@@ -7287,6 +7287,10 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 448365289807202635, guid: 528552baad407f744805e2c0982ee8a4, type: 3}
+      propertyPath: sourceAsset
+      value: 
+      objectReference: {fileID: 9197481963319205126, guid: 0f205fa7295c3c24b82d923f307911f3, type: 3}
     - target: {fileID: 921587757735370831, guid: 528552baad407f744805e2c0982ee8a4, type: 3}
       propertyPath: m_Name
       value: Inventory
@@ -7334,8 +7338,48 @@ PrefabInstance:
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
-    m_AddedComponents: []
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 921587757735370831, guid: 528552baad407f744805e2c0982ee8a4, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 864544372}
   m_SourcePrefab: {fileID: 100100000, guid: 528552baad407f744805e2c0982ee8a4, type: 3}
+--- !u!1 &864544367 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 921587757735370831, guid: 528552baad407f744805e2c0982ee8a4, type: 3}
+  m_PrefabInstance: {fileID: 864544366}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &864544369 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 5135317783017376475, guid: 528552baad407f744805e2c0982ee8a4, type: 3}
+  m_PrefabInstance: {fileID: 864544366}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 864544367}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fefaff733aa1d6f44a6b0f6f1116442f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!114 &864544372
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 864544367}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 273621cfd5068344d91daa1117a669c0, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  view: {fileID: 864544369}
+  capacity: 20
+  startingItems:
+  - {fileID: 11400000, guid: f265444da0003c246a13978ecb3d71e2, type: 2}
+  <Id>k__BackingField:
+    Part1: 173981255
+    Part2: 1154245810
+    Part3: 1436518547
+    Part4: 3204761150
 --- !u!1 &871841140
 GameObject:
   m_ObjectHideFlags: 0

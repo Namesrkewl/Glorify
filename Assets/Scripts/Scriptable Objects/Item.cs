@@ -1,14 +1,16 @@
 using System;
 using UnityEngine;
 
-[CreateAssetMenu(fileName = "New Item", menuName = "Inventory/Item"), Serializable]
-public class Item : ScriptableObject, Identifiable {
+[CreateAssetMenu(fileName = "New Item", menuName = "Inventory/Item2"), Serializable]
+public class Item : ScriptableObject, Identifiable
+{
     public new string name;
     [System.NonSerialized] public Sprite Icon;
     public ItemType Type;
     public Key key;
 
-    public enum ItemType {
+    public enum ItemType
+    {
         Armor,
         Consumable,
         Container,
@@ -25,21 +27,25 @@ public class Item : ScriptableObject, Identifiable {
         Weapon
     }
 
-    void Start() {
+    void Start()
+    {
         // Initialization or any startup logic goes here
     }
 
-    void Update() {
+    void Update()
+    {
         // Any update logic for the item goes here
     }
 
     // Add additional methods to handle item behaviours as needed
 
-    public Key GetKey() {
+    public Key GetKey()
+    {
         return key;
     }
 
-    public void SetKey(Key _key) {
+    public void SetKey(Key _key)
+    {
         key = _key;
     }
 }

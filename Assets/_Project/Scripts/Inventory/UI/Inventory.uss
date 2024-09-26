@@ -7,50 +7,50 @@
     flex-direction: column;
     justify-content: center;
     align-items: center;
-    -unity-font-definition: url('/Assets/FantasyCartoonGUI/Fonts/CantedFX Bold.ttf');
-    text-shadow: 2px 2px 2px rgba(0, 0, 0, 0.5);
+    -unity-font-definition: url('/Assets/TextMesh Pro/Examples & Extras/Fonts/Roboto-Bold.ttf');
+    text-shadow: 4px 4px 4px rgba(0, 0, 0, 0.5);
     color: rgb(255, 197, 0);
 }
 
 .inventory {
-    background-image: url('/Assets/FantasyCartoonGUI/Textures/Wooden_Background.png');
-    width: 300px;
-    padding: 10px;
+    background-image: url('/Assets/_Project/Sprites/InventoryForm.png');
+    width: 600px;
+    padding: 20px;
     align-items: flex-start;
     justify-content: flex-start;
-    max-height: 500px;
+    max-height: 1000px;
     flex-grow: 1;
 }
 
 .inventoryHeader {
     position: absolute;
-    top: -32px;
-    left: -27px;
-    width: 350px;
-    height: 70px;
+    top: -62px;
+    left: -74px;
+    width: 700px;
+    height: 140px;
     justify-content: center;
     align-items: center;
-    background-image: url('/Assets/FantasyCartoonGUI/Textures/inventory_bar_no_shadow.png');
+    background-image: url('/Assets/_Project/Sprites/Setting_Slider_Bar_01.png');
     -unity-slice-scale: 0.5;
 }
 
 Label {
-    font-size: 24px;
+    font-size: 48px;
 }
 
 .inventoryFrame {
     position: absolute;
-    top: -10px;
-    left: -17px;
-    width: 326px;
-    height: 520px;
-    background-image: url('/Assets/FantasyCartoonGUI/Textures/Border_Big.png');
+    top: -20px;
+    left: -34px;
+    width: 652px;
+    height: 1040px;
+    background-image: url('/Assets/_Project/Sprites/whiteBorder.png');
     -unity-slice-scale: 0.5;
 }
 
 .slotsContainer {
     flex-grow: 1;
-    padding-top: 30px;
+    padding-top: 60px;
     flex-wrap: wrap;
     flex-direction: row;
     align-items: flex-start;
@@ -59,24 +59,24 @@ Label {
 }
 
 .slot {
-    width: 60px;
-    height: 60px;
-    margin: 4px;
+    width: 120px;
+    height: 120px;
+    margin: 8px;
 }
 
 .slotFrame {
     position: absolute;
     top: 0;
     left: 0;
-    width: 60px;
-    height: 60px;
+    width: 120px;
+    height: 120px;
     border-width: 0;
-    background-image: url('/Assets/FantasyCartoonGUI/Textures/slot_opactiy.png');
+    background-image: url('/Assets/_Project/Sprites/Slot.png');
     -unity-slice-scale: 0.8;
 }
 
 .slotIcon {
-    padding: 4px;
+    padding: 8px;
     flex-shrink: 0;
     flex-grow: 1;
 }
@@ -86,14 +86,14 @@ Label {
     color: white;
     bottom: 0;
     right: 0;
-    font-size: 18px;
+    font-size: 36px;
 }
 
 .ghostIcon {
     visibility: hidden;
     position: absolute;
-    width: 60px;
-    height: 60px;
+    width: 120px;
+    height: 120px;
     background-image: none;
 }
 
@@ -105,8 +105,8 @@ Label {
 }
 
 .coinsIcon {
-    width: 40px;
-    height: 40px;
-    margin: 4px;
-    background-image: url('/Assets/FantasyCartoonGUI/Textures/coin.png');
+    width: 80px;
+    height: 80px;
+    margin: 8px;
+    background-image: url('/Assets/TextMesh Pro/Resources/Sprite Assets/InlineIcons.png');
 }
