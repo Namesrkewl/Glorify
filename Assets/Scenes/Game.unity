@@ -7375,6 +7375,7 @@ MonoBehaviour:
   capacity: 20
   startingItems:
   - {fileID: 11400000, guid: f265444da0003c246a13978ecb3d71e2, type: 2}
+  - {fileID: 11400000, guid: f265444da0003c246a13978ecb3d71e2, type: 2}
   <Id>k__BackingField:
     Part1: 173981255
     Part2: 1154245810

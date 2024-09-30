@@ -15,9 +15,9 @@ MonoBehaviour:
   Name: TempInventoryItem
   maxStack: 1
   Id:
-    Part1: 1614228321
-    Part2: 1306952988
-    Part3: 2874623143
-    Part4: 2713996388
-  Icon: {fileID: 0}
+    Part1: 4194642750
+    Part2: 1087646215
+    Part3: 2240650414
+    Part4: 1616508192
+  Icon: {fileID: 21300000, guid: 92265edaaecb024449caee1f5eb6053e, type: 3}
   Description: 

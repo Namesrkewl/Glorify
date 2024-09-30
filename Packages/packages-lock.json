@@ -10,6 +10,12 @@
       },
       "hash": "b849990020c30ac6ead4e4fb4881428f86dcde0d"
     },
+    "com.unity.2d.sprite": {
+      "version": "1.0.0",
+      "depth": 0,
+      "source": "builtin",
+      "dependencies": {}
+    },
     "com.unity.addressables": {
       "version": "2.2.2",
       "depth": 0,
@@ -128,7 +134,7 @@
       "url": "https://packages.unity.com"
     },
     "com.unity.probuilder": {
-      "version": "6.0.3",
+      "version": "6.0.4",
       "depth": 0,
       "source": "registry",
       "dependencies": {

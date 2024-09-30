@@ -75,7 +75,7 @@ Label {
     -unity-slice-scale: 0.8;
 }
 
-.slotIcon {
+.    {
     padding: 8px;
     flex-shrink: 0;
     flex-grow: 1;
@@ -108,5 +108,5 @@ Label {
     width: 80px;
     height: 80px;
     margin: 8px;
-    background-image: url('/Assets/TextMesh Pro/Resources/Sprite Assets/InlineIcons.png');
+    background-image: url('/Assets/TextMesh Pro/Resources/Sprite Assets/InlineIcons_122.png');
 }
