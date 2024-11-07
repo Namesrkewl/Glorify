@@ -21,7 +21,7 @@ GameObject:
   - component: {fileID: 3153021733640087511}
   - component: {fileID: 112930543655376551}
   m_Layer: 6
-  m_Name: Player
+  m_Name: GlorifyPlayer
   m_TagString: Player
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -350,7 +350,7 @@ MonoBehaviour:
   <SpawnableCollectionId>k__BackingField: 0
   _scenePathHash: 0
   <SceneId>k__BackingField: 0
-  <AssetPathHash>k__BackingField: 2921712479052097104
+  <AssetPathHash>k__BackingField: 10345206396141332278
 --- !u!114 &7643392635919447686
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -772,6 +772,15 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 1782702501690864755, guid: 60770bdb4dc667c45bea53db0339dc05, type: 3}
       insertIndex: -1
       addedObject: {fileID: 1704406811756266448}
+    - targetCorrespondingSourceObject: {fileID: 1782702501690864755, guid: 60770bdb4dc667c45bea53db0339dc05, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 1184767612733159659}
+    - targetCorrespondingSourceObject: {fileID: 1782702501690864755, guid: 60770bdb4dc667c45bea53db0339dc05, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 674960947956105323}
+    - targetCorrespondingSourceObject: {fileID: 1782702501690864755, guid: 60770bdb4dc667c45bea53db0339dc05, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 835522194698018794}
   m_SourcePrefab: {fileID: 100100000, guid: 60770bdb4dc667c45bea53db0339dc05, type: 3}
 --- !u!137 &570208842181567079 stripped
 SkinnedMeshRenderer:
@@ -850,6 +859,7 @@ MonoBehaviour:
   tempTreeMinDamage: 10
   criticalHitChance: 30
   criticalHitMultiplier: 1.2
+  player: {fileID: 0}
 --- !u!114 &7810011195234826528
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -895,6 +905,64 @@ MonoBehaviour:
     m_Bits: 0
   treeCutting: {fileID: 7695065616657874987}
   oreCutting: {fileID: 7810011195234826528}
+--- !u!114 &1184767612733159659
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1753639932139335750}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 19102, guid: 0000000000000000e000000000000000, type: 0}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_PanelSettings: {fileID: 11400000, guid: 5d648095474667743b26001c1359e620, type: 2}
+  m_ParentUI: {fileID: 0}
+  sourceAsset: {fileID: 9197481963319205126, guid: 0f205fa7295c3c24b82d923f307911f3, type: 3}
+  m_SortingOrder: 0
+  m_WorldSpaceSizeMode: 1
+  m_WorldSpaceWidth: 1920
+  m_WorldSpaceHeight: 1080
+--- !u!114 &674960947956105323
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1753639932139335750}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fefaff733aa1d6f44a6b0f6f1116442f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  document: {fileID: 1184767612733159659}
+  styleSheet: {fileID: 7433441132597879392, guid: fc215d101591745428c6a37c26584315, type: 3}
+  panelName: Inventory
+--- !u!114 &835522194698018794
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1753639932139335750}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 273621cfd5068344d91daa1117a669c0, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  customSprite: {fileID: 21300000, guid: e4ca642b79973d043b14336c846b1f11, type: 3}
+  view: {fileID: 674960947956105323}
+  capacity: 20
+  startingItems:
+  - {fileID: 11400000, guid: f265444da0003c246a13978ecb3d71e2, type: 2}
+  - {fileID: 11400000, guid: 36f97a6d90dba7e43a653f365d6b9253, type: 2}
+  <Id>k__BackingField:
+    Part1: 363456522
+    Part2: 1332054855
+    Part3: 1766417343
+    Part4: 3629344109
+  controller: {fileID: 0}
 --- !u!137 &2008662535309358004 stripped
 SkinnedMeshRenderer:
   m_CorrespondingSourceObject: {fileID: 1948778455749293953, guid: 60770bdb4dc667c45bea53db0339dc05, type: 3}

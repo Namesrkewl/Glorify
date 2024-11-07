@@ -128,7 +128,7 @@ public class OreCutting : NetworkBehaviour, IOreDamageable
                         if (objectToAction.TryGetComponent(out OreHealth oreHealth))
                         {
                             //DamageOre(oreHealth, resourceNode, objectToAction, HitInfo);
-                            StartMiningEvent(oreHealth, resourceNode, objectToAction, HitInfo);
+                            StartMiningEvent(oreHealth, resourceNode, objectToAction, HitInfo, gameObject);
                         }
                     }
                 }
@@ -136,17 +136,17 @@ public class OreCutting : NetworkBehaviour, IOreDamageable
         }
     }
 
-    public void StartMiningEvent(OreHealth oreHealth, ResourceNode resourceNode, GameObject objectToAction, RaycastHit HitInfo)
+    public void StartMiningEvent(OreHealth oreHealth, ResourceNode resourceNode, GameObject objectToAction, RaycastHit HitInfo, GameObject player)
     {
         GameObject miningEvent = GameObject.Find("MiningEvent");
         miningEvent.GetComponent<MiningEvent>().enabled = true;
         //miningEvent.GetComponent<MiningEvent>().circles = 1;
 
         // Return CompleteMining() value of MiningEvent
-        miningEvent.GetComponent<MiningEvent>().StartMiningEvent(oreHealth, resourceNode, objectToAction, HitInfo, this.LocalConnection);
+        miningEvent.GetComponent<MiningEvent>().StartMiningEvent(oreHealth, resourceNode, objectToAction, HitInfo, this.LocalConnection, player);
     }
 
-    public static void DamageOre(OreHealth oreHealth, ResourceNode resourceNode, GameObject objectToAction, RaycastHit HitInfo, MiningEvent.MiningScore miningScore, FishNet.Connection.NetworkConnection localConnection)
+    public static void DamageOre(OreHealth oreHealth, ResourceNode resourceNode, GameObject objectToAction, RaycastHit HitInfo, MiningEvent.MiningScore miningScore, FishNet.Connection.NetworkConnection localConnection, GameObject player)
     {
         if (miningScore == MiningEvent.MiningScore.Good || miningScore == MiningEvent.MiningScore.Excellent)
         {
@@ -167,12 +167,12 @@ public class OreCutting : NetworkBehaviour, IOreDamageable
 
             Debug.Log("Hit was good, doing damage of " + damage + " and critical bool = " + isCriticalHit);
             //oreHealth.AffectOre(resourceNode, objectToAction, this.LocalConnection, playerInventory, damage, isCriticalHit, HitInfo.point);
-            oreHealth.AffectOre(resourceNode, objectToAction, localConnection, damage, isCriticalHit, HitInfo.point);
+            oreHealth.AffectOre(resourceNode, objectToAction, localConnection, damage, player, isCriticalHit, HitInfo.point);
         }
         else
         {
             int damage = 0;
-            oreHealth.AffectOre(resourceNode, objectToAction, localConnection, damage, false, HitInfo.point);
+            oreHealth.AffectOre(resourceNode, objectToAction, localConnection, damage, player, false, HitInfo.point);
         }
     }
 

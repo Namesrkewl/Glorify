@@ -2,7 +2,7 @@ using System;
 using UnityEngine;
 
 [CreateAssetMenu(fileName = "New Item", menuName = "Inventory/Item2"), Serializable]
-public class Item : ScriptableObject, Identifiable
+public class Item2 : ScriptableObject, Identifiable
 {
     public new string name;
     [System.NonSerialized] public Sprite Icon;

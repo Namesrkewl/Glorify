@@ -4,8 +4,10 @@ using MoonSharp.Interpreter;
 using System;
 using System.Collections.Generic;
 using UnityEngine;
+using Systems.Inventory;
 
-public enum Rarity {
+public enum Rarity
+{
     Normal,
     Rare,
     Elite,
@@ -13,7 +15,8 @@ public enum Rarity {
 }
 
 [Serializable, MoonSharpUserData]
-public class NPC : Character {
+public class NPC : Character
+{
     public NPCBehaviour npcBehaviour;
     public float maxAttackRange = 50f;
     public float aggroRange = 10f; // Base range for initiating combat
@@ -23,23 +26,28 @@ public class NPC : Character {
     public float experience;
     public List<Item> dropTable;
 
-    public override ITargetable GetBehaviour() {
+    public override ITargetable GetBehaviour()
+    {
         return npcBehaviour;
     }
 
-    public override void Sync() {
-        if (npcBehaviour != null) {
+    public override void Sync()
+    {
+        if (npcBehaviour != null)
+        {
             npcBehaviour.npc.Dirty();
         }
     }
 
     [Client(Logging = LoggingType.Off)]
-    public override void SetInformationText(InformationText info) {
+    public override void SetInformationText(InformationText info)
+    {
         npcBehaviour.informationText = info;
     }
 
     [Server(Logging = LoggingType.Off)]
-    public void SetNPC(NPC scriptableNPC) {
+    public void SetNPC(NPC scriptableNPC)
+    {
         // Copying basic types and structures (value types)
         maxAttackRange = scriptableNPC.maxAttackRange;
         aggroRange = scriptableNPC.aggroRange;
@@ -52,9 +60,12 @@ public class NPC : Character {
         // Assuming 'Item' is a class you need to properly clone each item if it's not a simple type
         // For a deep copy, you would need a method in your Item class to clone or copy its properties.
         // Here's a shallow copy example, which works if Items are immutable or you're okay with shared references
-        if (dropTable != null ) {
+        if (dropTable != null)
+        {
             dropTable = new List<Item>(scriptableNPC.dropTable);
-        } else {
+        }
+        else
+        {
             dropTable = new List<Item>();
         }
         // Copying inherited properties from Character
@@ -80,27 +91,39 @@ public class NPC : Character {
         networkObject = scriptableNPC.networkObject; // Be careful with GameObjects; you usually don't want to copy these directly
 
         // Deep copying lists, ensuring a new list is created and filled with copies of the original items
-        if (scriptableNPC.weaknesses != null) {
+        if (scriptableNPC.weaknesses != null)
+        {
             weaknesses = new List<DamageSchool>(scriptableNPC.weaknesses);
-        } else {
+        }
+        else
+        {
             weaknesses = new List<DamageSchool>();
         }
 
-        if (scriptableNPC.resistances != null) {
+        if (scriptableNPC.resistances != null)
+        {
             resistances = new List<DamageSchool>(scriptableNPC.resistances);
-        } else {
+        }
+        else
+        {
             resistances = new List<DamageSchool>();
         }
 
-        if (scriptableNPC.immunities != null) {
+        if (scriptableNPC.immunities != null)
+        {
             immunities = new List<DamageSchool>(scriptableNPC.immunities);
-        } else {
+        }
+        else
+        {
             immunities = new List<DamageSchool>();
         }
 
-        if (scriptableNPC.aggroList != null) {
+        if (scriptableNPC.aggroList != null)
+        {
             aggroList = new List<GameObject>(scriptableNPC.aggroList); // This is also a shallow copy; consider implications in your game logic
-        } else {
+        }
+        else
+        {
             scriptableNPC.aggroList = new List<GameObject>();
         }
     }

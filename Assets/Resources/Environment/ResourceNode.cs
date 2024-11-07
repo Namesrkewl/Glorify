@@ -4,6 +4,8 @@ using UnityEngine;
 using FishNet.Object;
 using FishNet.Connection;
 using FishNet.Object.Synchronizing;
+using static UnityEngine.Rendering.PostProcessing.SubpixelMorphologicalAntialiasing;
+using Systems.Inventory;
 
 public class ResourceNode : NetworkBehaviour
 {
@@ -100,13 +102,15 @@ public class ResourceNode : NetworkBehaviour
 
     //public void Harvest(NetworkConnection conn, Inventory playerInventory, bool fullyHarvest = false)
     [ServerRpc(RequireOwnership = false)]
-    public void Harvest(NetworkConnection conn, bool fullyHarvest = true)
+    public void Harvest(NetworkConnection conn, GameObject player, bool fullyHarvest = true)
     {
+
+        //InventoryData item = new InventoryData(harvestObject.itemSO.Id, harvestAmount.Value, 1);
         Debug.Log("Trying to Harvest.");
         //HarvestClient(conn, playerInventory);
         if (IsFullyHarvested())
         {
-            HarvestClient(conn);
+            HarvestClient(conn, player);
             base.Despawn(DespawnType.Pool);
             Debug.Log("Resource harvested.");
         }
@@ -119,25 +123,43 @@ public class ResourceNode : NetworkBehaviour
 
     [TargetRpc]
     //public void HarvestClient(NetworkConnection conn, Inventory playerInventory)
-    public void HarvestClient(NetworkConnection conn)
+    public void HarvestClient(NetworkConnection conn, GameObject player)
     {
-        Debug.Log(harvestAmount + harvestObject.objectName + " harvested");
+        //Debug.Log(harvestAmount + harvestObject.objectName + " harvested");
+
         //netItem = new NetItem(itemSO.Id, itemSO.MaxStack, harvestAmount);
 
 
-        /********** Add to inventory to Glorify**********/
+        /********** Add to inventory to Glorify **********/
         Debug.Log("Add to inventory to Glorify");
+
+
+        Item newItem = new Item(harvestObject.ItemDetails, harvestAmount.Value);
+
+        /*
+        Item[] Items;
+        Items[0] = newItem;
+        int Capacity;
+        int Coins;
+        */
+
+        InventoryController invCont = player.GetComponent<Inventory>().controller;
+
+        Debug.Log(invCont);
+        Debug.Log(newItem);
+
+        invCont.AddItem(newItem);
+
+        //InventoryData inventoryData = new InventoryData(1, Items, 10, 1);
+
+        //Inventory.AddItem(harvestObject.ItemDetails);
+
+        //player.GetComponent<Inventory>().Bind(item);
 
         ///playerInventory.RequestAddItemServerRpc(netItem, conn);
 
 
         //NetItem netItem = new NetItem(harvestObject.name, harvestAmount);
         //playerInventory.TryAddItem
-    }
-
-    // Update is called once per frame
-    void Update()
-    {
-
     }
 }

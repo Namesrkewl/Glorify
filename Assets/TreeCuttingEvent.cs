@@ -27,7 +27,7 @@ public class TreeCuttingEvent : MonoBehaviour
     {
     }
 
-    public void StartCuttingEvent(TreeHealth treeHealth, ResourceNode resourceNode, GameObject objectToAction, RaycastHit HitInfo, FishNet.Connection.NetworkConnection localConnection)
+    public void StartCuttingEvent(TreeHealth treeHealth, ResourceNode resourceNode, GameObject objectToAction, RaycastHit HitInfo, FishNet.Connection.NetworkConnection localConnection, GameObject player)
     {
         Debug.Log("In StartCuttingEvent");
         cuttingCounter = 1;
@@ -36,7 +36,7 @@ public class TreeCuttingEvent : MonoBehaviour
         //actionSlider.GetComponent<CustomSlider>().enabled = true;
 
         isCutting = true;
-        StartCoroutine(Cutting(treeHealth, resourceNode, objectToAction, HitInfo, localConnection));
+        StartCoroutine(Cutting(treeHealth, resourceNode, objectToAction, HitInfo, localConnection, player));
         Debug.Log("Cutting Coroutine stopped.");
         //this.gameObject.SetActive(false);
     }
@@ -54,7 +54,7 @@ public class TreeCuttingEvent : MonoBehaviour
         }
     }
 
-    public IEnumerator Cutting(TreeHealth treeHealth, ResourceNode resourceNode, GameObject objectToAction, RaycastHit HitInfo, FishNet.Connection.NetworkConnection localConnection)
+    public IEnumerator Cutting(TreeHealth treeHealth, ResourceNode resourceNode, GameObject objectToAction, RaycastHit HitInfo, FishNet.Connection.NetworkConnection localConnection, GameObject player)
     {
         while (isCutting)
         {
@@ -63,7 +63,7 @@ public class TreeCuttingEvent : MonoBehaviour
             {
                 Debug.Log("Cutting counter is less than or equal to 0.");
                 isCutting = false;
-                CompleteCutting(treeHealth, resourceNode, objectToAction, HitInfo, localConnection);
+                CompleteCutting(treeHealth, resourceNode, objectToAction, HitInfo, localConnection, player);
                 //yield return null;
             }
             yield return null;
@@ -74,14 +74,14 @@ public class TreeCuttingEvent : MonoBehaviour
         yield return null;
     }
 
-    private void CompleteCutting(TreeHealth treeHealth, ResourceNode resourceNode, GameObject objectToAction, RaycastHit HitInfo, FishNet.Connection.NetworkConnection localConnection)
+    private void CompleteCutting(TreeHealth treeHealth, ResourceNode resourceNode, GameObject objectToAction, RaycastHit HitInfo, FishNet.Connection.NetworkConnection localConnection, GameObject player)
     {
         if (currentScore >= passingScore + 2)
         {
             Debug.Log("Cutting complete. Score of Excellent.");
             cuttingScore = TreeCuttingScore.Excellent;
             currentScore = 0;
-            TreeCutting.DamageTree(treeHealth, resourceNode, objectToAction, HitInfo, cuttingScore, localConnection);
+            TreeCutting.DamageTree(treeHealth, resourceNode, objectToAction, HitInfo, cuttingScore, localConnection, player);
             return;
         }
         else if (currentScore >= passingScore)
@@ -89,7 +89,7 @@ public class TreeCuttingEvent : MonoBehaviour
             Debug.Log("Cutting complete. Score of good.");
             cuttingScore = TreeCuttingScore.Good;
             currentScore = 0;
-            TreeCutting.DamageTree(treeHealth, resourceNode, objectToAction, HitInfo, cuttingScore, localConnection);
+            TreeCutting.DamageTree(treeHealth, resourceNode, objectToAction, HitInfo, cuttingScore, localConnection, player);
             return;
         }
         else
@@ -97,7 +97,7 @@ public class TreeCuttingEvent : MonoBehaviour
             Debug.Log("Cutting failed.");
             currentScore = 0;
             cuttingScore = TreeCuttingScore.Failed;
-            TreeCutting.DamageTree(treeHealth, resourceNode, objectToAction, HitInfo, cuttingScore, localConnection);
+            TreeCutting.DamageTree(treeHealth, resourceNode, objectToAction, HitInfo, cuttingScore, localConnection, player);
         }
     }
 

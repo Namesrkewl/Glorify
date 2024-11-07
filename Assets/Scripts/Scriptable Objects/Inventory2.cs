@@ -1,12 +1,12 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Inventory : MonoBehaviour
+public class Inventory2 : MonoBehaviour
 {
 
     #region Singleton
 
-    public static Inventory instance;
+    public static Inventory2 instance;
 
     private void Awake()
     {
@@ -28,14 +28,14 @@ public class Inventory : MonoBehaviour
     public delegate void OnItemChanged();
     public OnItemChanged onItemChangedCallback;
 
-    private List<Item> items;
+    private List<Item2> items;
     public int Capacity;
     void Start()
     {
-        items = new List<Item>(Capacity);
+        items = new List<Item2>(Capacity);
     }
 
-    public bool AddItem(Item item)
+    public bool AddItem(Item2 item)
     {
         if (items.Count < Capacity)
         {
@@ -50,14 +50,14 @@ public class Inventory : MonoBehaviour
         }
     }
 
-    public void RemoveItem(Item item)
+    public void RemoveItem(Item2 item)
     {
         items.Remove(item);
         if (onItemChangedCallback != null)
             onItemChangedCallback.Invoke();
     }
 
-    public Item GetItem(int index)
+    public Item2 GetItem(int index)
     {
         if (index >= 0 && index < items.Count)
         {

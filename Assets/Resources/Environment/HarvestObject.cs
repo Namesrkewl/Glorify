@@ -1,6 +1,8 @@
 using System.Collections;
 using System.Collections.Generic;
+//using Systems.Inventory;
 using UnityEngine;
+using Systems.Inventory;
 
 [CreateAssetMenu(fileName = "HarvestObject", menuName = "ScriptableObjects/HarvestObject", order = 1)]
 public class HarvestObject : ScriptableObject
@@ -31,4 +33,5 @@ public class HarvestObject : ScriptableObject
     public int harvestXP;
     public int defaultHealth;
     public HarvestType harvestType;
+    public ItemDetails ItemDetails;
 }

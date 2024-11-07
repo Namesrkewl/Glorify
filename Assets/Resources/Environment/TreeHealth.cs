@@ -134,7 +134,7 @@ public class TreeHealth : NetworkBehaviour, ITreeDamageable
         return true;
     }
 
-    public void AffectTree(ResourceNode resourceNode, GameObject objectToAction, FishNet.Connection.NetworkConnection localConnection, int damage, bool criticalHit = false, Vector3? hitPoint = null)
+    public void AffectTree(ResourceNode resourceNode, GameObject objectToAction, FishNet.Connection.NetworkConnection localConnection, int damage, GameObject player, bool criticalHit = false, Vector3? hitPoint = null)
     {
         //fullyHarvest = IsTreeFullyHarvested(objectToAction);
         //resourceNode.Harvest(localConnection, playerInventory, fullyHarvest);
@@ -146,7 +146,7 @@ public class TreeHealth : NetworkBehaviour, ITreeDamageable
         if (resourceNode.health.Value <= 0)
         {
             Debug.Log("Harvest resource");
-            resourceNode.Harvest(localConnection);
+            resourceNode.Harvest(localConnection, player);
         }
     }
 

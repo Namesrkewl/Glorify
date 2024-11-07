@@ -28,7 +28,7 @@ public class MiningEvent : MonoBehaviour
     {
     }
 
-    public void StartMiningEvent(OreHealth oreHealth, ResourceNode resourceNode, GameObject objectToAction, RaycastHit HitInfo, FishNet.Connection.NetworkConnection localConnection)
+    public void StartMiningEvent(OreHealth oreHealth, ResourceNode resourceNode, GameObject objectToAction, RaycastHit HitInfo, FishNet.Connection.NetworkConnection localConnection, GameObject player)
     {
         Debug.Log("In StartMiningEvent");
         circles = 1;
@@ -37,7 +37,7 @@ public class MiningEvent : MonoBehaviour
         actionCircles.GetComponent<PopupCircles>().enabled = true;
 
         isMining = true;
-        StartCoroutine(Mining(oreHealth, resourceNode, objectToAction, HitInfo, localConnection));
+        StartCoroutine(Mining(oreHealth, resourceNode, objectToAction, HitInfo, localConnection, player));
         Debug.Log("Mining Coroutine stopped.");
         //this.gameObject.SetActive(false);
     }
@@ -55,7 +55,7 @@ public class MiningEvent : MonoBehaviour
         }
     }
 
-    public IEnumerator Mining(OreHealth oreHealth, ResourceNode resourceNode, GameObject objectToAction, RaycastHit HitInfo, FishNet.Connection.NetworkConnection localConnection)
+    public IEnumerator Mining(OreHealth oreHealth, ResourceNode resourceNode, GameObject objectToAction, RaycastHit HitInfo, FishNet.Connection.NetworkConnection localConnection, GameObject player)
     {
         while (isMining)
         {
@@ -64,7 +64,7 @@ public class MiningEvent : MonoBehaviour
             {
                 Debug.LogError("Circles is less than or equal to 0.");
                 isMining = false;
-                CompleteMining(oreHealth, resourceNode, objectToAction, HitInfo, localConnection);
+                CompleteMining(oreHealth, resourceNode, objectToAction, HitInfo, localConnection, player);
                 //yield return null;
             }
             yield return null;
@@ -76,7 +76,7 @@ public class MiningEvent : MonoBehaviour
         yield return null;
     }
 
-    private void CompleteMining(OreHealth oreHealth, ResourceNode resourceNode, GameObject objectToAction, RaycastHit HitInfo, FishNet.Connection.NetworkConnection localConnection)
+    private void CompleteMining(OreHealth oreHealth, ResourceNode resourceNode, GameObject objectToAction, RaycastHit HitInfo, FishNet.Connection.NetworkConnection localConnection, GameObject player)
     {
         Debug.LogError("Current score = " + currentScore);
         Debug.LogError("Circle count= " + circles);
@@ -85,7 +85,7 @@ public class MiningEvent : MonoBehaviour
             Debug.LogError("Mining complete. Score of Excellent.");
             miningScore = MiningScore.Excellent;
             currentScore = 0;
-            OreCutting.DamageOre(oreHealth, resourceNode, objectToAction, HitInfo, miningScore, localConnection);
+            OreCutting.DamageOre(oreHealth, resourceNode, objectToAction, HitInfo, miningScore, localConnection, player);
             return;
         }
         else if (currentScore >= passingScore)
@@ -93,7 +93,7 @@ public class MiningEvent : MonoBehaviour
             Debug.LogError("Mining complete. Score of Good.");
             miningScore = MiningScore.Excellent;
             currentScore = 0;
-            OreCutting.DamageOre(oreHealth, resourceNode, objectToAction, HitInfo, miningScore, localConnection);
+            OreCutting.DamageOre(oreHealth, resourceNode, objectToAction, HitInfo, miningScore, localConnection, player);
             return;
         }
         else
@@ -101,7 +101,7 @@ public class MiningEvent : MonoBehaviour
             Debug.LogError("Mining failed.");
             currentScore = 0;
             miningScore = MiningScore.Failed;
-            OreCutting.DamageOre(oreHealth, resourceNode, objectToAction, HitInfo, miningScore, localConnection);
+            OreCutting.DamageOre(oreHealth, resourceNode, objectToAction, HitInfo, miningScore, localConnection, player);
         }
     }
 

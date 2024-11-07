@@ -24,6 +24,9 @@ public class TreeCutting : NetworkBehaviour, ITreeDamageable
 
     public float criticalHitChance = 30;
     public float criticalHitMultiplier = 1.20f;
+
+    public GameObject player;
+
     /*
     public enum TreeStatus
     {
@@ -69,7 +72,7 @@ public class TreeCutting : NetworkBehaviour, ITreeDamageable
     }
     */
 
-    public void StartCuttingEvent(TreeHealth treeHealth, ResourceNode resourceNode, GameObject objectToAction, RaycastHit HitInfo)
+    public void StartCuttingEvent(TreeHealth treeHealth, ResourceNode resourceNode, GameObject objectToAction, RaycastHit HitInfo, GameObject player)
     {
         //int damageAmount = 100;
 
@@ -79,12 +82,12 @@ public class TreeCutting : NetworkBehaviour, ITreeDamageable
 
         // Return CompleteMining() value of MiningEvent
         Debug.Log("Start Event Tree Cutting");
-        cuttingEvent.GetComponent<TreeCuttingEvent>().StartCuttingEvent(treeHealth, resourceNode, objectToAction, HitInfo, this.LocalConnection);
+        cuttingEvent.GetComponent<TreeCuttingEvent>().StartCuttingEvent(treeHealth, resourceNode, objectToAction, HitInfo, this.LocalConnection, player);
 
         // Start cutting tree
     }
 
-    public static void DamageTree(TreeHealth treeHealth, ResourceNode resourceNode, GameObject objectToAction, RaycastHit HitInfo, TreeCuttingEvent.TreeCuttingScore treeCuttingScore, FishNet.Connection.NetworkConnection localConnection)
+    public static void DamageTree(TreeHealth treeHealth, ResourceNode resourceNode, GameObject objectToAction, RaycastHit HitInfo, TreeCuttingEvent.TreeCuttingScore treeCuttingScore, FishNet.Connection.NetworkConnection localConnection, GameObject player)
     {
         if (treeCuttingScore == TreeCuttingEvent.TreeCuttingScore.Good || treeCuttingScore == TreeCuttingEvent.TreeCuttingScore.Excellent)
         {
@@ -106,12 +109,12 @@ public class TreeCutting : NetworkBehaviour, ITreeDamageable
 
             //Debug.Log("Hit was good, doing damage of " + damage + " and critical bool = " + isCriticalHit);
             //oreHealth.AffectOre(resourceNode, objectToAction, this.LocalConnection, playerInventory, damage, isCriticalHit, HitInfo.point);
-            treeHealth.AffectTree(resourceNode, objectToAction, localConnection, damage, isCriticalHit, HitInfo.point);
+            treeHealth.AffectTree(resourceNode, objectToAction, localConnection, damage, player, isCriticalHit, HitInfo.point);
         }
         else
         {
             int damage = 0;
-            treeHealth.AffectTree(resourceNode, objectToAction, localConnection, damage, false, HitInfo.point);
+            treeHealth.AffectTree(resourceNode, objectToAction, localConnection, damage, player, false, HitInfo.point);
         }
     }
 

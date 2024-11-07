@@ -30,7 +30,7 @@ public class CustomSlider : MonoBehaviour
     private VisualElement m_Middle;
 
     private bool sliderDirection = true;
-    float changeAmount = .03f;
+    float changeAmount = 2f;
 
     private float m_Dragger_Size;
     private float m_Dragger_Size_Relative;

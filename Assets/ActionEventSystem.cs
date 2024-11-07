@@ -113,7 +113,7 @@ public class ActionEventSystem : MonoBehaviour
                             Debug.Log("HitInfo: " + HitInfo);
 
 
-                            treeCutting.StartCuttingEvent(treeHealth, resourceNode, objectToAction, HitInfo);
+                            treeCutting.StartCuttingEvent(treeHealth, resourceNode, objectToAction, HitInfo, gameObject);
 
                         }
 
@@ -139,7 +139,7 @@ public class ActionEventSystem : MonoBehaviour
                                 Debug.LogError("HitInfo is null");
                             }
 
-                            oreCutting.StartMiningEvent(oreHealth, resourceNode, objectToAction, HitInfo);
+                            oreCutting.StartMiningEvent(oreHealth, resourceNode, objectToAction, HitInfo, gameObject);
                         }
                     }
                 }

@@ -132,7 +132,7 @@ public class OreHealth : NetworkBehaviour, IOreDamageable
         return true;
     }
 
-    public void AffectOre(ResourceNode resourceNode, GameObject objectToAction, FishNet.Connection.NetworkConnection localConnection, int damage, bool criticalHit = false, Vector3? hitPoint = null)
+    public void AffectOre(ResourceNode resourceNode, GameObject objectToAction, FishNet.Connection.NetworkConnection localConnection, int damage, GameObject player, bool criticalHit = false, Vector3? hitPoint = null)
     {
         //fullyHarvest = IsOreFullyHarvested(objectToAction);
         //resourceNode.Harvest(localConnection, playerInventory, fullyHarvest);
@@ -146,7 +146,7 @@ public class OreHealth : NetworkBehaviour, IOreDamageable
         Debug.Log("Ore resource node health after damage: " + resourceNode.health.Value);
         if (resourceNode.health.Value <= 0)
         {
-            resourceNode.Harvest(localConnection);
+            resourceNode.Harvest(localConnection, player);
         }
     }
 
