@@ -108,5 +108,5 @@ Label {
     width: 80px;
     height: 80px;
     margin: 8px;
-    background-image: url('/Assets/TextMesh Pro/Resources/Sprite Assets/InlineIcons_122.png');
+    background-image: url('/Assets/TextMesh Pro/Resources/Sprite Assets/CoinsIcon.png');
 }

@@ -23,12 +23,15 @@ public class ResourceNode : NetworkBehaviour
     private void Awake()
     {
 
+        Debug.Log("Pomme before onchange awake harvest amount = " + harvestAmount.Value);
         _myCollection.OnChange += _myCollection_OnChange;
+        Debug.Log("Pomme after onchange awake harvest amount = " + harvestAmount.Value);
     }
     public override void OnStartServer()
     {
 
         harvestAmount.Value = Random.Range(harvestObject.minAmount, harvestObject.maxAmount);
+        Debug.Log("Pomme harvest amount = " + harvestAmount.Value);
         health.Value = harvestObject.defaultHealth;
         base.OnStartServer();
     }
@@ -104,13 +107,14 @@ public class ResourceNode : NetworkBehaviour
     [ServerRpc(RequireOwnership = false)]
     public void Harvest(NetworkConnection conn, GameObject player, bool fullyHarvest = true)
     {
+        Debug.Log("Pomme harvest Function amount = " + harvestAmount.Value);
 
         //InventoryData item = new InventoryData(harvestObject.itemSO.Id, harvestAmount.Value, 1);
         Debug.Log("Trying to Harvest.");
         //HarvestClient(conn, playerInventory);
         if (IsFullyHarvested())
         {
-            HarvestClient(conn, player);
+            HarvestClient(conn, player, harvestAmount.Value);
             base.Despawn(DespawnType.Pool);
             Debug.Log("Resource harvested.");
         }
@@ -123,7 +127,7 @@ public class ResourceNode : NetworkBehaviour
 
     [TargetRpc]
     //public void HarvestClient(NetworkConnection conn, Inventory playerInventory)
-    public void HarvestClient(NetworkConnection conn, GameObject player)
+    public void HarvestClient(NetworkConnection conn, GameObject player, int harvestAmount)
     {
         //Debug.Log(harvestAmount + harvestObject.objectName + " harvested");
 
@@ -133,8 +137,8 @@ public class ResourceNode : NetworkBehaviour
         /********** Add to inventory to Glorify **********/
         Debug.Log("Add to inventory to Glorify");
 
-
-        Item newItem = new Item(harvestObject.ItemDetails, harvestAmount.Value);
+        Debug.Log("Harvest amount = " + harvestAmount);
+        Item newItem = harvestObject.ItemDetails.Create(harvestAmount);
 
         /*
         Item[] Items;

@@ -82,6 +82,11 @@ namespace Systems.Inventory
         public int Combine(int source, int target)
         {
             var total = Items[source].quantity + Items[target].quantity;
+            // Debug.Log values
+            Debug.Log("Total: " + total);
+            Debug.Log("Source: " + Items[source].quantity);
+            Debug.Log("Target: " + Items[target].quantity);
+
             Items[target].quantity = total;
             Remove(Items[source]);
             return total;

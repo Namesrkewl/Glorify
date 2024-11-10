@@ -15,9 +15,9 @@ MonoBehaviour:
   Name: PlanksInventoryItem
   maxStack: 20
   Id:
-    Part1: 4194642750
-    Part2: 1087646215
-    Part3: 2240650414
-    Part4: 1616508192
-  Icon: {fileID: 21300000, guid: e4ca642b79973d043b14336c846b1f11, type: 3}
+    Part1: 1198411056
+    Part2: 1284006565
+    Part3: 2691709854
+    Part4: 2251817820
+  spriteType: 0
   Description: 

@@ -955,7 +955,7 @@ MonoBehaviour:
   view: {fileID: 674960947956105323}
   capacity: 20
   startingItems:
-  - {fileID: 11400000, guid: f265444da0003c246a13978ecb3d71e2, type: 2}
+  - {fileID: 11400000, guid: 36f97a6d90dba7e43a653f365d6b9253, type: 2}
   - {fileID: 11400000, guid: 36f97a6d90dba7e43a653f365d6b9253, type: 2}
   <Id>k__BackingField:
     Part1: 363456522
