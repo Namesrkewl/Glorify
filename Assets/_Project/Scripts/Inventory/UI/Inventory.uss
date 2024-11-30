@@ -1,0 +1,112 @@
+.container {
+    flex-grow: 1;
+    width: auto;
+    height: auto;
+    max-width: none;
+    max-height: none;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    -unity-font-definition: url('/Assets/TextMesh Pro/Examples & Extras/Fonts/Roboto-Bold.ttf');
+    text-shadow: 4px 4px 4px rgba(0, 0, 0, 0.5);
+    color: rgb(255, 197, 0);
+}
+
+.inventory {
+    background-image: url('/Assets/_Project/Sprites/InventoryForm.png');
+    width: 600px;
+    padding: 20px;
+    align-items: flex-start;
+    justify-content: flex-start;
+    max-height: 1000px;
+    flex-grow: 1;
+}
+
+.inventoryHeader {
+    position: absolute;
+    top: -62px;
+    left: -74px;
+    width: 700px;
+    height: 140px;
+    justify-content: center;
+    align-items: center;
+    background-image: url('/Assets/_Project/Sprites/Setting_Slider_Bar_01.png');
+    -unity-slice-scale: 0.5;
+}
+
+Label {
+    font-size: 48px;
+}
+
+.inventoryFrame {
+    position: absolute;
+    top: -20px;
+    left: -34px;
+    width: 652px;
+    height: 1040px;
+    background-image: url('/Assets/_Project/Sprites/whiteBorder.png');
+    -unity-slice-scale: 0.5;
+}
+
+.slotsContainer {
+    flex-grow: 1;
+    padding-top: 60px;
+    flex-wrap: wrap;
+    flex-direction: row;
+    align-items: flex-start;
+    justify-content: flex-start;
+    flex-shrink: 0;
+}
+
+.slot {
+    width: 120px;
+    height: 120px;
+    margin: 8px;
+}
+
+.slotFrame {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 120px;
+    height: 120px;
+    border-width: 0;
+    background-image: url('/Assets/_Project/Sprites/Slot.png');
+    -unity-slice-scale: 0.8;
+}
+
+.    {
+    padding: 8px;
+    flex-shrink: 0;
+    flex-grow: 1;
+}
+
+.stackCount {
+    position: absolute;
+    color: white;
+    bottom: 0;
+    right: 0;
+    font-size: 36px;
+}
+
+.ghostIcon {
+    visibility: hidden;
+    position: absolute;
+    width: 120px;
+    height: 120px;
+    background-image: none;
+}
+
+.coins {
+    flex-grow: 1;
+    flex-direction: row;
+    align-items: flex-start;
+    justify-content: flex-start;
+}
+
+.coinsIcon {
+    width: 80px;
+    height: 80px;
+    margin: 8px;
+    background-image: url('/Assets/TextMesh Pro/Resources/Sprite Assets/CoinsIcon.png');
+}

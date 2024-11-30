@@ -1,0 +1,50 @@
+.BaseCircle1 {
+    opacity: 1;
+    flex-grow: 0;
+    background-color: rgba(0, 255, 227, 0.18);
+    border-top-left-radius: 50%;
+    border-top-right-radius: 50%;
+    border-bottom-right-radius: 50%;
+    border-bottom-left-radius: 50%;
+    border-left-color: rgba(0, 0, 0, 0);
+    border-right-color: rgba(0, 0, 0, 0);
+    border-top-color: rgba(0, 0, 0, 0);
+    border-bottom-color: rgba(0, 0, 0, 0);
+    translate: 350px 350px;
+    width: 1000px;
+    height: 1000px;
+    max-height: 1000px;
+    align-items: center;
+    justify-content: space-between;
+    overflow: visible;
+    position: absolute;
+    min-width: 1000px;
+    min-height: 1000px;
+    max-width: 1000px;
+}
+
+.ShrinkGrowCircle1 {
+    border-top-left-radius: 50%;
+    border-top-right-radius: 50%;
+    border-bottom-right-radius: 50%;
+    border-bottom-left-radius: 50%;
+    border-left-color: rgb(0, 0, 0);
+    border-right-color: rgb(0, 0, 0);
+    border-top-color: rgb(0, 0, 0);
+    border-bottom-color: rgb(0, 0, 0);
+    border-top-width: 15px;
+    border-right-width: 15px;
+    border-bottom-width: 15px;
+    border-left-width: 15px;
+    width: 1000px;
+    height: 1000px;
+    max-height: 1600px;
+    translate: 350px 350px;
+    justify-content: center;
+    align-items: center;
+    overflow: hidden;
+    max-width: 1600px;
+    min-width: 1000px;
+    min-height: 1000px;
+    position: absolute;
+}
